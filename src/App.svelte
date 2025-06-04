@@ -9,7 +9,7 @@
   let escalaReproducciones;
   let estadosReproduccion = {};
 
-  
+
   d3.csv("/Datos.csv").then(data => {
     //test
     canciones = data;
@@ -148,9 +148,9 @@ Object.keys(cancionesPorDecada).forEach(decada => {
 
   <p id="nombre">Steffy</p>
   <!-- ONDAS GIF -->
-  <img src="images/onda1.gif" class="onda onda1" alt="Onda 1">
-  <img src="images/onda2.gif" class="onda onda2" alt="Onda 2">
-  <img src="images/onda3.gif" class="onda onda3" alt="Onda 3">
+  <img src="images/onda1.gif" class="onda onda2" alt="Onda 1">
+  <img src="images/onda3.gif" class="onda onda1" alt="Onda 2">
+  <img src="images/onda2.gif" class="onda onda3" alt="Onda 3">
 
   </div>
       
