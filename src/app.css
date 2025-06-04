@@ -494,3 +494,7 @@ html {
     opacity: 1;
   }
 }
+::selection {
+  background-color: rgba(123, 0, 255, 0.182); /* light transparent purple */
+  color: black; /* Optional: set text color when selected */
+}
