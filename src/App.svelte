@@ -9,7 +9,7 @@
   let escalaReproducciones;
   let estadosReproduccion = {};
 
-  
+
   d3.csv("/Datos.csv").then(data => {
     //test
     canciones = data;
