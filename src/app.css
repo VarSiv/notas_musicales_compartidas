@@ -498,3 +498,87 @@ html {
   background-color: rgba(123, 0, 255, 0.182); /* light transparent purple */
   color: black; /* Optional: set text color when selected */
 }
+
+
+#decadas {
+  appearance: none;
+  background-color: #1e1e2f;
+  color: #f9f9f9;
+  padding: 0.6rem 1rem;
+  border: 2px solid #00cc66;
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-family: 'Raleway', sans-serif;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 204, 102, 0.2);
+}
+
+#decadas:hover {
+  background-color: #00cc66;
+  color: #1e1e2f;
+}
+
+#decadas:focus {
+  box-shadow: 0 0 0 3px rgba(0, 204, 102, 0.5);
+}
+
+
+#genero {
+  appearance: none;
+  background-color: #1e1e2f;
+  color: #f9f9f9;
+  padding: 0.6rem 1rem;
+  border: 2px solid #00cc66;
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-family: 'Raleway', sans-serif;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 204, 102, 0.2);
+}
+
+#genero:hover {
+  background-color: #00cc66;
+  color: #1e1e2f;
+}
+
+#genero:focus {
+  box-shadow: 0 0 0 3px rgba(0, 204, 102, 0.5);
+}
+
+#eligio {
+  appearance: none;
+  background-color: #1e1e2f;
+  color: #f9f9f9;
+  padding: 0.6rem 1rem;
+  border: 2px solid #00cc66;
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-family: 'Raleway', sans-serif;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 204, 102, 0.2);
+  margin-right: 0.5rem;
+}
+
+#eligio:hover {
+  background-color: #00cc66;
+  color: #1e1e2f;
+}
+
+#eligio:focus {
+  box-shadow: 0 0 0 3px rgba(0, 204, 102, 0.5);
+}
+
+#decadas, #genero, #eligio {
+  margin-bottom: 1.5rem; 
+  width: 200px; /* Ajustá este valor a lo que se vea bien */
+  text-align: center; /* Opcional: para centrar el texto */
+  width: fit-content;
+  min-width: 200px;
+  max-width: 100%;
+}
