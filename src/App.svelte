@@ -206,7 +206,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     {#each decadas as decada}
       <CancionesPorDecada
         {decada}
-        canciones={cancionesPorDecada[decada].filter(c => generoSeleccionado === "" || c.generos === generoSeleccionado)}
+        canciones={cancionesPorDecada[decada]}
         {colorGenero}
         {obtenerDiametro}
         {iconosPlayPause}
