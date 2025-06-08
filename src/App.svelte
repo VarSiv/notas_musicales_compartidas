@@ -160,7 +160,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   </div>
       
   <label for="decadas"></label>
-  <select bind:value={decadaSeleccionada} id="decadas">  
+  <select bind:value={decadaSeleccionada} id="decadas">
     <option value="all">Décadas</option>
     <option value="2020">2020</option>
     <option value="2010">2010</option>
@@ -169,61 +169,51 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     <option value="1980">1980</option>
   </select>
   
-
-<label for="genero"></label>
-<select bind:value={generoSeleccionado} id="genero">
-  <option value="">Géneros</option>
-  <option value="Pop">Pop</option>
-  <option value="Rock">Rock</option>
-  <option value="Indie">Indie</option>
-  <option value="Electrónica">Electrónica</option>
-  <option value="Reguetón">Reguetón</option>
-  <option value="Rap">Rap</option>
-</select>
-
-
-
-<select bind:value={elegidoPorSeleccionado} id="eligio">
-  <option value="">¿Quién eligió?</option>
-  <option value="Steffy">Steffy ❤️</option>
-  <option value="Var">Var ▶</option>
-  <option value="Rosita">Rosita ⭐</option>
-</select>
-
-
-
-
-{#each canciones.filter(c => generoSeleccionado === "" || c.generos === generoSeleccionado) as c}
-  <!-- Mostrar la canciones según los estilos musicales -->
-{/each}
-
-{#each canciones.filter(c => elegidoPorSeleccionado === "" || c.eligio === elegidoPorSeleccionado) as c}
-  <!-- Mostrar la canciones de Steffy, Rosita o Var -->
-{/each}
-
-
-{#if decadaSeleccionada === 'all'}
+  <label for="genero"></label>
+  <select bind:value={generoSeleccionado} id="genero">
+    <option value="">Géneros</option>
+    <option value="Pop">Pop</option>
+    <option value="Rock">Rock</option>
+    <option value="Indie">Indie</option>
+    <option value="Electrónica">Electrónica</option>
+    <option value="Reguetón">Reguetón</option>
+    <option value="Rap">Rap</option>
+  </select>
+  
+  <select bind:value={elegidoPorSeleccionado} id="eligio">
+    <option value="">¿Quién eligió?</option>
+    <option value="Steffy">Steffy ❤️</option>
+    <option value="Var">Var ▶</option>
+    <option value="Rosita">Rosita ⭐</option>
+  </select>
+  
+  {#if decadaSeleccionada === 'all'}
     {#each decadas as decada}
       <CancionesPorDecada
         {decada}
-        canciones={cancionesPorDecada[decada]}
+        canciones={cancionesPorDecada[decada].filter(c => 
+          (generoSeleccionado === "" || c.generos === generoSeleccionado) &&
+          (elegidoPorSeleccionado === "" || c.eligio === elegidoPorSeleccionado)
+        )}
         {colorGenero}
         {obtenerDiametro}
         {iconosPlayPause}
-        {simboloSelector} 
+        {simboloSelector}
       />
     {/each}
-    {:else}
+  {:else}
     <CancionesPorDecada
       decada={decadaSeleccionada}
-      canciones={cancionesPorDecada[decadaSeleccionada].filter(c => generoSeleccionado === "" || c.generos === generoSeleccionado)}
+      canciones={cancionesPorDecada[decadaSeleccionada].filter(c => 
+        (generoSeleccionado === "" || c.generos === generoSeleccionado) &&
+        (elegidoPorSeleccionado === "" || c.eligio === elegidoPorSeleccionado)
+      )}
       {colorGenero}
       {obtenerDiametro}
       {iconosPlayPause}
-      {simboloSelector} 
+      {simboloSelector}
     />
   {/if}
-
     <p>
       Cada canción se transforma en un círculo que late con su propia energía, mostrando su popularidad y estilo en un universo visual que invita a descubrir música con solo mirar.
       <br>
