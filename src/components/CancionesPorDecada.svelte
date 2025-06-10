@@ -172,7 +172,7 @@ function playCancion(nombre) {
          </div>
        {/each}
      </div>
-   </div>
+    </div>
    
    <style>
      .wave-container {
