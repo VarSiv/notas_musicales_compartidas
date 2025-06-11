@@ -102,7 +102,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   </div>
     
   
-  <div class="container">
+<div class="container">
 
 <svg width="1387" height="919" viewBox="0 0 1387 919" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <rect y="92" width="86" height="85" fill="url(#pattern0_240_8)"/>

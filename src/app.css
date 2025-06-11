@@ -249,6 +249,7 @@ p {
       position: relative;
       width: 800px; /* ajustá según tu diseño */
       margin: 40px auto;
+      margin-bottom: 100px;
     }
 
     .container svg {
@@ -502,7 +503,7 @@ html {
 
 #decadas {
   appearance: none;
-  background-color: #1e1e2f;
+  background-color: #000000;
   color: #f9f9f9;
   padding: 0.6rem 1rem;
   border: 2px solid #00cc66;
@@ -513,11 +514,12 @@ html {
   outline: none;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 204, 102, 0.2);
+  margin-left: 100px;
 }
 
 #decadas:hover {
   background-color: #00cc66;
-  color: #1e1e2f;
+  color: #000000;
 }
 
 #decadas:focus {
@@ -527,7 +529,7 @@ html {
 
 #genero {
   appearance: none;
-  background-color: #1e1e2f;
+  background-color: #000000;
   color: #f9f9f9;
   padding: 0.6rem 1rem;
   border: 2px solid #00cc66;
@@ -542,7 +544,7 @@ html {
 
 #genero:hover {
   background-color: #00cc66;
-  color: #1e1e2f;
+  color: #000000;
 }
 
 #genero:focus {
@@ -551,7 +553,7 @@ html {
 
 #eligio {
   appearance: none;
-  background-color: #1e1e2f;
+  background-color: #000000;
   color: #f9f9f9;
   padding: 0.6rem 1rem;
   border: 2px solid #00cc66;
@@ -562,7 +564,6 @@ html {
   outline: none;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 204, 102, 0.2);
-  margin-right: 0.5rem;
 }
 
 #eligio:hover {
@@ -581,4 +582,5 @@ html {
   width: fit-content;
   min-width: 200px;
   max-width: 100%;
+  margin-right: 10px;
 }
