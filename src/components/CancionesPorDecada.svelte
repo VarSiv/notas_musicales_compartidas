@@ -90,12 +90,17 @@
       return strokeWidth
   }
 
-
+// Calcular número de filas basado en 4 canciones por fila
+  $: filas = Math.ceil(canciones.length / 4);
 </script>
 
 <div class="fila-con-decada">
-  <div class="decada-label">{decada}</div>
+  {#if canciones.length > 0}
+  <div class="decada-label" style="--filas: {filas}">{decada}</div>
+{/if}
+
   <div class="grid-canciones" style="grid-template-rows: repeat(2, 1fr);">
+
 
     {#each canciones as cancion (cancion.canciones)}
       {@const diametro = obtenerDiametro(cancion.reproducciones) * 0.88}

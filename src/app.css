@@ -12,7 +12,7 @@ body {
 
 .fila-con-decada {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 40px;
 }
 
@@ -21,12 +21,15 @@ body {
   font-size: 24px;
   width: 70px;
   margin-right: 20px;
+  min-width: 80px;
+
   color: #003058;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  user-select: none;
+  text-align: right;
+
+  /* Centrado vertical relativo al grid de canciones */
+  transform: translateY(calc((var(--filas, 1) * 200px - 1.5rem) / 2));
 }
+
 
 .grid-canciones {
   display: grid;
@@ -583,4 +586,5 @@ html {
   min-width: 200px;
   max-width: 100%;
   margin-right: 10px;
+  
 }
