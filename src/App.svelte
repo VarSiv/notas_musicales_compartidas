@@ -2,6 +2,7 @@
   import * as d3 from "d3";
   import CancionesPorDecada from "./components/CancionesPorDecada.svelte";
   import Footer from "./components/Footer.svelte";
+  import { onMount } from 'svelte';
   
   let canciones = [];
   let cancionesPorDecada = {};
@@ -13,6 +14,8 @@
   let elegidoPorSeleccionado = "";
  
 
+// NUEVO: Variables para el scrollytelling (si las necesitas para alguna lógica extra)
+  let decadaActivaParaScrollytelling = ""; // Puedes usarla si quieres resaltar algo
 
 
   d3.csv("/Datos.csv").then(data => {
@@ -64,6 +67,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     const numero = reproducciones.replace(/[^0-9]/g, "");
     return escalaReproducciones(numero);
   }
+  
+  
 </script>
 
 <head>
