@@ -99,8 +99,7 @@
   <div class="decada-label" style="--filas: {filas}">{decada}</div>
 {/if}
 
-  <div class="grid-canciones" style="grid-template-rows: repeat(2, 1fr);">
-
+    <div class="grid-canciones" style="grid-template-rows: repeat({filas}, 1fr);">
 
     {#each canciones as cancion (cancion.canciones)}
       {@const diametro = obtenerDiametro(cancion.reproducciones) * 0.88}

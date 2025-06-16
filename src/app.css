@@ -27,7 +27,7 @@ body {
   text-align: right;
 
   /* Centrado vertical relativo al grid de canciones */
-  transform: translateY(calc((var(--filas, 1) * 200px - 1.5rem) / 2));
+  transform: translateY(calc((var(--filas, 1) * 240px - 1.5rem) / 2));
 }
 
 
