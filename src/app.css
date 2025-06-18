@@ -598,8 +598,8 @@ html {
   
 }
 
- /* Nuevos estilos para la sección del juego */
- .resultado-juego {
+/* Nuevos estilos para la sección del juego */
+.resultado-juego {
   margin: 60px auto;
   padding: 40px;
   background-color: var(--song-card-bg); /* Usa una variable para el color de fondo */
@@ -607,76 +607,46 @@ html {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
   max-width: 700px;
+  position: relative; /* ¡IMPORTANTE: Añade esto! */
 }
 
-.titulo-juego {
-  font-size: 2.2em;
-  font-weight: bold;
-  color: var(--secondary-highlight-color); /* Usa una variable para el color del título */
-  margin-bottom: 25px;
-  animation: brillarTitulo 6s ease-in-out infinite alternate; /* Reutiliza tu animación */
+/* AÑADE ESTO: el pseudo-elemento para el brillo */
+.resultado-juego::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: inherit; /* Hereda el border-radius del padre */
+  /* Crea un borde con múltiples sombras para el efecto luminoso */
+  box-shadow:
+      0 0 10px var(--primary-highlight-color),
+      0 0 20px color-mix(in srgb, var(--primary-highlight-color) 90%, black), /* darken es una función Sass, usamos color-mix de CSS */
+      0 0 30px var(--primary-highlight-color);
+  opacity: 0.7; /* Ajusta la intensidad del brillo */
+  z-index: -1; /* Coloca el brillo detrás del contenido */
+  animation: bordeLuminoso 3s ease-in-out infinite alternate; /* Animación para el brillo */
+  transition: opacity 0.3s ease; /* Transición suave para la aparición/desaparición */
 }
 
-.resultado-juego p {
-  font-size: 1.1em;
-  line-height: 1.5;
-  margin-bottom: 15px;
-  color: var(--main-text-color);
+.resultado-juego:hover::before {
+  opacity: 0.9; /* Ligeramente más intenso al pasar el ratón (opcional) */
 }
 
-.resultado-juego ul {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 25px;
-}
-
-.resultado-juego ul li {
-  font-size: 1.1em;
-  margin-bottom: 8px;
-  color: var(--main-text-color);
-  font-weight: 500;
-}
-
-.identificacion-final {
-  margin-top: 30px;
-  padding: 20px;
-  background-color: var(--primary-highlight-color);
-  border-radius: 10px;
-  color: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  animation: pulse-final 2s infinite ease-in-out;
-}
-
-.identificacion-final h3 {
-  font-size: 1.8em;
-  margin-bottom: 15px;
-  color: white; /* O un color que contraste bien con primary-highlight-color */
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-}
-
-.simbolo-final {
-  width: 80px;
-  height: 80px;
-  margin: 15px auto;
-  display: block;
-  filter: drop-shadow(0 0 8px rgba(0,0,0,0.4));
-}
-
-.identificacion-final p {
-  font-size: 1.2em;
-  font-weight: bold;
-  color: white;
-  margin-bottom: 0;
-}
-
-@keyframes pulse-final {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+/* AÑADE ESTO: el keyframes para la animación del brillo */
+@keyframes bordeLuminoso {
+  0% {
+      box-shadow:
+          0 0 5px var(--primary-highlight-color),
+          0 0 10px color-mix(in srgb, var(--primary-highlight-color) 90%, black),
+          0 0 15px var(--primary-highlight-color);
   }
-  50% {
-    transform: scale(1.02);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  100% {
+      box-shadow:
+          0 0 15px var(--primary-highlight-color),
+          0 0 25px color-mix(in srgb, var(--primary-highlight-color) 90%, black),
+          0 0 35px var(--primary-highlight-color);
   }
 }
 
