@@ -598,3 +598,85 @@ html {
   
 }
 
+ /* Nuevos estilos para la sección del juego */
+ .resultado-juego {
+  margin: 60px auto;
+  padding: 40px;
+  background-color: var(--song-card-bg); /* Usa una variable para el color de fondo */
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  max-width: 700px;
+}
+
+.titulo-juego {
+  font-size: 2.2em;
+  font-weight: bold;
+  color: var(--secondary-highlight-color); /* Usa una variable para el color del título */
+  margin-bottom: 25px;
+  animation: brillarTitulo 6s ease-in-out infinite alternate; /* Reutiliza tu animación */
+}
+
+.resultado-juego p {
+  font-size: 1.1em;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  color: var(--main-text-color);
+}
+
+.resultado-juego ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 25px;
+}
+
+.resultado-juego ul li {
+  font-size: 1.1em;
+  margin-bottom: 8px;
+  color: var(--main-text-color);
+  font-weight: 500;
+}
+
+.identificacion-final {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: var(--primary-highlight-color);
+  border-radius: 10px;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  animation: pulse-final 2s infinite ease-in-out;
+}
+
+.identificacion-final h3 {
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  color: white; /* O un color que contraste bien con primary-highlight-color */
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.simbolo-final {
+  width: 80px;
+  height: 80px;
+  margin: 15px auto;
+  display: block;
+  filter: drop-shadow(0 0 8px rgba(0,0,0,0.4));
+}
+
+.identificacion-final p {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0;
+}
+
+@keyframes pulse-final {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
+}
+

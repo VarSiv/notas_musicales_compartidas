@@ -105,6 +105,7 @@
       {@const diametro = obtenerDiametro(cancion.reproducciones) * 0.88}
       <div class="cancion-wrapper" data-cancion={cancion.canciones}>
         <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
           class="cancion"
           on:click={() => playCancion(cancion.canciones)}
@@ -177,6 +178,8 @@
         </div>
 
         <div class="nombre-cancion">{cancion.canciones}</div>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
           class="nombre-artista"
           on:click={() => window.open(cancion.youtube, "_blank")}

@@ -3,6 +3,7 @@
   import CancionesPorDecada from "./components/CancionesPorDecada.svelte";
   import Footer from "./components/Footer.svelte";
   import { onMount } from 'svelte';
+  import { reproduccionesPorPersona } from "./stores.js"; // Ajusta la ruta
   
   let canciones = [];
   let cancionesPorDecada = {};
@@ -12,10 +13,42 @@
   let generoSeleccionado = ""; 
   let decadaSeleccionada = "all";
   let elegidoPorSeleccionado = "";
- 
 
-// NUEVO: Variables para el scrollytelling (si las necesitas para alguna lógica extra)
-  let decadaActivaParaScrollytelling = ""; // Puedes usarla si quieres resaltar algo
+   // Variables para el juego final
+   let totalReproducciones = 0;
+  let afinidadSteffy = 0;
+  let afinidadRosita = 0;
+  let afinidadVar = 0;
+  let personaMasAfin = { nombre: '', porcentaje: 0, simbolo: '' };
+ // Suscribirse al store de reproducciones
+  $: {
+    const counts = $reproduccionesPorPersona; // '$' para acceder al valor del store
+    totalReproducciones = counts.Steffy + counts.Rosita + counts.Var;
+
+    if (totalReproducciones > 0) {
+      afinidadSteffy = (counts.Steffy / totalReproducciones) * 100;
+      afinidadRosita = (counts.Rosita / totalReproducciones) * 100;
+      afinidadVar = (counts.Var / totalReproducciones) * 100;
+
+      // Determinar la persona con mayor afinidad
+      const afinidades = [
+        { nombre: 'Steffy', porcentaje: afinidadSteffy, simbolo: simboloSelector.Steffy },
+        { nombre: 'Rosita', porcentaje: afinidadRosita, simbolo: simboloSelector.Rosita },
+        { nombre: 'Var', porcentaje: afinidadVar, simbolo: simboloSelector.Var },
+      ];
+
+      // Ordenar de mayor a menor y tomar la primera
+      afinidades.sort((a, b) => b.porcentaje - a.porcentaje);
+      personaMasAfin = afinidades[0];
+    } else {
+      // Resetear si no hay reproducciones
+      afinidadSteffy = 0;
+      afinidadRosita = 0;
+      afinidadVar = 0;
+      personaMasAfin = { nombre: '', porcentaje: 0, simbolo: '' };
+    }
+  }
+
 
 
   d3.csv("/Datos.csv").then(data => {
@@ -237,5 +270,25 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       <br>
       En el centro de cada canción, <strong>una onda estática</strong> muestra el ritmo de la música, adoptando el color de su género musical. La amplitud de la onda refleja la danceability de la canción: cuanto más bailable, más pronunciada será la onda.
     </p>
+
+    <div class="resultado-juego">
+      <h2 class="titulo-juego">¿Con quién vibrás más?</h2>
+      {#if totalReproducciones > 0}
+        <p>¡Has explorado la música! Basado en tus elecciones, así de cerca estás de cada estilo:</p>
+        <ul>
+          <li>Steffy: {afinidadSteffy.toFixed(1)}%</li>
+          <li>Rosita: {afinidadRosita.toFixed(1)}%</li>
+          <li>Var: {afinidadVar.toFixed(1)}%</li>
+        </ul>
+    
+        <div class="identificacion-final">
+          <h3>¡Te identificas más con **{personaMasAfin.nombre}**!</h3>
+          <img src={personaMasAfin.simbolo} alt="{personaMasAfin.nombre} Simbolo" class="simbolo-final" />
+          <p>¡Un {personaMasAfin.porcentaje.toFixed(1)}% de pura afinidad!</p>
+        </div>
+      {:else}
+        <p>¡Empieza a escuchar algunas canciones para descubrir tu afinidad musical!</p>
+      {/if}
+    </div>
     <Footer/>
 </body>
