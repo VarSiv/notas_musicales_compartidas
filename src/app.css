@@ -16,6 +16,15 @@ body {
   margin-bottom: 40px;
 }
 
+
+.fila-con-decada:not(:has(.cancion-wrapper)) {
+  margin-bottom: 0;
+}
+
+.grid-canciones:not(:has(.cancion-wrapper)){
+  gap:0;
+}
+
 .decada-label {
   font-weight: bold;
   font-size: 24px;
