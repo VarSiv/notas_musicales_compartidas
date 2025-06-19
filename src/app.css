@@ -602,24 +602,24 @@ html {
 .resultado-juego {
   margin: 60px auto;
   padding: 40px;
-  background-color: var(--song-card-bg); /* Usa una variable para el color de fondo */
+  background-color: var(--song-card-bg); 
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
   max-width: 700px;
-  position: relative; /* ¡IMPORTANTE: Añade esto! */
+  position: relative; 
 }
 
 
-/* Estilos para el gráfico de afinidad */
+
 .grafico-afinidad {
   display: flex;
   flex-direction: column;
   gap: 20px; /* Espacio entre las barras */
   margin-top: 30px;
   margin-bottom: 40px;
-  width: 80%; /* Ajusta el ancho del gráfico */
-  max-width: 600px; /* Máximo ancho para el gráfico */
+  width: 80%; 
+  max-width: 600px; 
   margin-left: auto;
   margin-right: auto;
 }
@@ -633,37 +633,36 @@ html {
 .afinidad-nombre {
   font-weight: bold;
   font-size: 1.1em;
-  min-width: 70px; /* Asegura un ancho mínimo para los nombres */
+  min-width: 70px; 
   text-align: right;
   color: #003058;
 }
 
 .afinidad-barra-contenedor {
-  flex-grow: 1; /* Ocupa el espacio restante */
+  flex-grow: 1;
   background-color: #eee;
   border-radius: 5px;
-  height: 20px; /* Altura de la barra */
-  overflow: hidden; /* Asegura que la barra interna no se desborde */
+  height: 20px; 
+  overflow: hidden; 
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .afinidad-barra {
   height: 100%;
   border-radius: 5px;
-  transition: width 0.8s ease-out; /* Animación de la barra */
-  box-shadow: 0 0 8px rgba(0,0,0,0.2); /* Sutil sombra en la barra */
+  box-shadow: 0 0 8px rgba(0,0,0,0.2); 
 }
 
 .afinidad-porcentaje {
   font-weight: bold;
   font-size: 1em;
-  min-width: 50px; /* Ancho mínimo para el porcentaje */
+  min-width: 50px; 
   text-align: left;
   color: #555;
 }
 
 .afinidad-simbolo {
-  width: 40px; /* Tamaño del símbolo */
+  width: 40px; 
   height: 28px;
   object-fit: contain;
   filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(280deg) brightness(0%); 
@@ -685,143 +684,49 @@ html {
 }
 ¡
 
-/* ========================================= */
-/* Estilos para la sección de Scrollytelling */
-/* Adaptado a la estética de la página existente */
-/* Ajustes de espacio y bordes */
-/* ========================================= */
-
 .scrollytelling-content {
-    background-color: #fcfcfc; /* Un blanco muy sutil para diferenciar del fondo general */
+    background-color: #fcfcfc;
     color: black; 
-    padding: 70px 30px; /* Reducido el padding para menos espacio blanco */
-    margin-top: 60px; /* Reducido el margen superior para menos espacio blanco */
-    /* Eliminamos el border-top directo aquí para controlarlo con el ::before */
-    border-bottom: 2px solid #15FB88; /* Borde inferior explícito con el color verde */
-    box-shadow: 0 5px 15px rgba(21, 251, 136, 0.1); /* Sombra suave hacia abajo con el color verde */
-    text-align: center; /* Centrar el texto por defecto */
-    font-family: 'Raleway', sans-serif; /* Mantiene la fuente principal de tu diseño */
-    position: relative; /* Necesario para los pseudo-elementos */
-    overflow: hidden; /* Evita desbordamientos */
-    border-radius: 5px; /* Un ligero borde redondeado, si te gusta el estilo de tus canciones */
-    max-width: 1200px; /* Limita el ancho máximo para evitar que se extienda demasiado */
-    margin-left: auto; /* Centrar el div */
-    margin-right: auto; /* Centrar el div */
+    padding: 70px 30px; 
+    margin-top: 60px; 
+    box-shadow: 0 5px 15px rgba(21, 251, 136, 0.1);
+    text-align: center; 
+    font-family: 'Raleway', sans-serif; 
+    position: relative; 
+    overflow: hidden; 
+    border-radius: 5px; 
+    max-width: 1200px; 
+    margin-left: auto; 
+    margin-right: auto; 
 }
 
-/* Efecto de brillo/sombra pulsante en el borde superior, similar a .cancion:hover::after */
-.scrollytelling-content::before {
-    content: '';
-    position: absolute;
-    top: -5px; /* Ligeramente por encima del borde superior */
-    left: 0;
-    width: 100%;
-    height: 5px; /* Pequeña altura para el efecto */
-    box-shadow: 0 0 15px 5px rgba(21, 251, 136, 0.6); /* Sombra que simula el borde "turquesa" */
-    opacity: 0; /* Inicialmente oculto */
-    transition: opacity 0.4s ease; /* Transición suave */
-    animation: pulseBorder 1.5s infinite alternate ease-in-out; /* Animación de pulso */
-}
-
-/* Animación de pulso para el borde superior */
-@keyframes pulseBorder {
-  0% {
-    box-shadow: 0 0 8px 2px rgba(21, 251, 136, 0.5); /* Sombra inicial más pequeña */
-    opacity: 0.7;
-  }
-  50% {
-    box-shadow: 0 0 20px 8px rgba(21, 251, 136, 0.9); /* Sombra más grande en el medio */
-    opacity: 1;
-  }
-  100% {
-    box-shadow: 0 0 8px 2px rgba(21, 251, 136, 0.5); /* Vuelve a la sombra inicial */
-    opacity: 0.7;
-  }
-}
 
 .scrollytelling-content h2 {
-    font-size: 3em; /* Tamaño de título ligeramente ajustado */
-    color: #003058; /* Color azul oscuro, como tus decadas-label y h2 de reproductor */
-    margin-bottom: 25px; /* Menos margen inferior para el título */
+    font-size: 3em; 
+    color: #003058; 
+    margin-bottom: 25px; 
     font-weight: 700;
     letter-spacing: -0.5px;
     line-height: 1.2;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .scrollytelling-content p {
-    font-size: 1.15em; /* Párrafos ligeramente más pequeños para menos espacio */
-    line-height: 1.6; /* Menos interlineado */
-    max-width: 700px; /* Ancho máximo para una lectura cómoda, ligeramente reducido */
-    margin: 0 auto 18px auto; /* Menos margen inferior */
+    font-size: 1.15em;
+    line-height: 1.6; 
+    max-width: 700px; 
+    margin: 0 auto 18px auto; 
     font-weight: 400;
     color: #333;
 }
 
-/* Clases específicas para los paneles del scrollytelling */
+
 .story-panel {
-    min-height: 60vh; /* Reducida la altura mínima para compactar más */
+    min-height: 60vh; 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 30px 20px; /* Reducido el padding interno del panel */
-    box-sizing: border-box;
+    padding: 30px 20px; 
+    box-sizing: boder-box;
 }
 
-/* Media Queries para responsividad, adaptando los tamaños y espaciados */
-@media (max-width: 1024px) {
-    .scrollytelling-content {
-        padding: 50px 25px;
-        margin-top: 50px;
-    }
-    .scrollytelling-content h2 {
-        font-size: 2.5em;
-    }
-    .scrollytelling-content p {
-        font-size: 1.05em;
-        max-width: 600px;
-    }
-    .story-panel {
-        min-height: 55vh;
-    }
-}
-
-@media (max-width: 768px) {
-    .scrollytelling-content {
-        padding: 40px 20px;
-        margin-top: 40px;
-    }
-    .scrollytelling-content h2 {
-        font-size: 2em;
-        margin-bottom: 18px;
-    }
-    .scrollytelling-content p {
-        font-size: 0.95em;
-        max-width: 100%;
-        margin-bottom: 12px;
-    }
-    .story-panel {
-        min-height: 50vh;
-        padding: 25px 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .scrollytelling-content {
-        padding: 30px 15px;
-        margin-top: 25px;
-    }
-    .scrollytelling-content h2 {
-        font-size: 1.6em;
-        margin-bottom: 12px;
-    }
-    .scrollytelling-content p {
-        font-size: 0.85em;
-        margin-bottom: 8px;
-    }
-    .story-panel {
-        min-height: 45vh;
-        padding: 20px 10px;
-    }
-}

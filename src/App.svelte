@@ -5,6 +5,7 @@
   import { onMount } from 'svelte';
   import { reproduccionesPorPersona } from "./stores.js"; // Para acumular los clics de las personas
   
+  // Variables generales
   let canciones = [];
   let cancionesPorDecada = {};
   let decadas = [];
@@ -15,8 +16,8 @@
   let elegidoPorSeleccionado = "";
 
    
-    // Variables para el juego final (si no las tenías ya, defínelas así)
-    let totalReproducciones = 0; // Se inicializa para evitar errores al inicio
+    // Variables para el juego final 
+    let totalReproducciones = 0; 
     let afinidadSteffy = 0;
     let afinidadRosita = 0;
     let afinidadVar = 0;
@@ -25,11 +26,6 @@
         simbolo: "",
         porcentaje: 0
     };
-      // Nueva variable para manejar los empates y sus símbolos
-    let afinidadesEmpatadas = []; // Contendrá un array de objetos { nombre, porcentaje, simbolo, color }
-    let mensajeEmpate = ""; // Mensaje dinámico si hay empate
-
-
 
     const simboloSelector = {
     "Var": "/images/Var.png",
@@ -42,7 +38,7 @@
     pause: "/images/Pause.png"
   };
 
-    // Bloque reactivo para los cálculos de afinidad
+    // Cálculos de afinidad
     $: {
         totalReproducciones = $reproduccionesPorPersona.Steffy + $reproduccionesPorPersona.Rosita + $reproduccionesPorPersona.Var;
 
