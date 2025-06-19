@@ -26,7 +26,7 @@
         porcentaje: 0
     };
       // Nueva variable para manejar los empates y sus símbolos
-      let afinidadesEmpatadas = []; // Contendrá un array de objetos { nombre, porcentaje, simbolo, color }
+    let afinidadesEmpatadas = []; // Contendrá un array de objetos { nombre, porcentaje, simbolo, color }
     let mensajeEmpate = ""; // Mensaje dinámico si hay empate
 
 
@@ -284,7 +284,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       En el centro de cada canción, <strong>una onda estática</strong> muestra el ritmo de la música, adoptando el color de su género musical. La amplitud de la onda refleja la danceability de la canción: cuanto más bailable, más pronunciada será la onda.
     </p>    
 
-
+  
 <div class="resultado-juego">
         <h2 class="titulo-juego">¿Con quién vibrás más?</h2>
         {#if totalReproducciones > 0}
@@ -326,5 +326,13 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             <p>¡Empieza a escuchar algunas canciones para descubrir tu afinidad musical!</p>
         {/if}
     </div>
+
+    <div class="scrollytelling-content">
+      <div id="intro-mapa" class="story-panel">
+          <h2>El Sonido del Mundo en 2025</h2>
+          <p>Explora un mapa interactivo con las canciones más reproducidas de 63 países en este momento.</p>
+          <p>Hemos seleccionado 8 puntos destacados, de diferentes continentes, para llevarte en un viaje musical único.</p>
+        </div>
+
     <Footer/>
 </body>
