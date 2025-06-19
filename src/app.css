@@ -610,43 +610,76 @@ html {
   position: relative; /* ¡IMPORTANTE: Añade esto! */
 }
 
-/* AÑADE ESTO: el pseudo-elemento para el brillo */
-.resultado-juego::before {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
-  border-radius: inherit; /* Hereda el border-radius del padre */
-  /* Crea un borde con múltiples sombras para el efecto luminoso */
-  box-shadow:
-      0 0 10px var(--primary-highlight-color),
-      0 0 20px color-mix(in srgb, var(--primary-highlight-color) 90%, black), /* darken es una función Sass, usamos color-mix de CSS */
-      0 0 30px var(--primary-highlight-color);
-  opacity: 0.7; /* Ajusta la intensidad del brillo */
-  z-index: -1; /* Coloca el brillo detrás del contenido */
-  animation: bordeLuminoso 3s ease-in-out infinite alternate; /* Animación para el brillo */
-  transition: opacity 0.3s ease; /* Transición suave para la aparición/desaparición */
+
+/* Estilos para el gráfico de afinidad */
+.grafico-afinidad {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Espacio entre las barras */
+  margin-top: 30px;
+  margin-bottom: 40px;
+  width: 80%; /* Ajusta el ancho del gráfico */
+  max-width: 600px; /* Máximo ancho para el gráfico */
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.resultado-juego:hover::before {
-  opacity: 0.9; /* Ligeramente más intenso al pasar el ratón (opcional) */
+.afinidad-item {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Espacio entre los elementos de la fila */
 }
 
-/* AÑADE ESTO: el keyframes para la animación del brillo */
-@keyframes bordeLuminoso {
-  0% {
-      box-shadow:
-          0 0 5px var(--primary-highlight-color),
-          0 0 10px color-mix(in srgb, var(--primary-highlight-color) 90%, black),
-          0 0 15px var(--primary-highlight-color);
-  }
-  100% {
-      box-shadow:
-          0 0 15px var(--primary-highlight-color),
-          0 0 25px color-mix(in srgb, var(--primary-highlight-color) 90%, black),
-          0 0 35px var(--primary-highlight-color);
-  }
+.afinidad-nombre {
+  font-weight: bold;
+  font-size: 1.1em;
+  min-width: 70px; /* Asegura un ancho mínimo para los nombres */
+  text-align: right;
+  color: #003058;
 }
 
+.afinidad-barra-contenedor {
+  flex-grow: 1; /* Ocupa el espacio restante */
+  background-color: #eee;
+  border-radius: 5px;
+  height: 20px; /* Altura de la barra */
+  overflow: hidden; /* Asegura que la barra interna no se desborde */
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.afinidad-barra {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.8s ease-out; /* Animación de la barra */
+  box-shadow: 0 0 8px rgba(0,0,0,0.2); /* Sutil sombra en la barra */
+}
+
+.afinidad-porcentaje {
+  font-weight: bold;
+  font-size: 1em;
+  min-width: 50px; /* Ancho mínimo para el porcentaje */
+  text-align: left;
+  color: #555;
+}
+
+.afinidad-simbolo {
+  width: 40px; /* Tamaño del símbolo */
+  height: 28px;
+  object-fit: contain;
+  filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(280deg) brightness(0%); 
+}
+
+
+.identificacion-final {
+  text-align: center; 
+  margin-top: 20px; 
+  filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(280deg) brightness(0%); 
+}
+
+
+.identificacion-final p {
+  text-align: center;
+  margin-left: auto; 
+  margin-right: auto; 
+  max-width: 90%; 
+}

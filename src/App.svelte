@@ -3,7 +3,7 @@
   import CancionesPorDecada from "./components/CancionesPorDecada.svelte";
   import Footer from "./components/Footer.svelte";
   import { onMount } from 'svelte';
-  import { reproduccionesPorPersona } from "./stores.js"; // Ajusta la ruta
+  import { reproduccionesPorPersona } from "./stores.js"; // Para acumular los clics de las personas
   
   let canciones = [];
   let cancionesPorDecada = {};
@@ -14,40 +14,63 @@
   let decadaSeleccionada = "all";
   let elegidoPorSeleccionado = "";
 
-   // Variables para el juego final
-   let totalReproducciones = 0;
-  let afinidadSteffy = 0;
-  let afinidadRosita = 0;
-  let afinidadVar = 0;
-  let personaMasAfin = { nombre: '', porcentaje: 0, simbolo: '' };
- // Suscribirse al store de reproducciones
-  $: {
-    const counts = $reproduccionesPorPersona; // '$' para acceder al valor del store
-    totalReproducciones = counts.Steffy + counts.Rosita + counts.Var;
+   
+    // Variables para el juego final (si no las tenías ya, defínelas así)
+    let totalReproducciones = 0; // Se inicializa para evitar errores al inicio
+    let afinidadSteffy = 0;
+    let afinidadRosita = 0;
+    let afinidadVar = 0;
+    let personaMasAfin = {
+        nombre: "Nadie",
+        simbolo: "",
+        porcentaje: 0
+    };
+      // Nueva variable para manejar los empates y sus símbolos
+      let afinidadesEmpatadas = []; // Contendrá un array de objetos { nombre, porcentaje, simbolo, color }
+    let mensajeEmpate = ""; // Mensaje dinámico si hay empate
 
-    if (totalReproducciones > 0) {
-      afinidadSteffy = (counts.Steffy / totalReproducciones) * 100;
-      afinidadRosita = (counts.Rosita / totalReproducciones) * 100;
-      afinidadVar = (counts.Var / totalReproducciones) * 100;
 
-      // Determinar la persona con mayor afinidad
-      const afinidades = [
-        { nombre: 'Steffy', porcentaje: afinidadSteffy, simbolo: simboloSelector.Steffy },
-        { nombre: 'Rosita', porcentaje: afinidadRosita, simbolo: simboloSelector.Rosita },
-        { nombre: 'Var', porcentaje: afinidadVar, simbolo: simboloSelector.Var },
-      ];
 
-      // Ordenar de mayor a menor y tomar la primera
-      afinidades.sort((a, b) => b.porcentaje - a.porcentaje);
-      personaMasAfin = afinidades[0];
-    } else {
-      // Resetear si no hay reproducciones
-      afinidadSteffy = 0;
-      afinidadRosita = 0;
-      afinidadVar = 0;
-      personaMasAfin = { nombre: '', porcentaje: 0, simbolo: '' };
+    const simboloSelector = {
+    "Var": "/images/Var.png",
+    "Rosita": "/images/Rosita.png",
+    "Steffy": "/images/Steffy.png"
+  };
+  
+  const iconosPlayPause = {
+    play: "/images/Var.png",
+    pause: "/images/Pause.png"
+  };
+
+    // Bloque reactivo para los cálculos de afinidad
+    $: {
+        totalReproducciones = $reproduccionesPorPersona.Steffy + $reproduccionesPorPersona.Rosita + $reproduccionesPorPersona.Var;
+
+        if (totalReproducciones > 0) {
+            afinidadSteffy = ($reproduccionesPorPersona.Steffy / totalReproducciones) * 100;
+            afinidadRosita = ($reproduccionesPorPersona.Rosita / totalReproducciones) * 100;
+            afinidadVar = ($reproduccionesPorPersona.Var / totalReproducciones) * 100;
+
+            const afinidades = [
+                { nombre: "Steffy", porcentaje: afinidadSteffy, simbolo: simboloSelector.Steffy },
+                { nombre: "Rosita", porcentaje: afinidadRosita, simbolo: simboloSelector.Rosita },
+                { nombre: "Var", porcentaje: afinidadVar, simbolo: simboloSelector.Var }
+            ];
+
+            // Ordenar de mayor a menor y asignar la personaMasAfin
+            afinidades.sort((a, b) => b.porcentaje - a.porcentaje);
+            personaMasAfin = afinidades[0];
+
+        } else {
+            // Resetear si no hay reproducciones
+            afinidadSteffy = 0;
+            afinidadRosita = 0;
+            afinidadVar = 0;
+            personaMasAfin = { nombre: "Nadie", porcentaje: 0, simbolo: "" };
+        }
+      
     }
-  }
+
 
   d3.csv("/Datos.csv").then(data => {
     //test
@@ -83,21 +106,13 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     .domain(["Pop", "Rock", "Indie", "Electrónica", "Reguetón", "Rap"])
     .range(["#00CC66", "#CC0000", "#CC0066", "#001BCC", "#CCB400", "#000000"]);
   
-  const simboloSelector = {
-    "Var": "/images/Var.png",
-    "Rosita": "/images/Rosita.png",
-    "Steffy": "/images/Steffy.png"
-  };
-  
-  const iconosPlayPause = {
-    play: "/images/Var.png",
-    pause: "/images/Pause.png"
-  };
+ 
   
   function obtenerDiametro(reproducciones) {
     const numero = reproducciones.replace(/[^0-9]/g, "");
     return escalaReproducciones(numero);
   }
+  
   
   
 </script>
@@ -194,7 +209,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   <img src="images/onda3.gif" class="onda onda3" alt="Onda 3">
 
   </div>
-      
+  
   <label for="decadas"></label>
   <select bind:value={decadaSeleccionada} id="decadas">
     <option value="all">Décadas</option>
@@ -267,26 +282,49 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       Finalmente, la <strong>danceability</strong> se traduce en la forma y movimiento, como si cada reproductor tuviera su propio pulso, latiendo al ritmo de su melodía.
       <br>
       En el centro de cada canción, <strong>una onda estática</strong> muestra el ritmo de la música, adoptando el color de su género musical. La amplitud de la onda refleja la danceability de la canción: cuanto más bailable, más pronunciada será la onda.
-    </p>
+    </p>    
 
-    <div class="resultado-juego">
-      <h2 class="titulo-juego">¿Con quién vibrás más?</h2>
-      {#if totalReproducciones > 0}
-        <p>¡Has explorado la música! Basado en tus elecciones, así de cerca estás de cada estilo:</p>
-        <ul>
-          <li>Steffy: {afinidadSteffy.toFixed(1)}%</li>
-          <li>Rosita: {afinidadRosita.toFixed(1)}%</li>
-          <li>Var: {afinidadVar.toFixed(1)}%</li>
-        </ul>
-    
-        <div class="identificacion-final">
-          <h3>¡Te identificas más con **{personaMasAfin.nombre}**!</h3>
-          <img src={personaMasAfin.simbolo} alt="{personaMasAfin.nombre} Simbolo" class="simbolo-final" />
-          <p>¡Un {personaMasAfin.porcentaje.toFixed(1)}% de pura afinidad!</p>
-        </div>
-      {:else}
-        <p>¡Empieza a escuchar algunas canciones para descubrir tu afinidad musical!</p>
-      {/if}
+
+<div class="resultado-juego">
+        <h2 class="titulo-juego">¿Con quién vibrás más?</h2>
+        {#if totalReproducciones > 0}
+            <p>¡Has explorado la música que nos gusta a nosotras! <br>
+              Basado en tus elecciones al hacer click en cada reproductor, estás así de cerca de descubrir tu estilo ideal y ver con quien compartís más canciones:</p>
+            
+            <div class="grafico-afinidad">
+                <div class="afinidad-item">
+                    <span class="afinidad-nombre">Steffy</span>
+                    <div class="afinidad-barra-contenedor">
+                        <div class="afinidad-barra" style="width: {afinidadSteffy}%; background-color: #e21c68;"></div> </div>
+                    <span class="afinidad-porcentaje">{afinidadSteffy.toFixed(1)}%</span>
+                    <img src={simboloSelector.Steffy} alt="Steffy Simbolo" class="afinidad-simbolo" />
+                </div>
+
+                <div class="afinidad-item">
+                    <span class="afinidad-nombre">Rosita</span>
+                    <div class="afinidad-barra-contenedor">
+                        <div class="afinidad-barra" style="width: {afinidadRosita}%; background-color: #FFD700;"></div> </div>
+                    <span class="afinidad-porcentaje">{afinidadRosita.toFixed(1)}%</span>
+                    <img src={simboloSelector.Rosita} alt="Rosita Simbolo" class="afinidad-simbolo" />
+                </div>
+
+                <div class="afinidad-item">
+                    <span class="afinidad-nombre">Var</span>
+                    <div class="afinidad-barra-contenedor">
+                        <div class="afinidad-barra" style="width: {afinidadVar}%; background-color: #0d2de2;"></div> </div>
+                    <span class="afinidad-porcentaje">{afinidadVar.toFixed(1)}%</span>
+                    <img src={simboloSelector.Var} alt="Var Simbolo" class="afinidad-simbolo" />
+                </div>
+            </div>
+
+            <div class="identificacion-final">
+                <h3>¡Te identificas más con {personaMasAfin.nombre}!</h3>
+                <img src={simboloSelector[personaMasAfin.nombre]} alt="{personaMasAfin.nombre} Simbolo" class="simbolo-final" />
+                <p>¡Un {personaMasAfin.porcentaje.toFixed(1)}% de pura afinidad!</p>
+            </div>
+        {:else}
+            <p>¡Empieza a escuchar algunas canciones para descubrir tu afinidad musical!</p>
+        {/if}
     </div>
     <Footer/>
 </body>
