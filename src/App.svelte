@@ -54,8 +54,27 @@
             ];
 
             // Ordenar de mayor a menor y asignar la personaMasAfin
+            // Ordenar de mayor a menor
             afinidades.sort((a, b) => b.porcentaje - a.porcentaje);
-            personaMasAfin = afinidades[0];
+
+            const top1 = afinidades[0];
+            const top2 = afinidades[1];
+
+            if (top1.porcentaje === top2.porcentaje) {
+              personaMasAfin = {
+                  nombre: "Tenés gustos mixtos",
+                  simbolo: "",
+                  porcentaje: 0
+              };
+          } else {
+              personaMasAfin = {
+                  nombre: "Te identificás más con " + top1.nombre,
+                  simbolo: top1.simbolo,
+                  porcentaje: top1.porcentaje
+              };
+          }
+
+
 
         } else {
             // Resetear si no hay reproducciones
@@ -314,10 +333,13 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             </div>
 
             <div class="identificacion-final">
-                <h3>¡Te identificas más con {personaMasAfin.nombre}!</h3>
-                <img src={simboloSelector[personaMasAfin.nombre]} alt="{personaMasAfin.nombre} Simbolo" class="simbolo-final" />
+              <h3>{personaMasAfin.nombre}!</h3>
+              {#if personaMasAfin.simbolo}
+                <img src={personaMasAfin.simbolo} alt="{personaMasAfin.nombre} Simbolo" class="simbolo-final" />
                 <p>¡Un {personaMasAfin.porcentaje.toFixed(1)}% de pura afinidad!</p>
+              {/if}
             </div>
+            
         {:else}
             <p>¡Empieza a escuchar algunas canciones para descubrir tu afinidad musical!</p>
         {/if}
