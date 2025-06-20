@@ -56,19 +56,14 @@
           audio.currentlyPlaying = null
           activeSongInfo = null; // Cierra el pop-up al finalizar la reproducción
       }
-
-      // 3. Registrar la "votación" (incrementar el contador en el store)
-      // Puedes considerar que un simple clic en la canción ya cuenta como "voto" o "interacción positiva"
-      // O podrías tener un botón explícito dentro del pop-up.
-      // Por ahora, lo haremos al hacer clic para reproducir/abrir info:
-      $reproduccionesPorPersona[cancion.eligio]++;
-     
+  
   }
 
   // Función para manejar el clic en el botón "Me Gusta" dentro del pop-up
   function handleLikeClick(cancion) {
       // Aquí podríamos añadir lógica si queremos que el "like" sea diferente del "play"
       // Por ahora, simplemente cerramos el pop-up.
+      $reproduccionesPorPersona[cancion.eligio]++;
       console.log(`Usuario le dio "Me Gusta" a ${cancion.canciones}`);
       // Si el "like" debe incrementar el contador solo una vez por canción por usuario,
       // necesitaríamos un sistema de IDs de usuario o cookies, lo cual complejizaría.
