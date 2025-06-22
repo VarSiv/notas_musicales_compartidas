@@ -27,6 +27,39 @@
         porcentaje: 0
     };
 
+    // Nuevas variables para la funcionalidad de canción favorita
+  let favoriteSongTitle = "";
+    let favoriteSongArtist = "";
+    let userFavoriteSongs = []; // Array para almacenar las canciones favoritas de los usuarios
+
+    // Cargar canciones favoritas del localStorage al inicio
+    onMount(() => {
+        loadFlourishScrolly();
+        const storedSongs = localStorage.getItem('userFavoriteSongs');
+        if (storedSongs) {
+            userFavoriteSongs = JSON.parse(storedSongs);
+        }
+    });
+
+    // Función para añadir la canción favorita
+    function addFavoriteSong() {
+        if (favoriteSongTitle.trim() !== "" && favoriteSongArtist.trim() !== "") {
+            userFavoriteSongs = [...userFavoriteSongs, { title: favoriteSongTitle, artist: favoriteSongArtist }];
+            localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs)); // Guardar en localStorage
+            favoriteSongTitle = ""; // Limpiar el input
+            favoriteSongArtist = ""; // Limpiar el input
+        } else {
+            alert("Por favor, ingresa el título y el artista de tu canción favorita.");
+        }
+    }
+
+    // Función para eliminar una canción de la lista
+    function removeFavoriteSong(index) {
+        userFavoriteSongs = userFavoriteSongs.filter((_, i) => i !== index);
+        localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs)); // Actualizar localStorage
+    }
+
+
     const simboloSelector = {
     "Var": "/images/Var.png",
     "Rosita": "/images/Rosita.png",
@@ -151,6 +184,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   onMount(() => {
     loadFlourishScrolly()
   });
+
+  
 </script>
 
 <head>
@@ -409,7 +444,50 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     Gracias por sumarte a esta experiencia. Ojalá te hayas divertido, emocionado o al menos encontrado una canción nueva para volver a poner en repeat 🎧
   </p>
 </div>
+<div class="favorite-song-section">
+  <h2 class="titulo-centrado">¿Cuál es tu canción favorita del momento?</h2>
+  <p>¡Comparte la canción que te tiene en repeat ahora mismo y déjala aquí para que otros la descubran!</p>
 
+  <form on:submit|preventDefault={addFavoriteSong}>
+      <div class="form-group">
+          <label for="songTitle">Título de la canción:</label>
+          <input type="text" id="songTitle" bind:value={favoriteSongTitle} placeholder="Ej: Pasaporte" required>
+      </div>
+      <div class="form-group">
+          <label for="songArtist">Artista:</label>
+          <input type="text" id="songArtist" bind:value={favoriteSongArtist} placeholder="Ej: Rauw Alejandro" required>
+      </div>
+      <button type="submit" class="submit-song-button">Agregar mi canción</button>
+  </form>
+
+  {#if userFavoriteSongs.length > 0}
+      <h3 class="titulo-centrado">Canciones favoritas de nuestros usuarios:</h3>
+      <div class="songs-table-container">
+          <table>
+              <thead>
+                  <tr>
+                      <th>Título</th>
+                      <th>Artista</th>
+                      <th>Acciones</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {#each userFavoriteSongs as song, index}
+                      <tr>
+                          <td>{song.title}</td>
+                          <td>{song.artist}</td>
+                          <td>
+                              <button class="remove-song-button" on:click={() => removeFavoriteSong(index)}>Eliminar</button>
+                          </td>
+                      </tr>
+                  {/each}
+              </tbody>
+          </table>
+      </div>
+  {:else}
+      <p class="no-songs-message">¡Sé el primero en agregar una canción a nuestra playlist compartida!</p>
+  {/if}
+</div>
   <Footer/>
 </body>
 <style>

@@ -759,3 +759,145 @@ body {
  
 }
 
+/* Estilos para la nueva sección de canción favorita */
+.favorite-song-section {
+  background-color: #f9f9f9;
+  padding: 40px 20px;
+  margin: 40px auto;
+  max-width: 900px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: 'Raleway', sans-serif;
+}
+
+.favorite-song-section h2 {
+  color: #003058;
+  margin-bottom: 25px;
+  font-size: 2.5em;
+}
+
+.favorite-song-section p {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.favorite-song-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 500px;
+  margin: 0 auto 40px auto;
+}
+
+.favorite-song-section .form-group {
+  text-align: left;
+}
+
+.favorite-song-section label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+  font-size: 1em;
+}
+
+.favorite-song-section input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+  color: #333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.favorite-song-section input[type="text"]:focus {
+  border-color: #15FB88;
+  box-shadow: 0 0 0 3px rgba(21, 251, 136, 0.3);
+  outline: none;
+}
+
+.submit-song-button {
+  background-color: #15FB88;
+  color: #000;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  margin-top: 20px;
+  box-shadow: 0 5px 15px rgba(21, 251, 136, 0.4);
+}
+
+.submit-song-button:hover {
+  background-color: #00CC66;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 204, 102, 0.5);
+}
+
+/* Estilos para la tabla de canciones */
+.songs-table-container {
+  overflow-x: auto;
+  margin-top: 30px;
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.songs-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  min-width: 500px; /* Asegura que la tabla no sea demasiado estrecha en móviles */
+}
+
+.songs-table-container th,
+.songs-table-container td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.songs-table-container th {
+  background-color: #003058;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.95em;
+}
+
+.songs-table-container tr:nth-child(even) {
+  background-color: #f6f6f6;
+}
+
+.songs-table-container tr:hover {
+  background-color: #eef;
+}
+
+.remove-song-button {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.remove-song-button:hover {
+  background-color: #cc0000;
+  transform: translateY(-1px);
+}
+
+.no-songs-message {
+  font-style: italic;
+  color: #777;
+  margin-top: 25px;
+  font-size: 1.1em;
+}
