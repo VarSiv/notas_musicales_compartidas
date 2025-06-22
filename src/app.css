@@ -699,34 +699,27 @@ html {
   display: block; 
 }
 
-/* Contenedor principal del scrollytelling */
 .scrollytelling-container {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap; /* Asegura que no se envuelvan */
-  min-height: 100vh;
-  justify-content: space-between; /* Esto los separará ahora */
+  justify-content: center; /* En lugar de space-between */
   align-items: flex-start;
-  gap: 20px;
+  gap: 40px; /* Un poco más de separación visual */
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
   overflow: hidden;
 }
 
-/* Columna del mapa (Izquierda) */
 .globe-container {
-  flex: 3; /* Proporción para el mapa */
-  height: 100vh;
-  position: sticky;
-  top: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: transparent;
-  overflow: hidden;
-  padding: 0;
-  box-sizing: border-box;
+  flex: 1.5;
+  min-width: 0;
+  max-width: 60%;
+}
+.scrolly-text-column {
+  flex: 1;
+  min-width: 0;
+  max-width: 40%;
 }
 
 /* El iframe de Flourish */
@@ -739,21 +732,8 @@ html {
   display: block;
 }
 
-/* ¡NUEVO ESTILO! Columna que contendrá todos los slides de texto y manejará el scroll */
-.scrolly-text-column {
-  flex: 2; /* Proporción para la columna del texto */
-  padding: 20px; /* Un padding general para toda la columna de texto */
-  max-width: 600px; /* Ancho máximo para legibilidad */
-  background-color: #ffffff; /* Fondo blanco para toda la columna de texto */
-  border-radius: 10px;
-  position: relative;
-  z-index: 10;
-  box-sizing: border-box;
-  overflow-y: auto; /* ¡Aquí se aplica el scroll a toda la columna! */
-  max-height: calc(100vh - 40px); /* Ajusta altura para el scroll */
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
+
+
 
 /* Estilos para cada "slide" individual de texto dentro de la columna de scroll */
 .texto-scrolly {
