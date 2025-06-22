@@ -394,6 +394,27 @@ Object.keys(cancionesPorDecada).forEach(decada => {
 
   {/each}
   </div>
+  <!-- Conclusión -->
+<div class="conclusion-musical">
+  <h2 class = "titulo-centrado">Y al final... siempre suena una canción</h2>
+  <p>
+    Este viaje no fue solo por décadas, géneros o países. Fue un paseo por lo que nos mueve, nos hace bailar o simplemente nos acompaña en el dia a dia.
+  </p>
+  <p>
+    Cada tema que tocaste fue una elección, un pedacito de vos. Y entre clicks, descubriste con quién compartís más que una playlist.
+    <br>
+    Porque la música no miente: lo que escuchamos dice mucho de lo que somos.
+  </p>
+  <p>
+    Gracias por sumarte a esta experiencia. Ojalá te hayas divertido, emocionado o al menos encontrado una canción nueva para volver a poner en repeat 🎧
+  </p>
+</div>
 
   <Footer/>
 </body>
+<style>
+  .titulo-centrado {
+  text-align: center;
+}
+
+</style>
