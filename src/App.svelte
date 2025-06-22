@@ -130,6 +130,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   
   
   const slides = [
+    "Explora un mapa interactivo con las canciones más escuchadas de 2025 en diversos países del mundo. Descubre los éxitos globales que están marcando el pulso musical del planeta este año.",
     "En 2025, la canción más escuchada en Argentina fue “DTMF (Debí Tirar Más Fotos)” de Bad Bunny. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
     "Desde Estados Unidos, Beautiful Things de Benson Boone se convirtió en una de las canciones más escuchadas del 2025. Con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
     "Desde Francia, Est-ce que tu m’aimes? de GIMS volvió a sonar con fuerza en 2025. Un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”. La canción cruzó fronteras con su estilo inconfundible, dejando eco en corazones de todo el mundo.",
@@ -240,7 +241,6 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   <p id="nombre">Steffy</p>
   <!-- ONDAS GIF -->
   <img src="images/onda1.gif" class="onda onda1" alt="Onda 1">
-  <img src="images/onda2.gif" class="onda onda2" alt="Onda 2">
   <img src="images/onda3.gif" class="onda onda3" alt="Onda 3">
 
   </div>
@@ -366,41 +366,34 @@ Object.keys(cancionesPorDecada).forEach(decada => {
         {/if}
     </div>
 
-    <div class="scrollytelling-content">
-      <div id="intro-mapa" class="story-panel">
-          <h2>El Sonido del Mundo en 2025</h2>
-          <p>Explora un mapa interactivo con las canciones más reproducidas de 63 países en este momento.</p>
-          <p>Hemos seleccionado 8 puntos destacados, de diferentes continentes, para llevarte en un viaje musical único.</p>
-        </div>
+<!-- Intro centrado -->
+<div class="scrollytelling-content">
+  <h2>El Sonido del Mundo en 2025</h2>
+  <p>Explora un mapa interactivo con las canciones más reproducidas de 63 países en este momento.</p>
+  <p>Hemos seleccionado 8 puntos destacados, de diferentes continentes, para llevarte en un viaje musical único.</p>
+</div>
 
+<!-- Mapa + Texto lado a lado -->
+<div class="scrollytelling-container">
+  <!-- Columna del mapa -->
+  <div class="globe-container">
+    <div class="flourish-embed" data-src="story/3175953" data-url="https://flo.uri.sh/story/3175953/embed" data-height="100vh"></div>
+  </div>
 
-
- 
-
-<!-- Contenedor de la story de flourish (scrolly)-->
-<div id="my-wrapper">
-  <!-- Reemplazar el ID de jeemplo por el de la story propia -->
-  <div class="flourish-embed" data-src="story/3175953" data-url="https://flo.uri.sh/story/3175953/embed" data-height="100vh">
- <!-- <script src="https://public.flourish.studio/resources/embed.js"></script> -->
-</div> 
-
-
-
-  <!-- Iteramos sobre las distintas slides del componente de Flourish -->
+  <!-- Columna del texto con scroll -->
   {#each slides as slide, index}
-    <p>
+   <div class="texto-scrolly">  
+  <p>
       {@html slide}
       <!-- svelte-ignore a11y-missing-content -->
+      
       <a href={"#story/3175953/slide-" + (index + 1)}></a>
-    </p>
+    </p>  
+    </div>
+
+
   {/each}
-</div>
+  </div>
 
-<div class="texto_container">
-  <p class="texto_parrafo">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eget mi eu nulla porta fringilla. Curabitur quis tincidunt purus. Duis nec neque et augue dictum blandit a eget neque. Phasellus tempor, metus et finibus pretium, eros est sagittis orci, vitae pellentesque nisl lectus et velit. Praesent fringilla mauris vitae magna sollicitudin, sit amet tincidunt dolor facilisis. Fusce quis augue et tortor interdum bibendum. Nam dolor elit, posuere nec tortor non, molestie congue justo. Praesent nisl arcu, consectetur sed hendrerit eget, interdum ac nisi. Vestibulum tempor mattis purus. Aliquam tempus neque sed velit convallis tempor. Cras sodales nunc lorem. Nulla pharetra malesuada consequat. Nulla elementum odio non mauris mollis suscipit. Praesent consectetur nunc eget ex varius blandit. Sed id facilisis tellus.
-  </p>
-</div>
-
-    <Footer/>
+  <Footer/>
 </body>
