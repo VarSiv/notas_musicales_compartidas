@@ -27,39 +27,118 @@
         porcentaje: 0
     };
 
-    // Nuevas variables para la funcionalidad de canción favorita
-  let favoriteSongTitle = "";
-    let favoriteSongArtist = "";
+  // Nuevas variables para la funcionalidad de canción favorita
+  let userName = ''; // Agregado: para el nombre de usuario
+    let favoriteSongTitle = '';
+    let favoriteSongArtist = '';
+    let favoriteSongGenre = ''; // Agregado: para el género
+    let songReleaseYear = ''; // Agregado: para el año de lanzamiento
     let userFavoriteSongs = []; // Array para almacenar las canciones favoritas de los usuarios
+
+    // Variables para estadísticas de género (del ejemplo anterior, si las necesitas)
+    let genreCounts = {};
+    let totalSharedSongs = 0;
+
+    // AQUI ES DONDE PONES EL LINK DE TU GOOGLE APPS SCRIPT
+    const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHQ7BSPmxFIYutkcsOOylaiEEEphCsOkECQyZBtgdyjQB3xEvMGe4uc9EgpwgvCg1oMQ/exec';
+
 
     // Cargar canciones favoritas del localStorage al inicio
     onMount(() => {
-        loadFlourishScrolly();
+        // loadFlourishScrolly(); // Mantén esta línea si es relevante para tu proyecto
         const storedSongs = localStorage.getItem('userFavoriteSongs');
         if (storedSongs) {
             userFavoriteSongs = JSON.parse(storedSongs);
+            // Si la estructura de los objetos en localStorage ha cambiado,
+            // considera una migración simple o un valor por defecto.
+            // Por ejemplo, para asegurarte de que tengan 'AñoLanzamiento' y 'GeneroCancion'
+            userFavoriteSongs = userFavoriteSongs.map(song => ({
+                NombreUsuario: song.NombreUsuario || 'Anónimo', // Valor por defecto si no existe
+                TituloCancion: song.TituloCancion || song.title, // Asegura compatibilidad con 'title' antiguo
+                ArtistaCancion: song.ArtistaCancion || song.artist, // Asegura compatibilidad con 'artist' antiguo
+                GeneroCancion: song.GeneroCancion || 'Desconocido', // Valor por defecto si no existe
+                AnioLanzamiento: song.AnioLanzamiento || '', // Valor por defecto si no existe
+                Timestamp: song.Timestamp || new Date().toISOString()
+            }));
+            updateGenreStats(); // Llama para actualizar las estadísticas al cargar
         }
     });
 
-    // Función para añadir la canción favorita
-    function addFavoriteSong() {
-        if (favoriteSongTitle.trim() !== "" && favoriteSongArtist.trim() !== "") {
-            userFavoriteSongs = [...userFavoriteSongs, { title: favoriteSongTitle, artist: favoriteSongArtist }];
-            localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs)); // Guardar en localStorage
-            favoriteSongTitle = ""; // Limpiar el input
-            favoriteSongArtist = ""; // Limpiar el input
-        } else {
-            alert("Por favor, ingresa el título y el artista de tu canción favorita.");
-        }
-    }
+    async function addFavoriteSong() {
+    if (userName.trim() !== "" &&
+        favoriteSongTitle.trim() !== "" &&
+        favoriteSongArtist.trim() !== "" &&
+        favoriteSongGenre.trim() !== "" &&
+        songReleaseYear.trim() !== "") {
 
-    // Función para eliminar una canción de la lista
+        const newSong = {
+            NombreUsuario: userName, // Clave: valor (importante que la clave coincida con lo que espera Apps Script)
+            TituloCancion: favoriteSongTitle,
+            ArtistaCancion: favoriteSongArtist,
+            GeneroCancion: favoriteSongGenre,
+            AnioLanzamiento: songReleaseYear, // Envía el año
+            
+        };
+
+        try {
+            const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', 
+                },
+                body: JSON.stringify(newSong), // <--- ¡Envía el objeto como JSON!
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Datos guardados en Google Sheet:', result);
+                alert('¡Canción agregada con éxito!');
+
+    
+                userFavoriteSongs = [...userFavoriteSongs, {
+                    NombreUsuario: userName,
+                    TituloCancion: favoriteSongTitle,
+                    ArtistaCancion: favoriteSongArtist,
+                    GeneroCancion: favoriteSongGenre,
+                    AnioLanzamiento: songReleaseYear,
+                   
+                }];
+                localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+                updateGenreStats();
+
+                // Limpiar los inputs
+                userName = '';
+                favoriteSongTitle = '';
+                favoriteSongArtist = '';
+                favoriteSongGenre = '';
+                songReleaseYear = '';
+            } else {
+                console.error('Error al guardar la canción:', response.status, response.statusText);
+                alert('Hubo un error al guardar tu canción. Intenta de nuevo.');
+            }
+        } catch (error) {
+            console.error('Error de red o al enviar datos:', error);
+            alert('No se pudo conectar con el servidor. Verifica tu conexión.');
+        }
+    } else {
+        alert("Por favor, completa todos los campos: Nombre, Título, Artista, Género y Año de Lanzamiento.");
+    }
+}
+    // ... (tus funciones removeFavoriteSong y updateGenreStats se mantienen igual)
     function removeFavoriteSong(index) {
         userFavoriteSongs = userFavoriteSongs.filter((_, i) => i !== index);
-        localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs)); // Actualizar localStorage
+        localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+        updateGenreStats();
     }
 
-
+    function updateGenreStats() {
+        const counts = {};
+        userFavoriteSongs.forEach(song => {
+            counts[song.GeneroCancion] = (counts[song.GeneroCancion] || 0) + 1;
+        });
+        genreCounts = counts;
+        totalSharedSongs = userFavoriteSongs.length;
+    }
     const simboloSelector = {
     "Var": "/images/Var.png",
     "Rosita": "/images/Rosita.png",
@@ -445,37 +524,64 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   </p>
 </div>
 <div class="favorite-song-section">
-  <h2 class="titulo-centrado">¿Cuál es tu canción favorita del momento?</h2>
-  <p>¡Comparte la canción que te tiene en repeat ahora mismo y déjala aquí para que otros la descubran!</p>
+  <h2 class="titulo-centrado">¡Deja tu canción favorita del momento!</h2>
+  <p>¿Qué canción te tiene en repeat? Comparte tu gusto musical con la comunidad.</p>
 
   <form on:submit|preventDefault={addFavoriteSong}>
       <div class="form-group">
+          <label for="userName">Tu Nombre:</label>
+          <input type="text" id="userName" bind:value={userName} placeholder="Ej:Carlos Araujo" required>
+      </div>
+      <div class="form-group">
           <label for="songTitle">Título de la canción:</label>
-          <input type="text" id="songTitle" bind:value={favoriteSongTitle} placeholder="Ej: Pasaporte" required>
+          <input type="text" id="songTitle" bind:value={favoriteSongTitle} placeholder="Ej:Every Breath You Take" required>
       </div>
       <div class="form-group">
           <label for="songArtist">Artista:</label>
-          <input type="text" id="songArtist" bind:value={favoriteSongArtist} placeholder="Ej: Rauw Alejandro" required>
+          <input type="text" id="songArtist" bind:value={favoriteSongArtist} placeholder="Ej:The Police" required>
+      </div>
+      <div class="form-group">
+          <label for="songGenre">Género:</label>
+          <select id="songGenre" bind:value={favoriteSongGenre} required>
+              <option value="">Selecciona un género</option>
+              <option value="Pop">Pop</option>
+              <option value="Rock">Rock</option>
+              <option value="Indie">Indie</option>
+              <option value="Electrónica">Electrónica</option>
+              <option value="Reguetón">Reguetón</option>
+              <option value="Rap">Rap</option>
+              <option value="Otro">Otro</option>
+          </select>
+      </div>
+      <div class="form-group">
+          <label for="songReleaseYear">Año de Lanzamiento:</label>
+          <input type="number" id="songReleaseYear" bind:value={songReleaseYear} placeholder="Año" min="1900" max={new Date().getFullYear()} required>
       </div>
       <button type="submit" class="submit-song-button">Agregar mi canción</button>
   </form>
 
   {#if userFavoriteSongs.length > 0}
-      <h3 class="titulo-centrado">Canciones favoritas de nuestros usuarios:</h3>
+      <h3 class="titulo-centrado">Canciones favoritas de nuestra comunidad:</h3>
       <div class="songs-table-container">
           <table>
               <thead>
                   <tr>
+                      <th>Usuario</th>
                       <th>Título</th>
-                      <th>Artista</th>
+                      <th><th>Artista</th>
+                      <th>Género</th>
+                      <th>Año de Lanzamiento</th>
                       <th>Acciones</th>
                   </tr>
               </thead>
               <tbody>
                   {#each userFavoriteSongs as song, index}
                       <tr>
-                          <td>{song.title}</td>
-                          <td>{song.artist}</td>
+                          <td>{song.NombreUsuario}</td>
+                          <td>{song.TituloCancion}</td>
+                          <td>{song.ArtistaCancion}</td>
+                          <td>{song.GeneroCancion}</td>
+                          <td>{song.AñoLanzamiento}</td>
                           <td>
                               <button class="remove-song-button" on:click={() => removeFavoriteSong(index)}>Eliminar</button>
                           </td>
@@ -484,6 +590,21 @@ Object.keys(cancionesPorDecada).forEach(decada => {
               </tbody>
           </table>
       </div>
+
+      <h3 class="titulo-centrado">Estadísticas por Género:</h3>
+      <div class="genre-stats-container">
+          {#if Object.keys(genreCounts).length > 0}
+              <ul>
+                  {#each Object.entries(genreCounts) as [genre, count]}
+                      <li>{genre}: {count} canciones</li>
+                  {/each}
+              </ul>
+              <p class="total-songs">Total de canciones compartidas: {totalSharedSongs}</p>
+          {:else}
+              <p>No hay suficientes datos para mostrar estadísticas.</p>
+          {/if}
+      </div>
+
   {:else}
       <p class="no-songs-message">¡Sé el primero en agregar una canción a nuestra playlist compartida!</p>
   {/if}

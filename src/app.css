@@ -901,3 +901,18 @@ body {
   margin-top: 25px;
   font-size: 1.1em;
 }
+
+/* Nuevos estilos para los campos del formulario y la tabla de canciones de la comunidad */
+.favorite-song-section select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+  color: #333;
+  background-color: white;
+  appearance: none; /* Elimina estilos por defecto del navegador */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+}
