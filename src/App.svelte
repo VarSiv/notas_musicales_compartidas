@@ -27,112 +27,174 @@
         porcentaje: 0
     };
 
- 
 
 
+    // Variables para la funcionalidad de canción favorita
+    let userName = '';
+    let userAge = '';
+    let favoriteSongTitle = '';
+    let favoriteSongArtist = '';
+    let favoriteSongGenre = '';
+    let songReleaseYear = '';
+    let userFavoriteSongs = [];
 
-// variables para la funcionalidad de canción favorita
-let userName = '';
-let userAge = ''; 
-let favoriteSongTitle = '';
-let favoriteSongArtist = '';
-let favoriteSongGenre = '';
-let songReleaseYear = '';
-let userFavoriteSongs = [];
+    // Variables para las estadísticas
+    let genreCounts = {};
+    let totalSharedSongs = 0;
+    let ageCounts = {}; // Para contar por edad
+    let yearCounts = {}; // Para contar por año
 
-let genreCounts = {};
-let totalSharedSongs = 0;
+    // Mapeo de tus variables Svelte a los entry.ID de Google Forms
+    // **IMPORTANTE: VERIFICA ESTOS IDs SI EL ENVÍO NO FUNCIONA**
+    // Los IDs se obtienen de la URL de pre-rellenado que proporcionaste
+    const FORM_FIELD_MAP = {
+        userName: 'entry.984890267',         // Nombre
+        userAge: 'entry.1712815975',         // Edad
+        favoriteSongTitle: 'entry.1809252496', // Título de la canción
+        favoriteSongArtist: 'entry.1793128131', // Artista
+        favoriteSongGenre: 'entry.2122062067', // Género
+        songReleaseYear: 'entry.2093388091', // Año de Lanzamiento
+    };
 
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyShw80k3kUfE04-uoz1NFBlDtBZBDCoNXQAcik6ZbRhXLhZ__OQuAGhFn8_WxIKhV1Hw/exec';
+    onMount(() => {
+        const storedSongs = localStorage.getItem('userFavoriteSongs');
+        if (storedSongs) {
+            userFavoriteSongs = JSON.parse(storedSongs);
+            // Mapeamos para asegurar consistencia con las propiedades que usamos
+            userFavoriteSongs = userFavoriteSongs.map(song => ({
+                NombreUsuario: song.NombreUsuario || 'Anónimo',
+                EdadUsuario: song.EdadUsuario || '',
+                TituloCancion: song.TituloCancion || song.title,
+                ArtistaCancion: song.ArtistaCancion || song.artist,
+                GeneroCancion: song.GeneroCancion || 'Desconocido',
+                AnioLanzamiento: song.AnioLanzamiento || '',
+                Timestamp: song.Timestamp || new Date().toISOString()
+            }));
+            updateStats(); // Llama a la función de actualización de estadísticas al cargar
+        }
+    });
 
-onMount(() => {
-    // loadFlourishScrolly(); 
-    const storedSongs = localStorage.getItem('userFavoriteSongs');
-    if (storedSongs) {
-        userFavoriteSongs = JSON.parse(storedSongs);
-        userFavoriteSongs = userFavoriteSongs.map(song => ({
-            NombreUsuario: song.NombreUsuario || 'Anónimo',
-            EdadUsuario: song.EdadUsuario || '',
-            TituloCancion: song.TituloCancion || song.title,
-            ArtistaCancion: song.ArtistaCancion || song.artist,
-            GeneroCancion: song.GeneroCancion || 'Desconocido',
-            AnioLanzamiento: song.AnioLanzamiento || '',
-            Timestamp: song.Timestamp || new Date().toISOString()
-        }));
-        updateGenreStats();
-    }
-});
+    function addFavoriteSong() {
+        // Validar que todos los campos estén llenos
+        if (
+            userName.trim() === "" ||
+            userAge === "" ||
+            favoriteSongTitle.trim() === "" ||
+            favoriteSongArtist.trim() === "" ||
+            favoriteSongGenre.trim() === "" ||
+            songReleaseYear.trim() === ""
+        ) {
+            alert("¡Faltan campos por completar! 🙈 Por favor, rellena todos los datos.");
+            return; // Detener la función si faltan campos
+        }
 
-async function addFavoriteSong() {
-    if (userName.trim() !== "" &&
-        userAge !== "" && 
-        favoriteSongTitle.trim() !== "" &&
-        favoriteSongArtist.trim() !== "" &&
-        favoriteSongGenre.trim() !== "" &&
-        songReleaseYear.trim() !== "") {
+        // 1. Enviar datos a Google Forms usando un formulario oculto y un iframe
+        const form = document.createElement("form");
+        // **ESTA ES LA URL CORRECTA PARA EL ENVÍO A GOOGLE FORMS**
+        form.action = "https://docs.google.com/forms/d/e/1FAIpQLSfiDdI50i3o-3LGc7TJ_P2owMCbgvTbyE0ei8ifrGXpEJ96JA/formResponse";
+        form.method = "POST";
+        form.target = "invisible_iframe"; // Apunta al iframe oculto
+        form.style.display = "none"; // Hace que el formulario sea invisible
 
+        // Mapea los valores de las variables Svelte a los entry.ID de Google Forms
+        const entries = {
+            [FORM_FIELD_MAP.userName]: userName,
+            [FORM_FIELD_MAP.userAge]: userAge,
+            [FORM_FIELD_MAP.favoriteSongTitle]: favoriteSongTitle,
+            [FORM_FIELD_MAP.favoriteSongArtist]: favoriteSongArtist,
+            [FORM_FIELD_MAP.favoriteSongGenre]: favoriteSongGenre,
+            [FORM_FIELD_MAP.songReleaseYear]: songReleaseYear
+        };
+
+        // Añade los campos de input ocultos al formulario
+        for (const [name, value] of Object.entries(entries)) {
+            const input = document.createElement("input");
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form); // Añade el formulario al cuerpo del documento
+
+        // Asegúrate de que el iframe exista
+        let iframe = document.getElementById("invisible_iframe");
+        if (!iframe) {
+            iframe = document.createElement("iframe");
+            iframe.name = "invisible_iframe";
+            iframe.id = "invisible_iframe"; // Asigna un ID para poder buscarlo
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
+        }
+
+        form.submit(); // Envía el formulario
+
+        // Limpia el formulario oculto del DOM después de un breve retraso
+        setTimeout(() => {
+            document.body.removeChild(form);
+            // Opcional: Si el iframe solo se usa para esto, también se podría remover
+            // document.body.removeChild(iframe);
+        }, 1000); // Dar un tiempo para que el envío se procese
+
+        // 2. Guardar la canción localmente y actualizar las estadísticas
         const newSong = {
             NombreUsuario: userName,
-            EdadUsuario: userAge, 
+            EdadUsuario: userAge,
             TituloCancion: favoriteSongTitle,
             ArtistaCancion: favoriteSongArtist,
             GeneroCancion: favoriteSongGenre,
             AnioLanzamiento: songReleaseYear,
-            Timestamp: new Date().toISOString()
+            Timestamp: new Date().toISOString() // Genera el timestamp localmente
         };
 
-        try {
-            const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newSong),
-            });
+        userFavoriteSongs = [...userFavoriteSongs, newSong]; // Añade la nueva canción
+        localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+        updateStats(); // Actualiza las estadísticas locales
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Datos guardados en Google Sheet:', result);
-                alert('¡Canción agregada con éxito!');
+        // 3. Limpiar los inputs del formulario
+        userName = '';
+        userAge = '';
+        favoriteSongTitle = '';
+        favoriteSongArtist = '';
+        favoriteSongGenre = '';
+        songReleaseYear = '';
 
-                userFavoriteSongs = [...userFavoriteSongs, newSong]; 
-                localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
-                updateGenreStats();
-
-                // Limpiar los inputs
-                userName = '';
-                userAge = ''; 
-                favoriteSongTitle = '';
-                favoriteSongArtist = '';
-                favoriteSongGenre = '';
-                songReleaseYear = '';
-            } else {
-                console.error('Error al guardar la canción:', response.status, response.statusText);
-                alert('Hubo un error al guardar tu canción. Intenta de nuevo.');
-            }
-        } catch (error) {
-            console.error('Error de red o al enviar datos:', error);
-            alert('No se pudo conectar con el servidor. Verifica tu conexión.');
-        }
-    } else {
-        alert("Por favor, completa todos los campos: Nombre, Edad, Título, Artista, Género y Año de Lanzamiento.");
+        alert("¡Canción agregada con éxito! Por favor, verifica la hoja de cálculo de Google para confirmar el envío. 😉");
     }
-}
 
-function removeFavoriteSong(index) {
-    userFavoriteSongs = userFavoriteSongs.filter((_, i) => i !== index);
-    localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
-    updateGenreStats();
-}
+    function removeFavoriteSong(index) {
+        userFavoriteSongs = userFavoriteSongs.filter((_, i) => i !== index);
+        localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+        updateStats(); // Actualiza las estadísticas después de eliminar
+    }
 
-function updateGenreStats() {
-    const counts = {};
-    userFavoriteSongs.forEach(song => {
-        counts[song.GeneroCancion] = (counts[song.GeneroCancion] || 0) + 1;
-    });
-    genreCounts = counts;
-    totalSharedSongs = userFavoriteSongs.length;
-}
+    // Función unificada para actualizar todas las estadísticas
+    function updateStats() {
+        const genreCountsLocal = {};
+        const ageCountsLocal = {};
+        const yearCountsLocal = {};
+
+        userFavoriteSongs.forEach(song => {
+            // Estadísticas por Género
+            genreCountsLocal[song.GeneroCancion] = (genreCountsLocal[song.GeneroCancion] || 0) + 1;
+
+            // Estadísticas por Edad
+            const age = song.EdadUsuario;
+            if (age && !isNaN(age)) { // Asegúrate de que la edad exista y sea un número
+                ageCountsLocal[age] = (ageCountsLocal[age] || 0) + 1;
+            }
+
+            // Estadísticas por Año de Lanzamiento
+            const year = song.AnioLanzamiento;
+            if (year && !isNaN(year)) { // Asegúrate de que el año exista y sea un número
+                yearCountsLocal[year] = (yearCountsLocal[year] || 0) + 1;
+            }
+        });
+
+        genreCounts = genreCountsLocal;
+        ageCounts = ageCountsLocal;
+        yearCounts = yearCountsLocal;
+        totalSharedSongs = userFavoriteSongs.length;
+    }
     const simboloSelector = {
     "Var": "/images/Var.png",
     "Rosita": "/images/Rosita.png",
@@ -517,6 +579,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     Gracias por sumarte a esta experiencia. Ojalá te hayas divertido, emocionado o al menos encontrado una canción nueva para volver a poner en repeat 🎧
   </p>
 </div>
+
 <div class="favorite-song-section">
   <h2 class="titulo-centrado">¡Deja tu canción favorita del momento!</h2>
   <p>¿Qué canción te tiene en repeat? Comparte tu gusto musical con la comunidad.</p>
@@ -527,7 +590,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
           <input type="text" id="userName" bind:value={userName} placeholder="Ej: Carlos Araujo" required>
       </div>
       <div class="form-group">
-          <label for="userAge">Tu Edad:</label> <input type="number" id="userAge" bind:value={userAge}  min="1" max="120" required>
+          <label for="userAge">Tu Edad:</label>
+          <input type="number" id="userAge" bind:value={userAge} min="1" max="120" required>
       </div>
       <div class="form-group">
           <label for="songTitle">Título de la canción:</label>
@@ -552,7 +616,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       </div>
       <div class="form-group">
           <label for="songReleaseYear">Año de Lanzamiento:</label>
-          <input type="number" id="songReleaseYear" bind:value={songReleaseYear}  min="1900" max={new Date().getFullYear()} required>
+          <input type="number" id="songReleaseYear" bind:value={songReleaseYear} min="1900" max={new Date().getFullYear()} required>
       </div>
       <button type="submit" class="submit-song-button">Agregar mi canción</button>
   </form>
@@ -564,7 +628,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
               <thead>
                   <tr>
                       <th>Usuario</th>
-                      <th>Edad</th> <th>Título</th>
+                      <th>Edad</th>
+                      <th>Título</th>
                       <th>Artista</th>
                       <th>Género</th>
                       <th>Año de Lanzamiento</th>
@@ -575,10 +640,11 @@ Object.keys(cancionesPorDecada).forEach(decada => {
                   {#each userFavoriteSongs as song, index}
                       <tr>
                           <td>{song.NombreUsuario}</td>
-                          <td>{song.EdadUsuario}</td> <td>{song.TituloCancion}</td>
+                          <td>{song.EdadUsuario}</td>
+                          <td>{song.TituloCancion}</td>
                           <td>{song.ArtistaCancion}</td>
                           <td>{song.GeneroCancion}</td>
-                          <td>{song.AñioLanzamiento}</td>
+                          <td>{song.AnioLanzamiento}</td>
                           <td>
                               <button class="remove-song-button" on:click={() => removeFavoriteSong(index)}>Eliminar</button>
                           </td>
@@ -598,7 +664,33 @@ Object.keys(cancionesPorDecada).forEach(decada => {
               </ul>
               <p class="total-songs">Total de canciones compartidas: {totalSharedSongs}</p>
           {:else}
-              <p>No hay suficientes datos para mostrar estadísticas.</p>
+              <p>No hay suficientes datos para mostrar estadísticas por género.</p>
+          {/if}
+      </div>
+
+      <h3 class="titulo-centrado">Estadísticas por Edad:</h3>
+      <div class="age-stats-container">
+          {#if Object.keys(ageCounts).length > 0}
+              <ul>
+                  {#each Object.entries(ageCounts).sort((a, b) => parseInt(a[0]) - parseInt(b[0])) as [age, count]}
+                      <li>Edad {age}: {count} canciones</li>
+                  {/each}
+              </ul>
+          {:else}
+              <p>No hay suficientes datos para mostrar estadísticas por edad.</p>
+          {/if}
+      </div>
+
+      <h3 class="titulo-centrado">Estadísticas por Año de Lanzamiento:</h3>
+      <div class="year-stats-container">
+          {#if Object.keys(yearCounts).length > 0}
+              <ul>
+                  {#each Object.entries(yearCounts).sort((a, b) => parseInt(a[0]) - parseInt(b[0])) as [year, count]}
+                      <li>Año {year}: {count} canciones</li>
+                  {/each}
+              </ul>
+          {:else}
+              <p>No hay suficientes datos para mostrar estadísticas por año.</p>
           {/if}
       </div>
 
