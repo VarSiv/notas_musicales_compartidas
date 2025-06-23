@@ -40,7 +40,7 @@
     let totalSharedSongs = 0;
 
     // AQUI ES DONDE PONES EL LINK DE TU GOOGLE APPS SCRIPT
-    const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHQ7BSPmxFIYutkcsOOylaiEEEphCsOkECQyZBtgdyjQB3xEvMGe4uc9EgpwgvCg1oMQ/exec';
+    const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrXZDoFEgFLWiOY16GR-QsoQrTw59VmjrPgDgwFZZy0-HOlD3ye3zAPWdfPJjOw4zRLQ/exec';
 
 
     // Cargar canciones favoritas del localStorage al inicio
