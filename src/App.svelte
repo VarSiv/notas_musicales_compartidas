@@ -41,11 +41,10 @@
     // Variables para las estadísticas
     let genreCounts = {};
     let totalSharedSongs = 0;
-    let ageCounts = {}; // Para contar por edad
-    let yearCounts = {}; // Para contar por año
+    let ageCounts = {}; 
+    let yearCounts = {}; 
 
     // Mapeo de tus variables Svelte a los entry.ID de Google Forms
-    // **IMPORTANTE: VERIFICA ESTOS IDs SI EL ENVÍO NO FUNCIONA**
     // Los IDs se obtienen de la URL de pre-rellenado que proporcionaste
     const FORM_FIELD_MAP = {
         userName: 'entry.984890267',         // Nombre
