@@ -684,7 +684,6 @@ html {
 }
 
 .scrollytelling-content {
-  color: black;
   padding: 10px 30px;
   margin-top: 60px;
   text-align: center;
@@ -696,6 +695,23 @@ html {
   margin-bottom: 40px;
   display: block;
 }
+.scrollytelling-content h2 {
+  background: linear-gradient(
+      to right,
+      #6a0dad,     /* Morado oscuro */
+      #007bff      /* Azul vibrante */
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+  font-size: 3em;
+  line-height: 1.2;
+  text-shadow: none;
+  -webkit-text-fill-color: unset;
+  margin-bottom: 20px;
+}
+
 /* Contenedor principal para el scrollytelling con mapa y texto lado a lado */
 .scrollytelling-container {
   display: flex; /* Hacemos este contenedor flex para alinear sus hijos */
