@@ -31,9 +31,9 @@
 
 
 
-// Nuevas variables para la funcionalidad de canción favorita
+// variables para la funcionalidad de canción favorita
 let userName = '';
-let userAge = ''; // NUEVA VARIABLE PARA LA EDAD
+let userAge = ''; 
 let favoriteSongTitle = '';
 let favoriteSongArtist = '';
 let favoriteSongGenre = '';
@@ -46,13 +46,13 @@ let totalSharedSongs = 0;
 const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyShw80k3kUfE04-uoz1NFBlDtBZBDCoNXQAcik6ZbRhXLhZ__OQuAGhFn8_WxIKhV1Hw/exec';
 
 onMount(() => {
-    // loadFlourishScrolly(); // Mantén esta línea si es relevante para tu proyecto
+    // loadFlourishScrolly(); 
     const storedSongs = localStorage.getItem('userFavoriteSongs');
     if (storedSongs) {
         userFavoriteSongs = JSON.parse(storedSongs);
         userFavoriteSongs = userFavoriteSongs.map(song => ({
             NombreUsuario: song.NombreUsuario || 'Anónimo',
-            EdadUsuario: song.EdadUsuario || '', // Asegura que la propiedad EdadUsuario exista
+            EdadUsuario: song.EdadUsuario || '',
             TituloCancion: song.TituloCancion || song.title,
             ArtistaCancion: song.ArtistaCancion || song.artist,
             GeneroCancion: song.GeneroCancion || 'Desconocido',
