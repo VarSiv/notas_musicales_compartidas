@@ -527,7 +527,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
           <input type="text" id="userName" bind:value={userName} placeholder="Ej: Carlos Araujo" required>
       </div>
       <div class="form-group">
-          <label for="userAge">Tu Edad:</label> <input type="number" id="userAge" bind:value={userAge} placeholder="Ej:Edad" min="1" max="120" required>
+          <label for="userAge">Tu Edad:</label> <input type="number" id="userAge" bind:value={userAge}  min="1" max="120" required>
       </div>
       <div class="form-group">
           <label for="songTitle">Título de la canción:</label>
@@ -552,7 +552,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       </div>
       <div class="form-group">
           <label for="songReleaseYear">Año de Lanzamiento:</label>
-          <input type="number" id="songReleaseYear" bind:value={songReleaseYear} placeholder="Ej: 1983" min="1900" max={new Date().getFullYear()} required>
+          <input type="number" id="songReleaseYear" bind:value={songReleaseYear}  min="1900" max={new Date().getFullYear()} required>
       </div>
       <button type="submit" class="submit-song-button">Agregar mi canción</button>
   </form>
