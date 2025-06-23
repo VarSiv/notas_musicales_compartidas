@@ -682,81 +682,68 @@ html {
   margin-right: auto; 
   max-width: 90%; 
 }
-/* Intro centrado - Aseguramos que se mantenga centrado y con su margen superior */
+
 .scrollytelling-content {
   color: black;
-  padding: 70px 30px;
-  margin-top: 60px; /* Margen superior para separarlo del borde superior */
+  padding: 10px 30px;
+  margin-top: 60px;
   text-align: center;
   font-family: 'Raleway', sans-serif;
-  position: relative; /* Puedes quitarlo si no lo necesitas para nada más */
-  max-width: 1200px; /* Limita el ancho del contenido */
-  margin-left: auto; /* Centra el div */
-  margin-right: auto; /* Centra el div */
-  margin-bottom: 40px; /* Margen inferior para separarlo del scrollytelling-container */
-  
-  /* Asegurarnos de que no se vea afectado por flexbox global si lo hubiera */
-  display: block; 
-}
-
-.scrollytelling-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center; /* En lugar de space-between */
-  align-items: flex-start;
-  gap: 40px; /* Un poco más de separación visual */
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-.globe-container {
-  flex: 1.5;
-  min-width: 0;
-  max-width: 60%;
-}
-.scrolly-text-column {
-  flex: 1;
-  min-width: 0;
-  max-width: 40%;
-}
-
-/* El iframe de Flourish */
-.flourish-embed {
-  width: 100%;
-  height: 100%;
-  max-height: 100vh;
-  min-height: 500px; /* Ajusta según necesidad visual */
-  object-fit: contain;
+  position: relative;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 40px;
   display: block;
 }
+/* Contenedor principal para el scrollytelling con mapa y texto lado a lado */
+.scrollytelling-container {
+  display: flex; /* Hacemos este contenedor flex para alinear sus hijos */
+  position: relative; /* Necesario para que el Flourish se posicione correctamente */
+  min-height: 100vh; /* Para asegurar que el scrollytelling tenga suficiente altura */
+  align-items: flex-start; 
+  padding-left: 30px; 
+  padding-right: 120px; 
+  
+}
 
 
+/* Columna del mapa (izquierda) */
+.globe-container {
+  flex: 1.5; /* Ocupa 1.5 veces el espacio de la columna de texto */
+  min-width: 0; /* Permite que el contenido se encoja si es necesario */
+  max-width: 60%; /* Límite de ancho para el mapa */
+  position: sticky; /* Hace que el mapa se quede fijo mientras el texto se desplaza */
+  padding-right: 15px; 
+  height: 100vh; /* Asegura que el contenedor del mapa ocupe toda la altura visible */
+  overflow: hidden; /* Oculta cualquier desbordamiento si el mapa es más grande */
+}
 
+
+div[id^="fl-scrolly-section-"] {
+  width: 100%;
+}
+
+/* Contenedor principal para el scrollytelling con mapa y texto lado a lado */
+.scrollytelling-container {
+  display: flex; /* Hacemos este contenedor flex para alinear sus hijos */
+  position: relative; /* Necesario para que el Flourish se posicione correctamente */
+  min-height: 100vh; /* Para asegurar que el scrollytelling tenga suficiente altura */
+  align-items: flex-start; /* Alinea los elementos al inicio (arriba) */
+}
 
 /* Estilos para cada "slide" individual de texto dentro de la columna de scroll */
 .texto-scrolly {
-  /* Ya no necesita flex, overflow, max-height, ni background-color (si toda la columna es blanca) */
-  padding: 10px 0; /* Un padding menor para separar los párrafos individuales */
-  text-align: left;
-  line-height: 1.7;
-  color: #333;
-  font-size: 1.05em;
-  /* Puedes ajustar margin-bottom entre los slides si quieres más espacio */
-  margin-bottom: 30px; /* Espacio entre cada slide de texto */
+  display: flex;
+  justify-content: flex-end;
 }
 
-/* Asegurarte de que el body y el html no tengan márgenes/paddings por defecto */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-body {
-  overflow-x: hidden;
- 
+p.fl-scrolly-step{
+  margin: 0 !important;
+  width: 30% !important;
+  text-align: center;
+  margin-bottom: 90vh !important;
+  padding: 1.25em; /* Padding interno del cuadro de texto */
 }
 
 /* Estilos para la nueva sección de canción favorita */
