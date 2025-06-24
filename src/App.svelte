@@ -453,7 +453,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     <option value="Var">Var ▶</option>
     <option value="Rosita">Rosita ⭐</option>
   </select>
-  
+
   {#if decadaSeleccionada === 'all'}
     {#each decadas as decada}
       <CancionesPorDecada
@@ -481,6 +481,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       {simboloSelector}
     />
   {/if}
+
     <p>
       Cada canción se transforma en un círculo que late con su propia energía, mostrando su popularidad y estilo en un universo visual que invita a descubrir música con solo mirar.
       <br>

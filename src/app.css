@@ -14,6 +14,7 @@ body {
   display: flex;
   align-items: flex-start;
   margin-bottom: 40px;
+  justify-content:center;
 }
 
 
@@ -29,7 +30,7 @@ body {
   font-weight: bold;
   font-size: 24px;
   width: 70px;
-  margin-right: 20px;
+  margin-left: -90px;
   min-width: 80px;
 
   color: #003058;
@@ -520,6 +521,7 @@ html {
   font-family: 'Raleway', sans-serif;
   cursor: pointer;
   outline: none;
+  margin-right: 10px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 204, 102, 0.2);
   margin-left: 160px;
@@ -546,6 +548,7 @@ html {
   font-family: 'Raleway', sans-serif;
   cursor: pointer;
   outline: none;
+  margin-right: 50px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 204, 102, 0.2);
 }
@@ -590,10 +593,19 @@ html {
   width: fit-content;
   min-width: 200px;
   max-width: 100%;
-  margin-right: 100px;
-  
+  margin-right: 150px;
 }
-
+.filters-wrapper { /* <--- ¡Cambia '.filters-wrapper' por el selector real de tu contenedor padre! */
+  display: flex; /* Habilita Flexbox */
+  justify-content: center; /* Centra los ítems (los selects) horizontalmente */
+  align-items: center; /* Alinea los ítems verticalmente al centro */
+  gap: 10px; /* Espacio entre los elementos select. Puedes ajustar este valor. */
+  margin-bottom: 30px; /* Espacio debajo de los filtros y el contenido siguiente */
+  flex-wrap: wrap; /* Para que los selects se envuelvan a la siguiente línea en pantallas pequeñas */
+  width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible para el centrado */
+  box-sizing: border-box; /* Incluye padding y border en el ancho/alto total */
+  padding: 0 20px; /* Opcional: pequeño padding a los lados para evitar que se peguen a los bordes */
+}
 /* Nuevos estilos para la sección del juego */
 .resultado-juego {
   margin: 60px auto;
