@@ -915,3 +915,11 @@ p.fl-scrolly-step{
   -moz-appearance: none;
 
 }
+
+ .album-cover-scrolly {
+    display: block;
+    margin: 20px auto; 
+    box-shadow: 0 0 5px 5px rgb(113, 222, 244);
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease-in-out;
+  }
