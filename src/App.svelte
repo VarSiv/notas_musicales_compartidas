@@ -708,7 +708,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       </div>
 
   {:else}
-      <p class="no-songs-message">¡Sé el primero en agregar una canción a nuestra playlist compartida!</p>
+      <p class="no-songs-message">¡Sé el primero en agregar una canción <br> a nuestra playlist compartida!</p>
   {/if}
 </div>
   <Footer/>
