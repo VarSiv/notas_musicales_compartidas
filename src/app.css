@@ -731,7 +731,21 @@ html {
   overflow: hidden; /* Oculta cualquier desbordamiento si el mapa es más grande */
 }
 
+.person-symbols-group{
+  filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(280deg) brightness(0%); 
+  display: flex;
+  width: 50px; 
+  height: 50px;
+  object-fit: contain; 
+  transform: translate(400%, -30%);
+  margin-top: 15px;
+}
+.simbolos{
+  margin-top: 20px;
+  margin-left: 5px;
+  text-align: center;
 
+}
 div[id^="fl-scrolly-section-"] {
   width: 100%;
 }
