@@ -78,73 +78,127 @@ onMount(() => {
     }
 });
 
+// async function addFavoriteSong() {
+//     if (userName.trim() !== "" &&
+//         userAge !== "" &&
+//         favoriteSongTitle.trim() !== "" &&
+//         favoriteSongArtist.trim() !== "" &&
+//         favoriteSongGenre.trim() !== "" &&
+//         songReleaseYear.trim() !== "") {
+
+//         // Construir los datos para la URL (form-urlencoded)
+//         const formData = new URLSearchParams();
+//         formData.append(FORM_FIELD_MAP.userName, userName);
+//         formData.append(FORM_FIELD_MAP.userAge, userAge);
+//         formData.append(FORM_FIELD_MAP.favoriteSongTitle, favoriteSongTitle);
+//         formData.append(FORM_FIELD_MAP.favoriteSongArtist, favoriteSongArtist);
+//         formData.append(FORM_FIELD_MAP.favoriteSongGenre, favoriteSongGenre);
+//         formData.append(FORM_FIELD_MAP.songReleaseYear, songReleaseYear);
+//         // Si tu formulario de Google tiene un campo para Timestamp,
+//         // tendrías que obtener su entry.ID y agregarlo aquí:
+//         // formData.append(FORM_FIELD_MAP.timestamp, new Date().toISOString());
+
+//         try {
+//             const response = await fetch(GOOGLE_FORM_SUBMIT_URL, {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/x-www-form-urlencoded',
+//                 },
+//                 body: formData.toString(),
+//                 mode: 'no-cors' // Crucial para que no haya errores de CORS, pero sin confirmación directa
+//             });
+
+//             // Como usamos 'no-cors', no podemos verificar response.ok o status.
+//             // Asumimos que si no hay error de red, la solicitud se envió.
+//             console.log('Solicitud enviada a Google Forms (modo no-cors).');
+//             console.log('Verifica tu Google Sheet vinculado al formulario para confirmar el envío.');
+
+//             alert('¡Canción agregada con éxito! Por favor, verifica la hoja de cálculo de Google para confirmar.');
+
+//             // Añadir la canción a la lista local después de "enviar"
+//             const newSong = {
+//                 NombreUsuario: userName,
+//                 EdadUsuario: userAge,
+//                 TituloCancion: favoriteSongTitle,
+//                 ArtistaCancion: favoriteSongArtist,
+//                 GeneroCancion: favoriteSongGenre,
+//                 AnioLanzamiento: songReleaseYear,
+//                 Timestamp: new Date().toISOString() // Genera el timestamp localmente
+//             };
+//             userFavoriteSongs = [...userFavoriteSongs, newSong];
+//             localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+//             updateGenreStats();
+
+//             // Limpiar los inputs
+//             userName = '';
+//             userAge = '';
+//             favoriteSongTitle = '';
+//             favoriteSongArtist = '';
+//             favoriteSongGenre = '';
+//             songReleaseYear = '';
+
+//         } catch (error) {
+//             console.error('Error de red o al enviar datos:', error);
+//             alert('No se pudo conectar con el servidor de Google Forms. Verifica tu conexión.');
+//         }
+//     } else {
+//         alert("Por favor, completa todos los campos: Nombre, Edad, Título, Artista, Género y Año de Lanzamiento.");
+//     }
+// }
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIR46T0vca2wdEqAIWSO4g_t27aWz8xT-u68mdy5sYMd4U9aWfBnB_WCKWuPfqgtP1fg/exec';
+
+
+
 async function addFavoriteSong() {
-    if (userName.trim() !== "" &&
-        userAge !== "" &&
-        favoriteSongTitle.trim() !== "" &&
-        favoriteSongArtist.trim() !== "" &&
-        favoriteSongGenre.trim() !== "" &&
-        songReleaseYear.trim() !== "") {
+  const nuevaCancion = {
+  NombreUsuario: userName,
+  EdadUsuario: userAge, // Antes decía "Edad", pero el server espera "EdadUsuario"
+  TituloCancion: favoriteSongTitle,
+  ArtistaCancion: favoriteSongArtist,
+  GeneroCancion: favoriteSongGenre,
+  AnioLanzamiento: songReleaseYear
+};
 
-        // Construir los datos para la URL (form-urlencoded)
-        const formData = new URLSearchParams();
-        formData.append(FORM_FIELD_MAP.userName, userName);
-        formData.append(FORM_FIELD_MAP.userAge, userAge);
-        formData.append(FORM_FIELD_MAP.favoriteSongTitle, favoriteSongTitle);
-        formData.append(FORM_FIELD_MAP.favoriteSongArtist, favoriteSongArtist);
-        formData.append(FORM_FIELD_MAP.favoriteSongGenre, favoriteSongGenre);
-        formData.append(FORM_FIELD_MAP.songReleaseYear, songReleaseYear);
-        // Si tu formulario de Google tiene un campo para Timestamp,
-        // tendrías que obtener su entry.ID y agregarlo aquí:
-        // formData.append(FORM_FIELD_MAP.timestamp, new Date().toISOString());
+  try {
+    const response = await fetch('http://localhost:3001/add-song', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    NombreUsuario: userName,
+    EdadUsuario: userAge,
+    TituloCancion: favoriteSongTitle,
+    ArtistaCancion: favoriteSongArtist,
+    GeneroCancion: favoriteSongGenre,
+    AnioLanzamiento: songReleaseYear
+  })
+});
 
-        try {
-            const response = await fetch(GOOGLE_FORM_SUBMIT_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData.toString(),
-                mode: 'no-cors' // Crucial para que no haya errores de CORS, pero sin confirmación directa
-            });
 
-            // Como usamos 'no-cors', no podemos verificar response.ok o status.
-            // Asumimos que si no hay error de red, la solicitud se envió.
-            console.log('Solicitud enviada a Google Forms (modo no-cors).');
-            console.log('Verifica tu Google Sheet vinculado al formulario para confirmar el envío.');
+    const result = await response.json();
 
-            alert('¡Canción agregada con éxito! Por favor, verifica la hoja de cálculo de Google para confirmar.');
-
-            // Añadir la canción a la lista local después de "enviar"
-            const newSong = {
-                NombreUsuario: userName,
-                EdadUsuario: userAge,
-                TituloCancion: favoriteSongTitle,
-                ArtistaCancion: favoriteSongArtist,
-                GeneroCancion: favoriteSongGenre,
-                AnioLanzamiento: songReleaseYear,
-                Timestamp: new Date().toISOString() // Genera el timestamp localmente
-            };
-            userFavoriteSongs = [...userFavoriteSongs, newSong];
-            localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
-            updateGenreStats();
-
-            // Limpiar los inputs
-            userName = '';
-            userAge = '';
-            favoriteSongTitle = '';
-            favoriteSongArtist = '';
-            favoriteSongGenre = '';
-            songReleaseYear = '';
-
-        } catch (error) {
-            console.error('Error de red o al enviar datos:', error);
-            alert('No se pudo conectar con el servidor de Google Forms. Verifica tu conexión.');
-        }
+    if (result.status === "success") {
+      userFavoriteSongs = [...userFavoriteSongs, nuevaCancion];
+      resetFormFields();
+      updateGenreStats();
+      updateAgeStats();
+      updateYearStats();
     } else {
-        alert("Por favor, completa todos los campos: Nombre, Edad, Título, Artista, Género y Año de Lanzamiento.");
+      console.error("Fallo al enviar datos al spreadsheet");
     }
+  } catch (err) {
+    console.error("Error al enviar canción:", err);
+  }
 }
+
+function resetFormFields() {
+  userName = '';
+  userAge = '';
+  favoriteSongTitle = '';
+  favoriteSongArtist = '';
+  favoriteSongGenre = '';
+  songReleaseYear = '';
+}
+
 
 function removeFavoriteSong(index) {
     userFavoriteSongs = userFavoriteSongs.filter((_, i) => i !== index);
