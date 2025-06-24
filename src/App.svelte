@@ -175,6 +175,7 @@ const FORM_FIELD_MAP = {
         ageCounts = counts;
     }
 
+
     function updateYearStats() {
         const counts = {};
         userFavoriteSongs.forEach(song => {
