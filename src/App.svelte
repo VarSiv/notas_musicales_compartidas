@@ -14,6 +14,9 @@
   let generoSeleccionado = ""; 
   let decadaSeleccionada = "all";
   let elegidoPorSeleccionado = "";
+  let ageCounts = {}; // Para contar por edad
+let yearCounts = {}; // Para contar por año
+
 
    
     // Variables para el juego final 
@@ -29,7 +32,6 @@
 
 
 
- 
     // Variables para la funcionalidad de canción favorita
     let userName = '';
     let userAge = '';
@@ -39,15 +41,11 @@
     let songReleaseYear = '';
     let userFavoriteSongs = [];
 
-    // Estadísticas
-    let genreCounts = {};
-    let totalSharedSongs = 0;
-    let ageCounts = {}; 
-    let yearCounts = {}; 
-
+let genreCounts = {};
+let totalSharedSongs = 0;
     const GOOGLE_FORM_SUBMIT_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfiDdI50i3o-3LGc7TJ_P2owMCbgvTbyE0ei8ifrGXpEJ96JA/formResponse?usp=submit_form';
 
-// Mapeo de tus variables Svelte a los entry.ID de Google Forms para el formulario de SUBMIT
+// Mapeo de tus variables Svelte a los entry.ID de Google Forms
 const FORM_FIELD_MAP = {
     userName: 'entry.984890267',         // NombreUsuario
     userAge: 'entry.1712815975',         // EdadUsuario
@@ -55,158 +53,114 @@ const FORM_FIELD_MAP = {
     favoriteSongArtist: 'entry.1793128131', // ArtistaCancion
     favoriteSongGenre: 'entry.2122062067', // GeneroCancion
     songReleaseYear: 'entry.2093388091', // AnioLanzamiento
+    // No veo un campo de Timestamp en tu URL de prueba,
+    // si lo tienes en el formulario de Google y quieres enviarlo,
+    // necesitarías su entry.ID y agregarlo aquí y en formData.append
 };
 
-   
-    // La URL base para el formulario de VOTACIÓN (¡esta es la misma que la de submit, pero en modo viewform!)
-    // Confirmado con tu link de pre-llenado.
-    const GOOGLE_FORM_VOTE_BASE_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfiDdI50i3o-3LGc7TJ_P2owMCbgvTbyE0ei8ifrGXpEJ96JA/viewform';
-
-    onMount(() => {
-        // ... (tu lógica de onMount) ...
-        const storedSongs = localStorage.getItem('userFavoriteSongs');
-        if (storedSongs) {
-            userFavoriteSongs = JSON.parse(storedSongs);
-            userFavoriteSongs = userFavoriteSongs.map(song => ({
-                NombreUsuario: song.NombreUsuario || 'Anónimo', 
-                EdadUsuario: song.EdadUsuario || '',
-                TituloCancion: song.TituloCancion || '', 
-                ArtistaCancion: song.ArtistaCancion || song.artist,
-                GeneroCancion: song.GeneroCancion || 'Desconocido',
-                AnioLanzamiento: song.AnioLanzamiento || '',
-                Timestamp: song.Timestamp || new Date().toISOString()
-            }));
-            updateGenreStats();
-            updateAgeStats();
-            updateYearStats();
-        }
-    });
-
-    async function addFavoriteSong() {
-        if (userName.trim() !== "" &&
-            userAge !== "" &&
-            favoriteSongTitle.trim() !== "" &&
-            favoriteSongArtist.trim() !== "" &&
-            favoriteSongGenre.trim() !== "" &&
-            songReleaseYear.trim() !== "") {
-
-            // Construir los datos para la URL (form-urlencoded)
-            const formData = new URLSearchParams();
-            formData.append(FORM_FIELD_MAP.userName, userName);
-            formData.append(FORM_FIELD_MAP.userAge, userAge);
-            formData.append(FORM_FIELD_MAP.favoriteSongTitle, favoriteSongTitle);
-            formData.append(FORM_FIELD_MAP.favoriteSongArtist, favoriteSongArtist);
-            formData.append(FORM_FIELD_MAP.favoriteSongGenre, favoriteSongGenre);
-            formData.append(FORM_FIELD_MAP.songReleaseYear, songReleaseYear);
-
-            try {
-                const response = await fetch(GOOGLE_FORM_SUBMIT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: formData.toString(),
-                    mode: 'no-cors' // Importante para evitar problemas de CORS
-                });
-
-                console.log('Solicitud enviada a Google Forms (modo no-cors).');
-                console.log('Verifica tu Google Sheet vinculado al formulario para confirmar el envío.');
-
-                alert('¡Canción agregada con éxito! Por favor, verifica la hoja de cálculo de Google para confirmar.');
-
-                // Añadir la canción a la lista local después de "enviar"
-                const newSong = {
-                    NombreUsuario: userName,
-                    EdadUsuario: userAge,
-                    TituloCancion: favoriteSongTitle,
-                    ArtistaCancion: favoriteSongArtist,
-                    GeneroCancion: favoriteSongGenre,
-                    AnioLanzamiento: songReleaseYear,
-                    Timestamp: new Date().toISOString() // Genera el timestamp localmente
-                };
-                userFavoriteSongs = [...userFavoriteSongs, newSong];
-                localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
-                updateGenreStats();
-                updateAgeStats();
-                updateYearStats();
-
-                // Limpiar los inputs
-                userName = '';
-                userAge = '';
-                favoriteSongTitle = '';
-                favoriteSongArtist = '';
-                favoriteSongGenre = '';
-                songReleaseYear = '';
-
-            } catch (error) {
-                console.error('Error de red o al enviar datos:', error);
-                alert('No se pudo conectar con el servidor de Google Forms. Verifica tu conexión.');
-            }
-        } else {
-            alert("Por favor, completa todos los campos: Nombre, Edad, Título, Artista, Género y Año de Lanzamiento.");
-        }
-    }
-
-    function removeFavoriteSong(index) {
-        userFavoriteSongs = userFavoriteSongs.filter((_, i) => i !== index);
-        localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+onMount(() => {
+    const storedSongs = localStorage.getItem('userFavoriteSongs');
+    if (storedSongs) {
+        userFavoriteSongs = JSON.parse(storedSongs);
+        userFavoriteSongs = userFavoriteSongs.map(song => ({
+            // Asegúrate de que las propiedades coincidan con cómo las guardas/esperas
+            // Por ejemplo, si tienes 'NombreUsuario' en el objeto song
+            // y 'userName' en tu variable de input.
+            NombreUsuario: song.NombreUsuario || 'Anónimo', // Corregido para usar NombreUsuario
+            EdadUsuario: song.EdadUsuario || '',
+            TituloCancion: song.TituloCancion || song.title, // Asegúrate de consistencia
+            ArtistaCancion: song.ArtistaCancion || song.artist,
+            GeneroCancion: song.GeneroCancion || 'Desconocido',
+            AnioLanzamiento: song.AnioLanzamiento || '',
+            Timestamp: song.Timestamp || new Date().toISOString()
+        }));
         updateGenreStats();
-        updateAgeStats();
-        updateYearStats();
     }
+});
 
-    function updateGenreStats() {
-        const counts = {};
-        userFavoriteSongs.forEach(song => {
-            counts[song.GeneroCancion] = (counts[song.GeneroCancion] || 0) + 1;
-        });
-        genreCounts = counts;
-        totalSharedSongs = userFavoriteSongs.length;
+async function addFavoriteSong() {
+    if (userName.trim() !== "" &&
+        userAge !== "" &&
+        favoriteSongTitle.trim() !== "" &&
+        favoriteSongArtist.trim() !== "" &&
+        favoriteSongGenre.trim() !== "" &&
+        songReleaseYear.trim() !== "") {
+
+        // Construir los datos para la URL (form-urlencoded)
+        const formData = new URLSearchParams();
+        formData.append(FORM_FIELD_MAP.userName, userName);
+        formData.append(FORM_FIELD_MAP.userAge, userAge);
+        formData.append(FORM_FIELD_MAP.favoriteSongTitle, favoriteSongTitle);
+        formData.append(FORM_FIELD_MAP.favoriteSongArtist, favoriteSongArtist);
+        formData.append(FORM_FIELD_MAP.favoriteSongGenre, favoriteSongGenre);
+        formData.append(FORM_FIELD_MAP.songReleaseYear, songReleaseYear);
+        // Si tu formulario de Google tiene un campo para Timestamp,
+        // tendrías que obtener su entry.ID y agregarlo aquí:
+        // formData.append(FORM_FIELD_MAP.timestamp, new Date().toISOString());
+
+        try {
+            const response = await fetch(GOOGLE_FORM_SUBMIT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
+                mode: 'no-cors' // Crucial para que no haya errores de CORS, pero sin confirmación directa
+            });
+
+            // Como usamos 'no-cors', no podemos verificar response.ok o status.
+            // Asumimos que si no hay error de red, la solicitud se envió.
+            console.log('Solicitud enviada a Google Forms (modo no-cors).');
+            console.log('Verifica tu Google Sheet vinculado al formulario para confirmar el envío.');
+
+            alert('¡Canción agregada con éxito! Por favor, verifica la hoja de cálculo de Google para confirmar.');
+
+            // Añadir la canción a la lista local después de "enviar"
+            const newSong = {
+                NombreUsuario: userName,
+                EdadUsuario: userAge,
+                TituloCancion: favoriteSongTitle,
+                ArtistaCancion: favoriteSongArtist,
+                GeneroCancion: favoriteSongGenre,
+                AnioLanzamiento: songReleaseYear,
+                Timestamp: new Date().toISOString() // Genera el timestamp localmente
+            };
+            userFavoriteSongs = [...userFavoriteSongs, newSong];
+            localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+            updateGenreStats();
+
+            // Limpiar los inputs
+            userName = '';
+            userAge = '';
+            favoriteSongTitle = '';
+            favoriteSongArtist = '';
+            favoriteSongGenre = '';
+            songReleaseYear = '';
+
+        } catch (error) {
+            console.error('Error de red o al enviar datos:', error);
+            alert('No se pudo conectar con el servidor de Google Forms. Verifica tu conexión.');
+        }
+    } else {
+        alert("Por favor, completa todos los campos: Nombre, Edad, Título, Artista, Género y Año de Lanzamiento.");
     }
+}
 
-    function updateAgeStats() {
-        const counts = {};
-        userFavoriteSongs.forEach(song => {
-            const age = song.EdadUsuario;
-            if (age) { // Solo si la edad está definida
-                counts[age] = (counts[age] || 0) + 1;
-            }
-        });
-        ageCounts = counts;
-    }
+function removeFavoriteSong(index) {
+    userFavoriteSongs = userFavoriteSongs.filter((_, i) => i !== index);
+    localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+    updateGenreStats();
+}
 
+function updateGenreStats() {
+    const counts = {};
+    userFavoriteSongs.forEach(song => {
+        counts[song.GeneroCancion] = (counts[song.GeneroCancion] || 0) + 1;
+    });
+    genreCounts = counts;
+    totalSharedSongs = userFavoriteSongs.length;
+}
 
-    function updateYearStats() {
-        const counts = {};
-        userFavoriteSongs.forEach(song => {
-            const year = song.AnioLanzamiento;
-            if (year) { // Solo si el año está definido
-                counts[year] = (counts[year] || 0) + 1;
-            }
-        });
-        yearCounts = counts;
-    }
-
-     // FUNCIÓN CORREGIDA: Genera la URL para el enlace de votación
-     function generateVoteLink(song) {
-        const params = new URLSearchParams();
-        
-        // Usamos los IDs que has obtenido del link pre-llenado, mapeándolos a las propiedades de 'song'.
-        // Asegúrate de que las propiedades del objeto 'song' (NombreUsuario, TituloCancion, etc.)
-        // coincidan con los datos que quieres enviar.
-        
-        // Si quieres pre-llenar todos los campos:
-        params.append(FORM_FIELD_MAP.userName, song.NombreUsuario); // Ahora se mapea correctamente
-        params.append(FORM_FIELD_MAP.userAge, song.EdadUsuario);     // Ahora se mapea correctamente
-        params.append(FORM_FIELD_MAP.favoriteSongTitle, song.TituloCancion); 
-        params.append(FORM_FIELD_MAP.favoriteSongArtist, song.ArtistaCancion); 
-        params.append(FORM_FIELD_MAP.favoriteSongGenre, song.GeneroCancion);
-        params.append(FORM_FIELD_MAP.songReleaseYear, song.AnioLanzamiento);
-        
-        // El 'usp=pp_url' es necesario para que Google Forms reconozca los parámetros pre-llenados
-        return `${GOOGLE_FORM_VOTE_BASE_URL}?usp=pp_url&${params.toString()}`;
-    }
-    
     const simboloSelector = {
     "Var": "/images/Var.png",
     "Rosita": "/images/Rosita.png",
@@ -310,15 +264,47 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   
   
   const slides = [
-    "Explora un mapa interactivo con las canciones más escuchadas de 2025 en diversos países del mundo. Descubre los éxitos globales que están marcando el pulso musical del planeta este año.",
-    "En 2025, la canción más escuchada en Argentina fue “DTMF (Debí Tirar Más Fotos)” de Bad Bunny. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
-    "Desde Estados Unidos, Beautiful Things de Benson Boone se convirtió en una de las canciones más escuchadas del 2025. Con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
-    "Desde Francia, Est-ce que tu m’aimes? de GIMS volvió a sonar con fuerza en 2025. Un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”. La canción cruzó fronteras con su estilo inconfundible, dejando eco en corazones de todo el mundo.",
-    "Desde Arabia Saudita, Die With a Smile de Lady Gaga y Bruno Mars conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final. Misterioso, magnético y poderoso… como el desierto al atardecer.",
-    "Desde Uganda llegó Baby (It Is a Crime), un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá. Porque a veces… amar también puede ser un crimen.",
-    "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada, donde cada verso es una pincelada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
-    "Desde Nueva Zelanda, Ordinary de Alex Warren tocó fibras profundas en 2025. Una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario."
-    ]
+    {
+        texto: "Explora un mapa interactivo con las canciones más escuchadas de 2025 en diversos países del mundo. Descubre los éxitos globales que están marcando el pulso musical del planeta este año.",
+        imagen: null,
+        elegidoPor: [] 
+    },
+    {
+        texto: "En 2025, la canción más escuchada en Argentina fue “DTMF (Debí Tirar Más Fotos)” de Bad Bunny. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
+        imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
+        elegidoPor: ["Steffy"]
+    },
+    {
+        texto: "Desde Estados Unidos, Beautiful Things de Benson Boone se convirtió en una de las canciones más escuchadas del 2025. Con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
+        imagen: "/images/album-covers/benson-boone-beautiful-things.jpg",
+        elegidoPor: ["Rosita", "Steffy"]
+    },
+    {
+        texto: "Desde Francia, Est-ce que tu m’aimes? de GIMS volvió a sonar con fuerza en 2025. Un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”. La canción cruzó fronteras con su estilo inconfundible, dejando eco en corazones de todo el mundo.",
+        imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
+        elegidoPor: ["Rosita"] 
+    },
+    {
+        texto: "Desde Arabia Saudita, Die With a Smile de Lady Gaga y Bruno Mars conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final. Misterioso, magnético y poderoso… como el desierto al atardecer.",
+        imagen: "/images/album-covers/lady-gaga-bruno-mars-die-with-a-smile.jpg",
+        elegidoPor: ["Rosita"] 
+    },
+    {
+        texto: "Desde Uganda llegó Baby (It Is a Crime), un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá. Porque a veces… amar también puede ser un crimen.",
+        imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
+        elegidoPor: [] 
+    },
+    {
+        texto: "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada, donde cada verso es una pincelada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
+        imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
+        elegidoPor: ["Rosita", "Steffy"] 
+    },
+    {
+        texto: "Desde Nueva Zelanda, Ordinary de Alex Warren tocó fibras profundas en 2025. Una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
+        imagen: "/images/album-covers/alex-warren-ordinary.jpg",
+        elegidoPor: ["Rosita", "Steffy"] 
+    }
+];
 
   function loadFlourishScrolly() {
       const script = document.createElement('script')
@@ -454,7 +440,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     <option value="Var">Var ▶</option>
     <option value="Rosita">Rosita ⭐</option>
   </select>
-
+  
   {#if decadaSeleccionada === 'all'}
     {#each decadas as decada}
       <CancionesPorDecada
@@ -482,7 +468,6 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       {simboloSelector}
     />
   {/if}
-
     <p>
       Cada canción se transforma en un círculo que late con su propia energía, mostrando su popularidad y estilo en un universo visual que invita a descubrir música con solo mirar.
       <br>
@@ -558,26 +543,40 @@ Object.keys(cancionesPorDecada).forEach(decada => {
 
 <!-- Mapa + Texto lado a lado -->
 <div class="scrollytelling-container">
-  <!-- Columna del mapa -->
-  <div class="globe-container">
-    <div class="flourish-embed" data-src="story/3175953" data-url="https://flo.uri.sh/story/3175953/embed" data-height="100vh"></div>
-  </div>
+ <div class="globe-container">
+  <div class="flourish-embed" data-src="story/3175953" data-url="https://flo.uri.sh/story/3175953/embed" data-height="100vh"></div>
+ </div>
 
-  <!-- Columna del texto con scroll -->
-  {#each slides as slide, index}
-   <div class="texto-scrolly">  
-  <p>
-      {@html slide}
-      <!-- svelte-ignore a11y-missing-content -->
-      
-      <a href={"#story/3175953/slide-" + (index + 1)}></a>
-    </p>  
-    </div>
+{#each slides as slide, index}
+  <div class="texto-scrolly">
+    <p>
+    {@html slide.texto}
+    {#if slide.imagen}
+      <img src={slide.imagen} alt="Portada del álbum" class="album-cover-scrolly" />
+    {/if}
+    <a href={"#story/3175953/slide-" + (index + 1)}></a>
 
-
+    {#if slide.elegidoPor && slide.elegidoPor.length > 0}
+         <div class="person-symbols-group">
+            {#each slide.elegidoPor as person, i}
+              {#if person === "Steffy"}
+                <img src="/images/Steffy.png"
+                                alt="Steffy Simbolo" class ="simbolos">
+              {/if}
+              {#if person === "Rosita"}
+                <img src="/images/Rosita.png"
+                                alt="Rosita Simbolo" class ="simbolos">
+              {/if}
+              {#if person === "Var"}
+                <img src="/images/Var.png"
+                                alt="Var Simbolo" class ="simbolos">
+              {/if}
+            {/each}
+          </div>
+        {/if}
+      </div>
   {/each}
-  </div>
-  <!-- Conclusión -->
+</div>  <!-- Conclusión -->
 <div class="conclusion-musical">
   <h2 class = "titulo-centrado">Y al final... siempre suena una canción</h2>
   <p>
@@ -592,9 +591,10 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     Gracias por sumarte a esta experiencia. Ojalá te hayas divertido, emocionado o al menos encontrado una canción nueva para volver a poner en repeat 🎧
   </p>
 </div>
+
 <div class="favorite-song-section">
   <h2 class="titulo-centrado">¡Deja tu canción favorita del momento!</h2>
-  <p>¿Qué canción te tiene en repeat? <br> Comparte tu gusto musical con la comunidad.</p>
+  <p>¿Qué canción te tiene en repeat? Comparte tu gusto musical con la comunidad.</p>
 
   <form on:submit|preventDefault={addFavoriteSong}>
       <div class="form-group">
@@ -659,7 +659,6 @@ Object.keys(cancionesPorDecada).forEach(decada => {
                           <td>{song.AnioLanzamiento}</td>
                           <td>
                               <button class="remove-song-button" on:click={() => removeFavoriteSong(index)}>Eliminar</button>
-                              <a href={generateVoteLink(song)} target="_blank" class="vote-button">Votar por esta canción</a>
                           </td>
                       </tr>
                   {/each}
@@ -708,7 +707,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       </div>
 
   {:else}
-      <p class="no-songs-message">¡Sé el primero en agregar una canción  <br> a nuestra playlist compartida!</p>
+      <p class="no-songs-message">¡Sé el primero en agregar una canción a nuestra playlist compartida!</p>
   {/if}
 </div>
   <Footer/>
