@@ -3,7 +3,7 @@
 
   <footer class="footer">
     <div class="footer-left">
-      <p>Visualización de Datos<br />Trabajo Final</p>
+      <p>Visualización de Datos<br />Trabajo Final 2025</p>
     </div>
 
     <div class="music-link">

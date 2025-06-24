@@ -593,7 +593,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
 </div>
 <div class="favorite-song-section">
   <h2 class="titulo-centrado">¡Deja tu canción favorita del momento!</h2>
-  <p>¿Qué canción te tiene en repeat? Comparte tu gusto musical con la comunidad.</p>
+  <p>¿Qué canción te tiene en repeat? <br> Comparte tu gusto musical con la comunidad.</p>
 
   <form on:submit|preventDefault={addFavoriteSong}>
       <div class="form-group">
@@ -707,7 +707,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       </div>
 
   {:else}
-      <p class="no-songs-message">¡Sé el primero en agregar una canción a nuestra playlist compartida!</p>
+      <p class="no-songs-message">¡Sé el primero en agregar una canción  <br> a nuestra playlist compartida!</p>
   {/if}
 </div>
   <Footer/>

@@ -595,17 +595,7 @@ html {
   max-width: 100%;
   margin-right: 150px;
 }
-.filters-wrapper { /* <--- ¡Cambia '.filters-wrapper' por el selector real de tu contenedor padre! */
-  display: flex; /* Habilita Flexbox */
-  justify-content: center; /* Centra los ítems (los selects) horizontalmente */
-  align-items: center; /* Alinea los ítems verticalmente al centro */
-  gap: 10px; /* Espacio entre los elementos select. Puedes ajustar este valor. */
-  margin-bottom: 30px; /* Espacio debajo de los filtros y el contenido siguiente */
-  flex-wrap: wrap; /* Para que los selects se envuelvan a la siguiente línea en pantallas pequeñas */
-  width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible para el centrado */
-  box-sizing: border-box; /* Incluye padding y border en el ancho/alto total */
-  padding: 0 20px; /* Opcional: pequeño padding a los lados para evitar que se peguen a los bordes */
-}
+
 /* Nuevos estilos para la sección del juego */
 .resultado-juego {
   margin: 60px auto;
@@ -776,6 +766,42 @@ div[id^="fl-scrolly-section-"] {
   justify-content: flex-end;
 }
 
+
+
+/* Estilos para el contenedor principal de la conclusión */
+.conclusion-musical {
+    background-color: var(--color-fondo-oscuro);
+    color: var(--color-parrafo-claro); /* Color general de texto para los párrafos */
+    padding: 4rem 2rem; /* Espaciado interno generoso */
+    margin: 3rem auto; /* Margen superior/inferior y centrado horizontal */
+    max-width: 900px; /* Ancho máximo para mejor legibilidad */
+    border-radius: 1.5rem; /* Bordes redondeados suaves */
+    box-shadow: 0 10px 30px var(--color-sombra-suave); /* Sombra sutil para profundidad */
+    text-align: center; /* Centra todo el contenido de texto dentro del div */
+    line-height: 1.8; /* Mayor espacio entre líneas para mejor lectura */
+    font-family: 'Raleway', sans-serif; /* Consistencia con tus selectores */
+}
+
+/* Estilos para el título de la conclusión */
+.conclusion-musical .titulo-centrado {
+    color: #003058;
+    font-size: 2.8rem; /* Tamaño de fuente grande para el título */
+    margin-bottom: 2rem; /* Espacio debajo del título */
+    font-weight: 700; /* Negrita */
+}
+
+/* Estilos para los párrafos dentro de la conclusión */
+.conclusion-musical p {
+    font-size: 1.15rem; /* Tamaño de fuente ligeramente más grande para párrafos */
+    margin-bottom: 1.5rem; /* Espacio entre párrafos */
+    max-width: 700px; /* Ancho máximo para párrafos para evitar líneas demasiado largas */
+    margin-left: auto; /* Centra los párrafos si son más estrechos que el contenedor */
+    margin-right: auto;
+}
+
+
+
+
 p.fl-scrolly-step{
   margin: 0 !important;
   width: 30% !important;
@@ -784,17 +810,17 @@ p.fl-scrolly-step{
   padding: 1.25em; /* Padding interno del cuadro de texto */
 }
 
-/* Estilos para la nueva sección de canción favorita */
 .favorite-song-section {
-  background-color: #f9f9f9;
-  padding: 40px 20px;
-  margin: 40px auto;
-  max-width: 900px;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  font-family: 'Raleway', sans-serif;
-}
+   background-color: #f9f9f9;
+    padding: 10px;
+    margin: 40px auto;
+    max-width: 900px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30x rgba(0, 0, 0, 0.15);
+    text-align: center;
+    font-family: 'Raleway', sans-serif;
+    box-sizing: border-box;
+  }
 
 .favorite-song-section h2 {
   color: #003058;
@@ -803,9 +829,9 @@ p.fl-scrolly-step{
 }
 
 .favorite-song-section p {
-  font-size: 1.1em;
-  color: #555;
-  margin-bottom: 30px;
+  font-size: 1.3em;
+  color:#000 !important;
+  margin-bottom: 40px;
   line-height: 1.6;
 }
 
@@ -813,7 +839,7 @@ p.fl-scrolly-step{
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto 40px auto;
 }
 
@@ -905,7 +931,7 @@ p.fl-scrolly-step{
 }
 
 .remove-song-button {
-  background-color: #ff4d4d;
+  background-color: #00CC66;
   color: white;
   padding: 8px 15px;
   border: none;
@@ -916,15 +942,17 @@ p.fl-scrolly-step{
 }
 
 .remove-song-button:hover {
-  background-color: #cc0000;
+  background-color: #00CC66;
   transform: translateY(-1px);
 }
 
 .no-songs-message {
-  font-style: italic;
-  color: #777;
-  margin-top: 25px;
-  font-size: 1.1em;
+  font-style: italic !important;
+  color:#000 !important;
+  margin-top: 40px !important;
+  font-size: 1.3em !important;
+  margin-right:20px !important;
+  text-align: justify !important;
 }
 
 /* Nuevos estilos para los campos del formulario y la tabla de canciones de la comunidad */
