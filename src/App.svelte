@@ -292,7 +292,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     {
         texto: "Desde Uganda llegó Baby (It Is a Crime), un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá. Porque a veces… amar también puede ser un crimen.",
         imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
-        elegidoPor: [] 
+        elegidoPor: ["Steffy"] 
     },
     {
         texto: "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada, donde cada verso es una pincelada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
@@ -554,6 +554,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     {#if slide.imagen}
       <img src={slide.imagen} alt="Portada del álbum" class="album-cover-scrolly" />
     {/if}
+    <!-- svelte-ignore a11y-missing-content -->
     <a href={"#story/3175953/slide-" + (index + 1)}></a>
 
     {#if slide.elegidoPor && slide.elegidoPor.length > 0}
