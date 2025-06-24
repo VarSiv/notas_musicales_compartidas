@@ -14,9 +14,6 @@
   let generoSeleccionado = ""; 
   let decadaSeleccionada = "all";
   let elegidoPorSeleccionado = "";
-  let ageCounts = {}; // Para contar por edad
-let yearCounts = {}; // Para contar por año
-
 
    
     // Variables para el juego final 
@@ -32,6 +29,7 @@ let yearCounts = {}; // Para contar por año
 
 
 
+ 
     // Variables para la funcionalidad de canción favorita
     let userName = '';
     let userAge = '';
@@ -41,11 +39,15 @@ let yearCounts = {}; // Para contar por año
     let songReleaseYear = '';
     let userFavoriteSongs = [];
 
-let genreCounts = {};
-let totalSharedSongs = 0;
+    // Estadísticas
+    let genreCounts = {};
+    let totalSharedSongs = 0;
+    let ageCounts = {}; 
+    let yearCounts = {}; 
+
     const GOOGLE_FORM_SUBMIT_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfiDdI50i3o-3LGc7TJ_P2owMCbgvTbyE0ei8ifrGXpEJ96JA/formResponse?usp=submit_form';
 
-// Mapeo de tus variables Svelte a los entry.ID de Google Forms
+// Mapeo de tus variables Svelte a los entry.ID de Google Forms para el formulario de SUBMIT
 const FORM_FIELD_MAP = {
     userName: 'entry.984890267',         // NombreUsuario
     userAge: 'entry.1712815975',         // EdadUsuario
@@ -53,114 +55,157 @@ const FORM_FIELD_MAP = {
     favoriteSongArtist: 'entry.1793128131', // ArtistaCancion
     favoriteSongGenre: 'entry.2122062067', // GeneroCancion
     songReleaseYear: 'entry.2093388091', // AnioLanzamiento
-    // No veo un campo de Timestamp en tu URL de prueba,
-    // si lo tienes en el formulario de Google y quieres enviarlo,
-    // necesitarías su entry.ID y agregarlo aquí y en formData.append
 };
 
-onMount(() => {
-    const storedSongs = localStorage.getItem('userFavoriteSongs');
-    if (storedSongs) {
-        userFavoriteSongs = JSON.parse(storedSongs);
-        userFavoriteSongs = userFavoriteSongs.map(song => ({
-            // Asegúrate de que las propiedades coincidan con cómo las guardas/esperas
-            // Por ejemplo, si tienes 'NombreUsuario' en el objeto song
-            // y 'userName' en tu variable de input.
-            NombreUsuario: song.NombreUsuario || 'Anónimo', // Corregido para usar NombreUsuario
-            EdadUsuario: song.EdadUsuario || '',
-            TituloCancion: song.TituloCancion || song.title, // Asegúrate de consistencia
-            ArtistaCancion: song.ArtistaCancion || song.artist,
-            GeneroCancion: song.GeneroCancion || 'Desconocido',
-            AnioLanzamiento: song.AnioLanzamiento || '',
-            Timestamp: song.Timestamp || new Date().toISOString()
-        }));
-        updateGenreStats();
-    }
-});
+   
+    // La URL base para el formulario de VOTACIÓN (¡esta es la misma que la de submit, pero en modo viewform!)
+    // Confirmado con tu link de pre-llenado.
+    const GOOGLE_FORM_VOTE_BASE_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfiDdI50i3o-3LGc7TJ_P2owMCbgvTbyE0ei8ifrGXpEJ96JA/viewform';
 
-async function addFavoriteSong() {
-    if (userName.trim() !== "" &&
-        userAge !== "" &&
-        favoriteSongTitle.trim() !== "" &&
-        favoriteSongArtist.trim() !== "" &&
-        favoriteSongGenre.trim() !== "" &&
-        songReleaseYear.trim() !== "") {
-
-        // Construir los datos para la URL (form-urlencoded)
-        const formData = new URLSearchParams();
-        formData.append(FORM_FIELD_MAP.userName, userName);
-        formData.append(FORM_FIELD_MAP.userAge, userAge);
-        formData.append(FORM_FIELD_MAP.favoriteSongTitle, favoriteSongTitle);
-        formData.append(FORM_FIELD_MAP.favoriteSongArtist, favoriteSongArtist);
-        formData.append(FORM_FIELD_MAP.favoriteSongGenre, favoriteSongGenre);
-        formData.append(FORM_FIELD_MAP.songReleaseYear, songReleaseYear);
-        // Si tu formulario de Google tiene un campo para Timestamp,
-        // tendrías que obtener su entry.ID y agregarlo aquí:
-        // formData.append(FORM_FIELD_MAP.timestamp, new Date().toISOString());
-
-        try {
-            const response = await fetch(GOOGLE_FORM_SUBMIT_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData.toString(),
-                mode: 'no-cors' // Crucial para que no haya errores de CORS, pero sin confirmación directa
-            });
-
-            // Como usamos 'no-cors', no podemos verificar response.ok o status.
-            // Asumimos que si no hay error de red, la solicitud se envió.
-            console.log('Solicitud enviada a Google Forms (modo no-cors).');
-            console.log('Verifica tu Google Sheet vinculado al formulario para confirmar el envío.');
-
-            alert('¡Canción agregada con éxito! Por favor, verifica la hoja de cálculo de Google para confirmar.');
-
-            // Añadir la canción a la lista local después de "enviar"
-            const newSong = {
-                NombreUsuario: userName,
-                EdadUsuario: userAge,
-                TituloCancion: favoriteSongTitle,
-                ArtistaCancion: favoriteSongArtist,
-                GeneroCancion: favoriteSongGenre,
-                AnioLanzamiento: songReleaseYear,
-                Timestamp: new Date().toISOString() // Genera el timestamp localmente
-            };
-            userFavoriteSongs = [...userFavoriteSongs, newSong];
-            localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+    onMount(() => {
+        // ... (tu lógica de onMount) ...
+        const storedSongs = localStorage.getItem('userFavoriteSongs');
+        if (storedSongs) {
+            userFavoriteSongs = JSON.parse(storedSongs);
+            userFavoriteSongs = userFavoriteSongs.map(song => ({
+                NombreUsuario: song.NombreUsuario || 'Anónimo', 
+                EdadUsuario: song.EdadUsuario || '',
+                TituloCancion: song.TituloCancion || '', 
+                ArtistaCancion: song.ArtistaCancion || song.artist,
+                GeneroCancion: song.GeneroCancion || 'Desconocido',
+                AnioLanzamiento: song.AnioLanzamiento || '',
+                Timestamp: song.Timestamp || new Date().toISOString()
+            }));
             updateGenreStats();
-
-            // Limpiar los inputs
-            userName = '';
-            userAge = '';
-            favoriteSongTitle = '';
-            favoriteSongArtist = '';
-            favoriteSongGenre = '';
-            songReleaseYear = '';
-
-        } catch (error) {
-            console.error('Error de red o al enviar datos:', error);
-            alert('No se pudo conectar con el servidor de Google Forms. Verifica tu conexión.');
+            updateAgeStats();
+            updateYearStats();
         }
-    } else {
-        alert("Por favor, completa todos los campos: Nombre, Edad, Título, Artista, Género y Año de Lanzamiento.");
-    }
-}
-
-function removeFavoriteSong(index) {
-    userFavoriteSongs = userFavoriteSongs.filter((_, i) => i !== index);
-    localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
-    updateGenreStats();
-}
-
-function updateGenreStats() {
-    const counts = {};
-    userFavoriteSongs.forEach(song => {
-        counts[song.GeneroCancion] = (counts[song.GeneroCancion] || 0) + 1;
     });
-    genreCounts = counts;
-    totalSharedSongs = userFavoriteSongs.length;
-}
-    //
+
+    async function addFavoriteSong() {
+        if (userName.trim() !== "" &&
+            userAge !== "" &&
+            favoriteSongTitle.trim() !== "" &&
+            favoriteSongArtist.trim() !== "" &&
+            favoriteSongGenre.trim() !== "" &&
+            songReleaseYear.trim() !== "") {
+
+            // Construir los datos para la URL (form-urlencoded)
+            const formData = new URLSearchParams();
+            formData.append(FORM_FIELD_MAP.userName, userName);
+            formData.append(FORM_FIELD_MAP.userAge, userAge);
+            formData.append(FORM_FIELD_MAP.favoriteSongTitle, favoriteSongTitle);
+            formData.append(FORM_FIELD_MAP.favoriteSongArtist, favoriteSongArtist);
+            formData.append(FORM_FIELD_MAP.favoriteSongGenre, favoriteSongGenre);
+            formData.append(FORM_FIELD_MAP.songReleaseYear, songReleaseYear);
+
+            try {
+                const response = await fetch(GOOGLE_FORM_SUBMIT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString(),
+                    mode: 'no-cors' // Importante para evitar problemas de CORS
+                });
+
+                console.log('Solicitud enviada a Google Forms (modo no-cors).');
+                console.log('Verifica tu Google Sheet vinculado al formulario para confirmar el envío.');
+
+                alert('¡Canción agregada con éxito! Por favor, verifica la hoja de cálculo de Google para confirmar.');
+
+                // Añadir la canción a la lista local después de "enviar"
+                const newSong = {
+                    NombreUsuario: userName,
+                    EdadUsuario: userAge,
+                    TituloCancion: favoriteSongTitle,
+                    ArtistaCancion: favoriteSongArtist,
+                    GeneroCancion: favoriteSongGenre,
+                    AnioLanzamiento: songReleaseYear,
+                    Timestamp: new Date().toISOString() // Genera el timestamp localmente
+                };
+                userFavoriteSongs = [...userFavoriteSongs, newSong];
+                localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+                updateGenreStats();
+                updateAgeStats();
+                updateYearStats();
+
+                // Limpiar los inputs
+                userName = '';
+                userAge = '';
+                favoriteSongTitle = '';
+                favoriteSongArtist = '';
+                favoriteSongGenre = '';
+                songReleaseYear = '';
+
+            } catch (error) {
+                console.error('Error de red o al enviar datos:', error);
+                alert('No se pudo conectar con el servidor de Google Forms. Verifica tu conexión.');
+            }
+        } else {
+            alert("Por favor, completa todos los campos: Nombre, Edad, Título, Artista, Género y Año de Lanzamiento.");
+        }
+    }
+
+    function removeFavoriteSong(index) {
+        userFavoriteSongs = userFavoriteSongs.filter((_, i) => i !== index);
+        localStorage.setItem('userFavoriteSongs', JSON.stringify(userFavoriteSongs));
+        updateGenreStats();
+        updateAgeStats();
+        updateYearStats();
+    }
+
+    function updateGenreStats() {
+        const counts = {};
+        userFavoriteSongs.forEach(song => {
+            counts[song.GeneroCancion] = (counts[song.GeneroCancion] || 0) + 1;
+        });
+        genreCounts = counts;
+        totalSharedSongs = userFavoriteSongs.length;
+    }
+
+    function updateAgeStats() {
+        const counts = {};
+        userFavoriteSongs.forEach(song => {
+            const age = song.EdadUsuario;
+            if (age) { // Solo si la edad está definida
+                counts[age] = (counts[age] || 0) + 1;
+            }
+        });
+        ageCounts = counts;
+    }
+
+    function updateYearStats() {
+        const counts = {};
+        userFavoriteSongs.forEach(song => {
+            const year = song.AnioLanzamiento;
+            if (year) { // Solo si el año está definido
+                counts[year] = (counts[year] || 0) + 1;
+            }
+        });
+        yearCounts = counts;
+    }
+
+     // FUNCIÓN CORREGIDA: Genera la URL para el enlace de votación
+     function generateVoteLink(song) {
+        const params = new URLSearchParams();
+        
+        // Usamos los IDs que has obtenido del link pre-llenado, mapeándolos a las propiedades de 'song'.
+        // Asegúrate de que las propiedades del objeto 'song' (NombreUsuario, TituloCancion, etc.)
+        // coincidan con los datos que quieres enviar.
+        
+        // Si quieres pre-llenar todos los campos:
+        params.append(FORM_FIELD_MAP.userName, song.NombreUsuario); // Ahora se mapea correctamente
+        params.append(FORM_FIELD_MAP.userAge, song.EdadUsuario);     // Ahora se mapea correctamente
+        params.append(FORM_FIELD_MAP.favoriteSongTitle, song.TituloCancion); 
+        params.append(FORM_FIELD_MAP.favoriteSongArtist, song.ArtistaCancion); 
+        params.append(FORM_FIELD_MAP.favoriteSongGenre, song.GeneroCancion);
+        params.append(FORM_FIELD_MAP.songReleaseYear, song.AnioLanzamiento);
+        
+        // El 'usp=pp_url' es necesario para que Google Forms reconozca los parámetros pre-llenados
+        return `${GOOGLE_FORM_VOTE_BASE_URL}?usp=pp_url&${params.toString()}`;
+    }
+    
     const simboloSelector = {
     "Var": "/images/Var.png",
     "Rosita": "/images/Rosita.png",
@@ -545,7 +590,6 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     Gracias por sumarte a esta experiencia. Ojalá te hayas divertido, emocionado o al menos encontrado una canción nueva para volver a poner en repeat 🎧
   </p>
 </div>
-
 <div class="favorite-song-section">
   <h2 class="titulo-centrado">¡Deja tu canción favorita del momento!</h2>
   <p>¿Qué canción te tiene en repeat? Comparte tu gusto musical con la comunidad.</p>
@@ -613,6 +657,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
                           <td>{song.AnioLanzamiento}</td>
                           <td>
                               <button class="remove-song-button" on:click={() => removeFavoriteSong(index)}>Eliminar</button>
+                              <a href={generateVoteLink(song)} target="_blank" class="vote-button">Votar por esta canción</a>
                           </td>
                       </tr>
                   {/each}
