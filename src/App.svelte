@@ -198,7 +198,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     {
         texto: "En 2025, la canción más escuchada en Argentina fue “DTMF (Debí Tirar Más Fotos)” de Bad Bunny. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
         imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
-        elegidoPor: ["Steffy"]
+        elegidoPor: ["Steffy", "Var"]
     },
     {
         texto: "Desde Estados Unidos, Beautiful Things de Benson Boone se convirtió en una de las canciones más escuchadas del 2025. Con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
@@ -208,7 +208,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     {
         texto: "Desde Francia, Est-ce que tu m’aimes? de GIMS volvió a sonar con fuerza en 2025. Un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”. La canción cruzó fronteras con su estilo inconfundible, dejando eco en corazones de todo el mundo.",
         imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
-        elegidoPor: ["Rosita"] 
+        elegidoPor: ["Rosita","Var"] 
     },
     {
         texto: "Desde Arabia Saudita, Die With a Smile de Lady Gaga y Bruno Mars conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final. Misterioso, magnético y poderoso… como el desierto al atardecer.",
@@ -223,13 +223,13 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     {
         texto: "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada, donde cada verso es una pincelada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
         imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
-        elegidoPor: ["Rosita", "Steffy"] 
+        elegidoPor: ["Rosita", "Steffy", "Var"] 
     },
     {
         texto: "Desde Nueva Zelanda, Ordinary de Alex Warren tocó fibras profundas en 2025. Una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
         imagen: "/images/album-covers/alex-warren-ordinary.jpg",
         elegidoPor: ["Rosita", "Steffy"] 
-    }
+    },
 ];
 
   function loadFlourishScrolly() {
