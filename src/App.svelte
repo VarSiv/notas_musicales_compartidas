@@ -463,8 +463,11 @@ Object.keys(cancionesPorDecada).forEach(decada => {
 <!-- Intro centrado -->
 <div class="scrollytelling-content">
   <h2>El Sonido del Mundo en 2025</h2>
-  <p>Explora un mapa interactivo con las canciones más reproducidas de 63 países en este momento.</p>
-  <p>Hemos seleccionado 8 puntos destacados, de diferentes continentes, para llevarte en un viaje musical único.</p>
+  <p>Sumérgete en un mapa interactivo que descifra la energía musical de 63 países hoy en día. Descubre cuáles son las canciones que marcan tendencia y conecta con ritmos que trascienden continentes, colores y culturas. 
+    <br>Un recorrido sonoro que te invita a sentir el latido global, donde cada nota cuenta una historia única y contemporánea.</p>
+  <p>Elegimos 8 puntos clave de distintos continentes para llevarte en un viaje musical como ningún otro.
+    <br> Nuestros símbolos resaltan en cada parada, marcando con fuerza qué estilos vibran más con nuestra esencia.
+  </p>
 </div>
 
 <!-- Mapa + Texto lado a lado -->
