@@ -682,7 +682,7 @@ html {
 }
 
 .scrollytelling-content {
-  padding: 10px 30px;
+  padding: 20px 30px;
   margin-top: 60px;
   text-align: center;
   font-family: 'Raleway', sans-serif;
@@ -764,6 +764,25 @@ div[id^="fl-scrolly-section-"] {
 .texto-scrolly {
   display: flex;
   justify-content: flex-end;
+  font-size: 1.5rem;
+  font-weight: bold;
+   margin-bottom: 0.5rem;  
+}
+
+
+
+.lista-canciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.tarjeta-cancion {
+  background: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  width: 200px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 

@@ -4,6 +4,7 @@
   import Footer from "./components/Footer.svelte";
   import { onMount } from 'svelte';
   import { reproduccionesPorPersona } from "./stores.js"; // Para acumular los clics de las personas
+  import ReproductorCompartido from "./components/ReproductorCompartido.svelte";
   
   // Variables generales
   let canciones = [];
@@ -28,64 +29,18 @@
         porcentaje: 0
     };
 
+    const simbolosDisponibles = ["🎧", "🎤", "🎶", "🎵"];
+   
+  // 5 votaciones donde este el formulario, agregar una canción 
+  // lista de canciones pre-armada cuando llenan el formulario le agregan a la lista una nueva canción
   
 
-    function enviarCancion() {
-    const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfiDdI50i3o-3LGc7TJ_P2owMCbgvTbyE0ei8ifrGXpEJ96JA/formResponse";
 
-    // Entry IDs de tu Google Form
-    const data = new URLSearchParams();
-    data.append("entry.984890267", document.getElementById("nombre").value);
-    data.append("entry.1712815975", document.getElementById("edad").value);
-    data.append("entry.1809252496", document.getElementById("titulo").value);
-    data.append("entry.1793128131", document.getElementById("artista").value);
-    data.append("entry.2122062067", document.getElementById("genero").value);
-    data.append("entry.2093388091", document.getElementById("anio").value);
-    
+function obtenerSimboloAleatorio() {
+  const simbolos = ["🎧", "🎵", "🪩", "🎤", "📻"];
+  return simbolos[Math.floor(Math.random() * simbolos.length)];
+}
 
-    fetch(formUrl, {
-      method: "POST",
-      mode: "no-cors",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: data
-    })
-    .then(() => {
-      document.getElementById("mensaje").textContent = "🎶 ¡Canción enviada con éxito!";
-      document.getElementById("customForm").reset?.(); // por si luego lo envolvés en un form
-    })
-    .catch(() => {
-      document.getElementById("mensaje").textContent = "❌ Hubo un problema al enviar. Intentá de nuevo.";
-    });
-
-  
-  // Ahora sí: definimos cancion y usamos el try/catch DENTRO de la función
-  const cancion = {
-    nombre: document.getElementById("nombre").value,
-    edad: Number(document.getElementById("edad").value),
-    titulo: document.getElementById("titulo").value,
-    artista: document.getElementById("artista").value,
-    genero: document.getElementById("genero").value,
-    anio: Number(document.getElementById("anio").value)
-  };
-    let cancionesUsuarios = [];
-
-    const guardadas = localStorage.getItem("canciones");
-    if (guardadas) {
-      const parseadas = JSON.parse(guardadas);
-      if (Array.isArray(parseadas)) {
-        cancionesUsuarios = parseadas;
-      } else {
-        console.warn("⚠️ El contenido del localStorage no es un array. Se limpia.");
-        localStorage.removeItem("canciones");
-      }
-    }
-
-    cancionesUsuarios.push(cancion);
-    localStorage.setItem("canciones", JSON.stringify(cancionesUsuarios));
- 
-    }
 
     const simboloSelector = {
     "Var": "/images/Var.png",
@@ -189,48 +144,57 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   }
   
   
-  const slides = [
-    {
-        texto: "Explora un mapa interactivo con las canciones más escuchadas de 2025 en diversos países del mundo. Descubre los éxitos globales que están marcando el pulso musical del planeta este año.",
-        imagen: null,
-        elegidoPor: [] 
-    },
-    {
-        texto: "En 2025, la canción más escuchada en Argentina fue “DTMF (Debí Tirar Más Fotos)” de Bad Bunny. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
-        imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
-        elegidoPor: ["Steffy", "Var"]
-    },
-    {
-        texto: "Desde Estados Unidos, Beautiful Things de Benson Boone se convirtió en una de las canciones más escuchadas del 2025. Con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
-        imagen: "/images/album-covers/benson-boone-beautiful-things.jpg",
-        elegidoPor: ["Rosita", "Steffy"]
-    },
-    {
-        texto: "Desde Francia, Est-ce que tu m’aimes? de GIMS volvió a sonar con fuerza en 2025. Un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”. La canción cruzó fronteras con su estilo inconfundible, dejando eco en corazones de todo el mundo.",
-        imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
-        elegidoPor: ["Rosita","Var"] 
-    },
-    {
-        texto: "Desde Arabia Saudita, Die With a Smile de Lady Gaga y Bruno Mars conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final. Misterioso, magnético y poderoso… como el desierto al atardecer.",
-        imagen: "/images/album-covers/lady-gaga-bruno-mars-die-with-a-smile.jpg",
-        elegidoPor: ["Rosita"] 
-    },
-    {
-        texto: "Desde Uganda llegó Baby (It Is a Crime), un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá. Porque a veces… amar también puede ser un crimen.",
-        imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
-        elegidoPor: ["Steffy"] 
-    },
-    {
-        texto: "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada, donde cada verso es una pincelada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
-        imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
-        elegidoPor: ["Rosita", "Steffy", "Var"] 
-    },
-    {
-        texto: "Desde Nueva Zelanda, Ordinary de Alex Warren tocó fibras profundas en 2025. Una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
-        imagen: "/images/album-covers/alex-warren-ordinary.jpg",
-        elegidoPor: ["Rosita", "Steffy"] 
-    },
+const slides = [
+  {
+    titulo: null,
+    texto: "Explora un mapa interactivo con las canciones más escuchadas de 2025 en diversos países del mundo. <br>Descubre los éxitos globales que están marcando el pulso musical del planeta este año.",
+    imagen: null,
+    elegidoPor: []
+  },
+  {
+    titulo: "“DTMF (Debí Tirar Más Fotos)” – Bad Bunny",
+    texto: "Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat.",
+    imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
+    elegidoPor: ["Steffy", "Var"]
+  },
+  {
+    titulo: "“Beautiful Things” – Benson Boone",
+    texto: "Con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
+    imagen: "/images/album-covers/benson-boone-beautiful-things.jpg",
+    elegidoPor: ["Rosita", "Steffy"]
+  },
+  {
+    titulo: "“Est-ce que tu m’aimes?” – GIMS",
+    texto: "Un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”. La canción cruzó fronteras con su estilo inconfundible, dejando eco en corazones de todo el mundo.",
+    imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
+    elegidoPor: ["Rosita","Var"]
+  },
+  {
+    titulo: "“Die With a Smile” – Lady Gaga & Bruno Mars",
+    texto: "Una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final. Misterioso, magnético y poderoso… como el desierto al atardecer.",
+    imagen: "/images/album-covers/lady-gaga-bruno-mars-die-with-a-smile.jpg",
+    elegidoPor: ["Rosita"]
+  },
+  {
+    titulo: "“Baby (It Is a Crime)” – Artista de Uganda",
+    texto: "Un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá.",
+    imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
+    elegidoPor: ["Steffy"]
+  },
+  {
+    titulo: "“Mona Lisa” – J-Hope",
+    texto: "Un tema enigmático, con ritmos suaves y elegancia coreografiada, donde cada verso es una pincelada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
+    imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
+    elegidoPor: ["Rosita", "Steffy", "Var"]
+  },
+  {
+    titulo: "“Ordinary” – Alex Warren",
+    texto: "Una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
+    imagen: "/images/album-covers/alex-warren-ordinary.jpg",
+    elegidoPor: ["Rosita", "Steffy"]
+  },
 ];
+
 
   function loadFlourishScrolly() {
       const script = document.createElement('script')
@@ -462,10 +426,10 @@ Object.keys(cancionesPorDecada).forEach(decada => {
 
 <!-- Intro centrado -->
 <div class="scrollytelling-content">
-  <h2>El Sonido del Mundo en 2025</h2>
-  <p>Sumérgete en un mapa interactivo que descifra la energía musical de 63 países hoy en día. Descubre cuáles son las canciones que marcan tendencia y conecta con ritmos que trascienden continentes, colores y culturas. 
-    <br>Un recorrido sonoro que te invita a sentir el latido global, donde cada nota cuenta una historia única y contemporánea.</p>
-  <p>Elegimos 8 puntos clave de distintos continentes para llevarte en un viaje musical como ningún otro.
+  <h2>Las canciones más <br> reproducidas en 2025</h2>
+  <p>Sumérgete en un mapa interactivo que descifra la energía musical de 63 países hoy en día. 
+    Un recorrido sonoro que te invita a sentir el latido global, donde cada nota cuenta una historia única.</p>
+  <p>Elegimos ocho puntos clave de distintos continentes para llevarte en un viaje musical como ningún otro.
     <br> Nuestros símbolos resaltan en cada parada, marcando con fuerza qué estilos vibran más con nuestra esencia.
   </p>
 </div>
@@ -522,40 +486,9 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   </p>
 </div>
 
-<div class="form-container">
-  <h2>¡Dejá tu canción favorita del momento!</h2>
-  <p>¿Qué canción te tiene en repeat? Compartí tu gusto musical con la comunidad.</p>
 
-  <form id="favoriteSongForm">
-    <input type="text" name="entry.984890267" placeholder="Tu Nombre" required />
-    <input type="number" name="entry.1712815975" placeholder="Tu Edad" required />
-    <input type="text" name="entry.1809252496" placeholder="Título de la canción" required />
-    <input type="text" name="entry.1793128131" placeholder="Artista" required />
-    <select name="entry.2122062067" required>
-      <option value="">Selecciona un género</option>
-      <option value="Pop">Pop</option>
-      <option value="Rock">Rock</option>
-      <option value="Indie">Indie</option>
-      <option value="Electrónica">Electrónica</option>
-      <option value="Reguetón">Reguetón</option>
-      <option value="Rap">Rap</option>
-      <option value="Otro">Otro</option>
-    </select>
-    <input type="number" name="entry.2093388091" placeholder="Año de Lanzamiento" required />
-    <button type="submit">Agregar mi canción</button>
-  </form>
-</div>
 
-<h3>🎧 Canciones agregadas</h3>
-<table id="tablaCanciones" border="1">
-  <thead>
-    <tr>
-      <th>Nombre</th><th>Edad</th><th>Título</th><th>Artista</th><th>Género</th><th>Año</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
+ <ReproductorCompartido />
 
   <Footer/>
 </body>
