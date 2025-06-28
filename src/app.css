@@ -729,6 +729,7 @@ html {
 .globe-container {
   flex: 0 0 45%; 
   max-width: 45%;
+  margin-left: 10px;
   height: auto;
   position: relative;
 }
@@ -743,7 +744,7 @@ html {
 .song-card {
   background: #fff;
   border-radius: 12px;
-  margin-right:20px !important;
+  margin-right:70px !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   padding: 1rem;
   font-family: 'Raleway', sans-serif;
@@ -843,6 +844,22 @@ html {
     margin: 0 auto;
     cursor: pointer;
     overflow: hidden; /* Para asegurar que el icono no se salga si es muy grande */
+  }
+  .ranking-circle {
+    position: absolute;
+    top: 15px; /* Ajusta la distancia desde arriba */
+    right: 15px; /* Ajusta la distancia desde la derecha */
+    width: 25px; /* Tamaño del círculo */
+    height: 25px;
+    border-radius: 50%; /* Para que sea un círculo perfecto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.0em;
+    color: white; /* Color del número */
+    z-index: 5; /* Asegura que esté por encima de la imagen y el overlay de play/pause */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Una pequeña sombra para que destaque */
   }
 
   .album-cover {

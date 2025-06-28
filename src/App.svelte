@@ -155,7 +155,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             genero: null,
             danzabilidad: null,
             audiofile: null,
-            personalMatch: null
+            personalMatch: null,
+            ranking: null,
         },
         {
             titulo: "DTMF (Debí Tirar Más Fotos)",
@@ -169,7 +170,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             personalMatch: { 
             Steffy: 95, 
             Var: 70,    
-          }
+          },
+          ranking:1,
         },
         {
             titulo: "Beautiful Things",
@@ -183,8 +185,9 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             personalMatch: { 
              Steffy: 89, 
             Rosita: 85, 
-            }
-        },
+            },
+            ranking: 4,
+          },
         {
             titulo: "Est-ce que tu m’aimes?",
             artista: "GIMS",
@@ -197,7 +200,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             personalMatch: {
               Rosita: 65,
               Var:50,
-            }
+            },
+            ranking: 10,
         },
         {
             titulo: "Die With a Smile",
@@ -210,7 +214,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             elegidoPor: ["Rosita"],
             personalMatch:{
               Rosita: 77,
-            }
+            },
+            ranking: 6,
         },
         {
             titulo: "Baby (It Is a Crime)",
@@ -223,7 +228,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             elegidoPor: ["Steffy"],
             personalMatch:{
               Steffy: 60,
-            }
+            },
+            ranking: 12,
         },
         {
             titulo: "Mona Lisa",
@@ -238,7 +244,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
               Steffy: 75,
             Rosita: 100,
             Var: 70,
-            }
+            },
+            ranking: 8,
         },
         {
             titulo: "Ordinary",
@@ -252,7 +259,8 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             personalMatch:{
               Steffy: 60,
               Rosita: 85,
-            }
+            },
+            ranking: 10,
         },
     ];
 
@@ -584,6 +592,13 @@ function handleClickCancion(slide) {
           {/if}
         </div>
       {/if}
+
+      {#if slide.ranking !== null}
+      <div class="ranking-circle" style="background-color: var(--genre-color);">
+        {slide.ranking}
+      </div>
+    {/if}
+
      
       <p class="description">
         {@html slide.texto}
