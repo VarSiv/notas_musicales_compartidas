@@ -835,6 +835,57 @@ html {
   border-radius: 5px 0 0 5px;
 }
 
+  /* Estilos para el wrapper de la imagen y el overlay de play/pause */
+  .album-cover-wrapper {
+    position: relative;
+    width: 100%; /* O el ancho deseado */
+    max-width: 300px; /* Ejemplo, ajusta a tu diseño */
+    margin: 0 auto;
+    cursor: pointer;
+    overflow: hidden; /* Para asegurar que el icono no se salga si es muy grande */
+  }
+
+  .album-cover {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px; /* Si tus covers son redondas o con bordes redondeados */
+    transition: transform 0.3s ease-in-out; /* Para el efecto de pulso */
+  }
+
+  .play-pause-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(236, 226, 226, 0.4); /* Fondo semi-transparente para el icono */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* Oculto por defecto */
+    transition: opacity 0.2s ease-in-out;
+    border-radius: 8px; /* Coincide con la imagen */
+  }
+
+  .album-cover-wrapper:hover .play-pause-overlay {
+    opacity: 1; /* Muestra el overlay al pasar el mouse */
+  }
+
+  .play-pause-overlay .icon {
+    font-size: 3em; /* Tamaño del icono */
+    color: white;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra para que destaque */
+  }
+
+  /* Efecto "pulso" cuando la canción está activa */
+  .album-cover-wrapper.is-playing .album-cover {
+    transform: scale(1.03); /* Un pequeño pulso */
+  }
+
+  .album-cover-wrapper.is-playing .play-pause-overlay {
+    opacity: 1; /* Asegura que el overlay se vea cuando está reproduciendo */
+  }
 .symbols {
   display: flex;
   align-items: center;

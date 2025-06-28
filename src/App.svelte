@@ -5,6 +5,7 @@
   import { onMount } from 'svelte';
   import { reproduccionesPorPersona } from "./stores.js"; // Para acumular los clics de las personas
   import ReproductorCompartido from "./components/ReproductorCompartido.svelte";
+  import { writable } from 'svelte/store';
   
   // Variables generales
   let canciones = [];
@@ -143,13 +144,6 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     return escalaReproducciones(numero);
   }
   
-
-  // Simulamos cuánto le gusta a cada persona
-  const likePercentage = {
-    Steffy: 95,
-    Rosita: 80,
-    Var: 60
-  };
     const slides = [
         {
             texto: "Descubrí los éxitos globales que están transformando el sonido del planeta en 2025. Dejá que cada ritmo y cada historia que vibra desde todos los rincones del globo te envuelvan. Sentí cómo la música nos conecta en una misma emoción compartida.",
@@ -262,49 +256,57 @@ Object.keys(cancionesPorDecada).forEach(decada => {
         },
     ];
 
-    let currentlyPlaying = null;
-  let activeSongInfo = null;
+ // Cuando una canción se reproduce, guardaremos su 'titulo' aquí
+const currentlyPlayingSongTitle = writable(null);
+let audioGlobal;
+onMount(() => {
+  if (!window.audioGlobalInstance) {
+    window.audioGlobalInstance = new Audio();
+  }
+  audioGlobal = window.audioGlobalInstance;
 
-  if (!window.audioGlobal) {
-    window.audioGlobal = new Audio();
-    window.audioGlobal.currentlyPlaying = null;
+  // Escuchador para cuando la canción termine
+  audioGlobal.onended = () => {
+    currentlyPlayingSongTitle.set(null); // Resetea el estado cuando la canción termina
+  };
+});
+
+function handleClickCancion(slide) {
+  // Asegurarse de que slide.audiofile existe para evitar errores
+  if (!slide.audiofile) {
+    console.warn('Esta slide no tiene un archivo de audio asociado:', slide.titulo);
+    return;
   }
 
-  function handleClickCancion(cancion) {
-    const audio = window.audioGlobal;
-    const path = `/Musica Scolly/${cancion.canciones}.mp3`; // Ajustado al nuevo folder
+  const audioPath = `/Musica Scrolly/${slide.audiofile}`; // Ruta corregida: Public es la raíz
+  const currentTitle = slide.titulo;
 
-    if (audio.currentlyPlaying === cancion.canciones) {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.currentlyPlaying = null;
-      activeSongInfo = null;
-      return;
-    }
+  // Si la canción que se está reproduciendo es la misma que la que se hizo clic
+  if ($currentlyPlayingSongTitle === currentTitle) {
+    audioGlobal.pause();
+    audioGlobal.currentTime = 0; // Opcional: reiniciar a 0 al pausar/detener
+    currentlyPlayingSongTitle.set(null); // No hay canción reproduciéndose
+  } else {
+    // Si hay otra canción reproduciéndose o ninguna, pausar y reproducir la nueva
+    audioGlobal.pause();
+    audioGlobal.currentTime = 0; // Reiniciar por si había otra canción cargada
+    audioGlobal.src = audioPath; // Establecer la nueva fuente de audio
+    audioGlobal.load(); // Cargar el audio
 
-    audio.pause();
-    audio.currentTime = 0;
-    audio.src = path;
-    currentlyPlaying = cancion.canciones;
-    audio.load();
-
-    audio.play()
+    audioGlobal.play()
       .then(() => {
-        audio.currentlyPlaying = cancion.canciones;
-        activeSongInfo = cancion;
+        currentlyPlayingSongTitle.set(currentTitle); // Actualiza la store con el título de la canción actual
       })
       .catch(error => {
-        console.error("Error playing audio:", error);
-        audio.currentlyPlaying = null;
-        activeSongInfo = null;
+        console.error("Error al reproducir el audio:", error);
+        currentlyPlayingSongTitle.set(null);
       });
-
-    audio.onended = () => {
-      audio.currentlyPlaying = null;
-      activeSongInfo = null;
-    };
   }
-    
+}
+
+ const PlayIcon = '▶️';
+  const PauseIcon = '⏸️'
+
   function calculateSpeed(danzabilidad) {
     // Invertimos: + danzabilidad => - duración (más rápido)
     const minSpeed = 0.5; // segundos
@@ -567,9 +569,22 @@ Object.keys(cancionesPorDecada).forEach(decada => {
       {/if}
 
       {#if slide.imagen}
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <div class="album-cover-wrapper" on:click={() => handleClickCancion(slide)}>
         <img src={slide.imagen} alt="Portada del álbum" class="album-cover" />
+        {#if slide.audiofile}
+            <div class="play-pause-overlay">
+              {#if $currentlyPlayingSongTitle === slide.titulo}
+                <span class="icon">{PauseIcon}</span>
+              {:else}
+                <span class="icon">{PlayIcon}</span>
+              {/if}
+            </div>
+          {/if}
+        </div>
       {/if}
-
+     
       <p class="description">
         {@html slide.texto}
       </p>
