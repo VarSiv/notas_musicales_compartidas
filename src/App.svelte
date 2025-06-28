@@ -159,7 +159,9 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             titulo: null,
             artista: null,
             genero: null,
-            danzabilidad: null
+            danzabilidad: null,
+            audiofile: null,
+            personalMatch: null
         },
         {
             titulo: "DTMF (Debí Tirar Más Fotos)",
@@ -169,7 +171,11 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             texto: "La canción más escuchada en Argentina fue DTMF. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
             imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
             audiofile: "DTMF-Bad-Bunny.mp3",
-            elegidoPor: ["Steffy", "Var"]
+            elegidoPor: ["Steffy", "Var"],
+            personalMatch: { 
+            Steffy: 95, 
+            Var: 70,    
+          }
         },
         {
             titulo: "Beautiful Things",
@@ -179,7 +185,11 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             texto: "Desde Estados Unidos, Beautiful Things con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
             imagen: "/images/album-covers/benson-boone-beautiful-things.jpg",
             audiofile: "Beautiful-Things-Benson-Boone.mp3",
-            elegidoPor: ["Rosita", "Steffy"]
+            elegidoPor: ["Rosita", "Steffy"],
+            personalMatch: { 
+             Steffy: 89, 
+            Rosita: 85, 
+            }
         },
         {
             titulo: "Est-ce que tu m’aimes?",
@@ -189,7 +199,11 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             texto: "Desde Francia, Est-ce que tu m’aimes?, un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”.",
             imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
             audiofile: "Est-ce-que-tu-m’aimes-GIMS.mp3",
-            elegidoPor: ["Rosita","Var"]
+            elegidoPor: ["Rosita","Var"],
+            personalMatch: {
+              Rosita: 65,
+              Var:50,
+            }
         },
         {
             titulo: "Die With a Smile",
@@ -199,7 +213,10 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             texto: "Desde Arabia Saudita, Die With a Smile conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final",
             imagen: "/images/album-covers/lady-gaga-bruno-mars-die-with-a-smile.jpg",
             audiofile: "Die-With-a-Smile-Bruno-Mars-_-Lady-Gaga.mp3",
-            elegidoPor: ["Rosita"]
+            elegidoPor: ["Rosita"],
+            personalMatch:{
+              Rosita: 77,
+            }
         },
         {
             titulo: "Baby (It Is a Crime)",
@@ -209,7 +226,10 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             texto: "Desde Uganda llegó Baby (It Is a Crime), un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá.",
             imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
             audiofile: "Baby-_It-Is-a-Crime_-Rema.mp3",
-            elegidoPor: ["Steffy"]
+            elegidoPor: ["Steffy"],
+            personalMatch:{
+              Steffy: 60,
+            }
         },
         {
             titulo: "Mona Lisa",
@@ -219,7 +239,12 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             texto: "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
             imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
             audiofile: "Mona-Lisa-J-Hope.mp3",
-            elegidoPor: ["Rosita", "Steffy", "Var"]
+            elegidoPor: ["Rosita", "Steffy", "Var"],
+            personalMatch:{
+              Steffy: 75,
+            Rosita: 100,
+            Var: 70,
+            }
         },
         {
             titulo: "Ordinary",
@@ -229,7 +254,11 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             texto: "Desde Nueva Zelanda, Ordinary, una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
             imagen: "/images/album-covers/alex-warren-ordinary.jpg",
             audiofile:"Ordinary-Alex-Warren.mp3",
-            elegidoPor: ["Rosita", "Steffy"]
+            elegidoPor: ["Rosita", "Steffy"],
+            personalMatch:{
+              Steffy: 60,
+              Rosita: 85,
+            }
         },
     ];
 
@@ -516,7 +545,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   <h2>Las canciones más <br> reproducidas en 2025</h2>
   <p>Sumérgete en un mapa interactivo que descifra la energía musical de 63 países hoy en día. 
     Un recorrido sonoro que te invita a sentir el latido global, donde cada nota cuenta una historia única.</p>
-  <p>Elegimos ocho puntos clave de distintos continentes para llevarte en un viaje musical como ningún otro.
+  <p>Elegimos siete puntos clave de distintos continentes para llevarte en un viaje musical como ningún otro.
     <br> Nuestros símbolos resaltan en cada parada, marcando con fuerza qué estilos vibran más con nuestra esencia.
   </p>
 </div>
@@ -577,7 +606,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
                 alt="{person} símbolo" 
                 class="symbol" 
                 style="filter: none; background-color: var(--genre-color);">
-              <div class="like-info">{likePercentage[person]}%</div>
+              <div class="like-info">{slide.personalMatch[person]}%</div>
             </div>
           {/each}
         </div>
