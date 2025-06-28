@@ -168,6 +168,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             danzabilidad: 80,
             texto: "La canción más escuchada en Argentina fue DTMF. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
             imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
+            audiofile: "DTMF-Bad-Bunny.mp3",
             elegidoPor: ["Steffy", "Var"]
         },
         {
@@ -177,34 +178,38 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             danzabilidad: 65,
             texto: "Desde Estados Unidos, Beautiful Things con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
             imagen: "/images/album-covers/benson-boone-beautiful-things.jpg",
+            audiofile: "Beautiful-Things-Benson-Boone.mp3",
             elegidoPor: ["Rosita", "Steffy"]
         },
         {
             titulo: "Est-ce que tu m’aimes?",
             artista: "GIMS",
             genero: "Rap",
-            danzabilidad: 40,
+            danzabilidad: 45,
             texto: "Desde Francia, Est-ce que tu m’aimes?, un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”.",
             imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
+            audiofile: "Est-ce-que-tu-m’aimes-GIMS.mp3",
             elegidoPor: ["Rosita","Var"]
         },
         {
             titulo: "Die With a Smile",
             artista: "Lady Gaga y Bruno Mars",
             genero: "Pop", // Ajusta el género según tu referencia, si "Soul" no está en tu nueva lista
-            danzabilidad: 75,
+            danzabilidad: 70,
             texto: "Desde Arabia Saudita, Die With a Smile conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final",
             imagen: "/images/album-covers/lady-gaga-bruno-mars-die-with-a-smile.jpg",
+            audiofile: "Die-With-a-Smile-Bruno-Mars-_-Lady-Gaga.mp3",
             elegidoPor: ["Rosita"]
         },
         {
             titulo: "Baby (It Is a Crime)",
             artista: "Rema",
             genero: "Rap", // Ajusta el género según tu referencia, si "Afrobeat" no está en tu nueva lista
-            danzabilidad: 60,
+            danzabilidad: 50,
             texto: "Desde Uganda llegó Baby (It Is a Crime), un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá.",
             imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
-            elegidoPor: []
+            audiofile: "Baby-_It-Is-a-Crime_-Rema.mp3",
+            elegidoPor: ["Steffy"]
         },
         {
             titulo: "Mona Lisa",
@@ -213,19 +218,63 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             danzabilidad: 80,
             texto: "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
             imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
+            audiofile: "Mona-Lisa-J-Hope.mp3",
             elegidoPor: ["Rosita", "Steffy", "Var"]
         },
         {
             titulo: "Ordinary",
             artista: "Alex Warren",
             genero: "Indie",
-            danzabilidad: 50,
+            danzabilidad:40,
             texto: "Desde Nueva Zelanda, Ordinary, una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
             imagen: "/images/album-covers/alex-warren-ordinary.jpg",
+            audiofile:"Ordinary-Alex-Warren.mp3",
             elegidoPor: ["Rosita", "Steffy"]
         },
     ];
 
+    let currentlyPlaying = null;
+  let activeSongInfo = null;
+
+  if (!window.audioGlobal) {
+    window.audioGlobal = new Audio();
+    window.audioGlobal.currentlyPlaying = null;
+  }
+
+  function handleClickCancion(cancion) {
+    const audio = window.audioGlobal;
+    const path = `/Musica Scolly/${cancion.canciones}.mp3`; // Ajustado al nuevo folder
+
+    if (audio.currentlyPlaying === cancion.canciones) {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.currentlyPlaying = null;
+      activeSongInfo = null;
+      return;
+    }
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.src = path;
+    currentlyPlaying = cancion.canciones;
+    audio.load();
+
+    audio.play()
+      .then(() => {
+        audio.currentlyPlaying = cancion.canciones;
+        activeSongInfo = cancion;
+      })
+      .catch(error => {
+        console.error("Error playing audio:", error);
+        audio.currentlyPlaying = null;
+        activeSongInfo = null;
+      });
+
+    audio.onended = () => {
+      audio.currentlyPlaying = null;
+      activeSongInfo = null;
+    };
+  }
     
   function calculateSpeed(danzabilidad) {
     // Invertimos: + danzabilidad => - duración (más rápido)

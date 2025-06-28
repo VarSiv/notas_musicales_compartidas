@@ -834,6 +834,7 @@ html {
   transition: width 1s ease-out;
   border-radius: 5px 0 0 5px;
 }
+
 .symbols {
   display: flex;
   align-items: center;
