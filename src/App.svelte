@@ -143,50 +143,96 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     return escalaReproducciones(numero);
   }
   
-  
-  const slides = [
-    {
-        texto: "Explora un mapa interactivo con las canciones más escuchadas de 2025 en diversos países del mundo. Descubre los éxitos globales que están marcando el pulso musical del planeta este año.",
-        imagen: null,
-        elegidoPor: [] 
-    },
-    {
-        texto: "En 2025, la canción más escuchada en Argentina fue “DTMF (Debí Tirar Más Fotos)” de Bad Bunny. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
-        imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
-        elegidoPor: ["Steffy", "Var"]
-    },
-    {
-        texto: "Desde Estados Unidos, Beautiful Things de Benson Boone se convirtió en una de las canciones más escuchadas del 2025. Con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
-        imagen: "/images/album-covers/benson-boone-beautiful-things.jpg",
-        elegidoPor: ["Rosita", "Steffy"]
-    },
-    {
-        texto: "Desde Francia, Est-ce que tu m’aimes? de GIMS volvió a sonar con fuerza en 2025. Un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”. La canción cruzó fronteras con su estilo inconfundible, dejando eco en corazones de todo el mundo.",
-        imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
-        elegidoPor: ["Rosita","Var"] 
-    },
-    {
-        texto: "Desde Arabia Saudita, Die With a Smile de Lady Gaga y Bruno Mars conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final. Misterioso, magnético y poderoso… como el desierto al atardecer.",
-        imagen: "/images/album-covers/lady-gaga-bruno-mars-die-with-a-smile.jpg",
-        elegidoPor: ["Rosita"] 
-    },
-    {
-        texto: "Desde Uganda llegó Baby (It Is a Crime), un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá. Porque a veces… amar también puede ser un crimen.",
-        imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
-        elegidoPor: ["Steffy"] 
-    },
-    {
-        texto: "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada, donde cada verso es una pincelada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
-        imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
-        elegidoPor: ["Rosita", "Steffy", "Var"] 
-    },
-    {
-        texto: "Desde Nueva Zelanda, Ordinary de Alex Warren tocó fibras profundas en 2025. Una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
-        imagen: "/images/album-covers/alex-warren-ordinary.jpg",
-        elegidoPor: ["Rosita", "Steffy"] 
-    },
-];
 
+  // Simulamos cuánto le gusta a cada persona
+  const likePercentage = {
+    Steffy: 95,
+    Rosita: 80,
+    Var: 60
+  };
+    const slides = [
+        {
+            texto: "Descubrí los éxitos globales que están transformando el sonido del planeta en 2025. Dejá que cada ritmo y cada historia que vibra desde todos los rincones del globo te envuelvan. Sentí cómo la música nos conecta en una misma emoción compartida.",
+            ismagen: null,
+            ismagen: null,
+            elegidoPor: [],
+            titulo: null,
+            artista: null,
+            genero: null,
+            danzabilidad: null
+        },
+        {
+            titulo: "DTMF (Debí Tirar Más Fotos)",
+            artista: "Bad Bunny",
+            genero: "Reguetón", // Asegúrate de que los géneros aquí coincidan con tus claves en genreColors
+            danzabilidad: 80,
+            texto: "La canción más escuchada en Argentina fue DTMF. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
+            imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
+            elegidoPor: ["Steffy", "Var"]
+        },
+        {
+            titulo: "Beautiful Things",
+            artista: "Benson Boone",
+            genero: "Pop", // Cambiado de 'Balada' a 'Pop' si es el caso, o deja 'Balada' si tienes ese género
+            danzabilidad: 65,
+            texto: "Desde Estados Unidos, Beautiful Things con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
+            imagen: "/images/album-covers/benson-boone-beautiful-things.jpg",
+            elegidoPor: ["Rosita", "Steffy"]
+        },
+        {
+            titulo: "Est-ce que tu m’aimes?",
+            artista: "GIMS",
+            genero: "Rap",
+            danzabilidad: 40,
+            texto: "Desde Francia, Est-ce que tu m’aimes?, un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”.",
+            imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
+            elegidoPor: ["Rosita","Var"]
+        },
+        {
+            titulo: "Die With a Smile",
+            artista: "Lady Gaga y Bruno Mars",
+            genero: "Pop", // Ajusta el género según tu referencia, si "Soul" no está en tu nueva lista
+            danzabilidad: 75,
+            texto: "Desde Arabia Saudita, Die With a Smile conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final",
+            imagen: "/images/album-covers/lady-gaga-bruno-mars-die-with-a-smile.jpg",
+            elegidoPor: ["Rosita"]
+        },
+        {
+            titulo: "Baby (It Is a Crime)",
+            artista: "Rema",
+            genero: "Rap", // Ajusta el género según tu referencia, si "Afrobeat" no está en tu nueva lista
+            danzabilidad: 60,
+            texto: "Desde Uganda llegó Baby (It Is a Crime), un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá.",
+            imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
+            elegidoPor: []
+        },
+        {
+            titulo: "Mona Lisa",
+            artista: "J-Hope",
+            genero: "Pop", // Ajusta el género según tu referencia, si "K-Pop" no está en tu nueva lista
+            danzabilidad: 80,
+            texto: "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
+            imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
+            elegidoPor: ["Rosita", "Steffy", "Var"]
+        },
+        {
+            titulo: "Ordinary",
+            artista: "Alex Warren",
+            genero: "Indie",
+            danzabilidad: 50,
+            texto: "Desde Nueva Zelanda, Ordinary, una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
+            imagen: "/images/album-covers/alex-warren-ordinary.jpg",
+            elegidoPor: ["Rosita", "Steffy"]
+        },
+    ];
+
+    
+  function calculateSpeed(danzabilidad) {
+    // Invertimos: + danzabilidad => - duración (más rápido)
+    const minSpeed = 0.5; // segundos
+    const maxSpeed = 2.5; // segundos
+    return maxSpeed - (danzabilidad / 100) * (maxSpeed - minSpeed);
+  }
 
   function loadFlourishScrolly() {
       const script = document.createElement('script')
@@ -416,7 +462,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
         {/if}
     </div>
 
-<!-- Intro centrado -->
+    <!-- Intro centrado -->
 <div class="scrollytelling-content">
   <h2>Las canciones más <br> reproducidas en 2025</h2>
   <p>Sumérgete en un mapa interactivo que descifra la energía musical de 63 países hoy en día. 
@@ -425,44 +471,78 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     <br> Nuestros símbolos resaltan en cada parada, marcando con fuerza qué estilos vibran más con nuestra esencia.
   </p>
 </div>
-
-<!-- Mapa + Texto lado a lado -->
 <div class="scrollytelling-container">
- <div class="globe-container">
-  <div class="flourish-embed" data-src="story/3175953" data-url="https://flo.uri.sh/story/3175953/embed" data-height="100vh"></div>
- </div>
+  <div class="globe-container">
+    <div class="flourish-embed" data-src="story/3175953" data-url="https://flo.uri.sh/story/3175953/embed" data-height="100vh"></div>
+  </div>
 
-{#each slides as slide, index}
-  <div class="texto-scrolly">
-    <p>
-    {#if slide.imagen}
-      <img src={slide.imagen} alt="Portada del álbum" class="album-cover-scrolly" />
-    {/if}
-    <!-- svelte-ignore a11y-missing-content -->
-    {@html slide.texto}
-    <a href={"#story/3175953/slide-" + (index + 1)}></a>
-
-    {#if slide.elegidoPor && slide.elegidoPor.length > 0}
-         <div class="person-symbols-group">
-            {#each slide.elegidoPor as person, i}
-              {#if person === "Steffy"}
-                <img src="/images/Steffy.png"
-                                alt="Steffy Simbolo" class ="simbolos">
-              {/if}
-              {#if person === "Rosita"}
-                <img src="/images/Rosita.png"
-                                alt="Rosita Simbolo" class ="simbolos">
-              {/if}
-              {#if person === "Var"}
-                <img src="/images/Var.png"
-                                alt="Var Simbolo" class ="simbolos">
-              {/if}
-            {/each}
+  {#each slides as slide, index}
+    <div class="song-card" style="--genre-color: {slide.genero ? colorGenero(slide.genero) : '#ccc'};">
+      {#if slide.titulo}
+        <div class="header">
+          <div class="genre-dot" style="background-color: var(--genre-color);"></div>
+          <div class="title-artist">
+            <h3>{slide.titulo}</h3>
+            <p>{slide.artista}</p>
           </div>
-        {/if}
+        </div>
+      {/if}
+
+      {#if slide.imagen}
+        <img src={slide.imagen} alt="Portada del álbum" class="album-cover" />
+      {/if}
+
+      <p class="description">
+        {@html slide.texto}
+      </p>
+      
+      {#if slide.danzabilidad} 
+      <div class="danzability-wrapper">
+        <div class="danzability-labels">
+          <span>0%</span>
+          <span>100%</span>
+        </div>
+    
+        <div class="danzability-bar-container">
+          <div 
+            class="danzability-bar"
+            style="
+              width: {slide.danzabilidad}%;
+              background-color: var(--genre-color);
+              animation: danceScale {calculateSpeed(slide.danzabilidad)}s infinite ease-in-out;
+            ">
+          </div>
+          <div class="danzability-info">{slide.danzabilidad}%</div>
+        </div>
       </div>
+    {/if}
+    
+    
+      {#if slide.elegidoPor && slide.elegidoPor.length > 0}
+        <div class="symbols">
+          <span>Matchea con:</span>
+          {#each slide.elegidoPor as person}
+            <div class="symbol-wrapper">
+              <img 
+                src="/images/{person}.png" 
+                alt="{person} símbolo" 
+                class="symbol" 
+                style="filter: none; background-color: var(--genre-color);">
+              <div class="like-info">{likePercentage[person]}%</div>
+            </div>
+          {/each}
+        </div>
+      {/if}
+
+      <!-- svelte-ignore a11y-missing-content -->
+      <a href={"#story/3175953/slide-" + (index + 1)}></a>
+    </div>
   {/each}
-</div>  <!-- Conclusión -->
+</div>
+       
+ 
+    
+    <!-- Conclusión -->
 <div class="conclusion-musical">
   <h2 class = "titulo-centrado">Y al final... siempre suena una canción</h2>
   <p>
