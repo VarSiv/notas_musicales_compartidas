@@ -4,6 +4,8 @@
   import Footer from "./components/Footer.svelte";
   import { onMount } from 'svelte';
   import { reproduccionesPorPersona } from "./stores.js"; // Para acumular los clics de las personas
+  import ReproductorCompartido from "./components/ReproductorCompartido.svelte";
+  import { writable } from 'svelte/store';
   
   // Variables generales
   let canciones = [];
@@ -28,64 +30,18 @@
         porcentaje: 0
     };
 
+    const simbolosDisponibles = ["🎧", "🎤", "🎶", "🎵"];
+   
+  // 5 votaciones donde este el formulario, agregar una canción 
+  // lista de canciones pre-armada cuando llenan el formulario le agregan a la lista una nueva canción
   
 
-    function enviarCancion() {
-    const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfiDdI50i3o-3LGc7TJ_P2owMCbgvTbyE0ei8ifrGXpEJ96JA/formResponse";
 
-    // Entry IDs de tu Google Form
-    const data = new URLSearchParams();
-    data.append("entry.984890267", document.getElementById("nombre").value);
-    data.append("entry.1712815975", document.getElementById("edad").value);
-    data.append("entry.1809252496", document.getElementById("titulo").value);
-    data.append("entry.1793128131", document.getElementById("artista").value);
-    data.append("entry.2122062067", document.getElementById("genero").value);
-    data.append("entry.2093388091", document.getElementById("anio").value);
-    
+function obtenerSimboloAleatorio() {
+  const simbolos = ["🎧", "🎵", "🪩", "🎤", "📻"];
+  return simbolos[Math.floor(Math.random() * simbolos.length)];
+}
 
-    fetch(formUrl, {
-      method: "POST",
-      mode: "no-cors",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: data
-    })
-    .then(() => {
-      document.getElementById("mensaje").textContent = "🎶 ¡Canción enviada con éxito!";
-      document.getElementById("customForm").reset?.(); // por si luego lo envolvés en un form
-    })
-    .catch(() => {
-      document.getElementById("mensaje").textContent = "❌ Hubo un problema al enviar. Intentá de nuevo.";
-    });
-
-  
-  // Ahora sí: definimos cancion y usamos el try/catch DENTRO de la función
-  const cancion = {
-    nombre: document.getElementById("nombre").value,
-    edad: Number(document.getElementById("edad").value),
-    titulo: document.getElementById("titulo").value,
-    artista: document.getElementById("artista").value,
-    genero: document.getElementById("genero").value,
-    anio: Number(document.getElementById("anio").value)
-  };
-    let cancionesUsuarios = [];
-
-    const guardadas = localStorage.getItem("canciones");
-    if (guardadas) {
-      const parseadas = JSON.parse(guardadas);
-      if (Array.isArray(parseadas)) {
-        cancionesUsuarios = parseadas;
-      } else {
-        console.warn("⚠️ El contenido del localStorage no es un array. Se limpia.");
-        localStorage.removeItem("canciones");
-      }
-    }
-
-    cancionesUsuarios.push(cancion);
-    localStorage.setItem("canciones", JSON.stringify(cancionesUsuarios));
- 
-    }
 
     const simboloSelector = {
     "Var": "/images/Var.png",
@@ -188,49 +144,183 @@ Object.keys(cancionesPorDecada).forEach(decada => {
     return escalaReproducciones(numero);
   }
   
-  
-  const slides = [
-    {
-        texto: "Explora un mapa interactivo con las canciones más escuchadas de 2025 en diversos países del mundo. Descubre los éxitos globales que están marcando el pulso musical del planeta este año.",
-        imagen: null,
-        elegidoPor: [] 
-    },
-    {
-        texto: "En 2025, la canción más escuchada en Argentina fue <strong>“DTMF (Debí Tirar Más Fotos)”</strong> de Bad Bunny. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
-        imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
-        elegidoPor: ["Steffy", "Var"]
-    },
-    {
-        texto: "Desde Estados Unidos, <strong>Beautiful Things</strong> de Benson Boone se convirtió en una de las canciones más escuchadas del 2025. Con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
-        imagen: "/images/album-covers/benson-boone-beautiful-things.jpg",
-        elegidoPor: ["Rosita", "Steffy"]
-    },
-    {
-        texto: "Desde Francia, <strong>Est-ce que tu m’aimes?</strong> de GIMS volvió a sonar con fuerza en 2025. Un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”. La canción cruzó fronteras con su estilo inconfundible, dejando eco en corazones de todo el mundo.",
-        imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
-        elegidoPor: ["Rosita","Var"] 
-    },
-    {
-        texto: "Desde Arabia Saudita, <strong>Die With a Smile</strong> de Lady Gaga y Bruno Mars conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final. Misterioso, magnético y poderoso… como el desierto al atardecer.",
-        imagen: "/images/album-covers/lady-gaga-bruno-mars-die-with-a-smile.jpg",
-        elegidoPor: ["Rosita"] 
-    },
-    {
-        texto: "Desde Uganda llegó <strong>Baby (It Is a Crime)</strong>, un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá. Porque a veces… amar también puede ser un crimen.",
-        imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
-        elegidoPor: ["Steffy"] 
-    },
-    {
-        texto: "Desde Japón, <strong>Mona Lisa</strong> de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada, donde cada verso es una pincelada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
-        imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
-        elegidoPor: ["Rosita", "Steffy", "Var"] 
-    },
-    {
-        texto: "Desde Nueva Zelanda, <strong>Ordinary</strong> de Alex Warren tocó fibras profundas en 2025. Una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
-        imagen: "/images/album-covers/alex-warren-ordinary.jpg",
-        elegidoPor: ["Rosita", "Steffy"] 
-    },
-];
+    const slides = [
+        {
+            texto: "Descubrí los éxitos globales que están transformando el sonido del planeta en 2025. Dejá que cada ritmo y cada historia que vibra desde todos los rincones del globo te envuelvan. Sentí cómo la música nos conecta en una misma emoción compartida.",
+            ismagen: null,
+            ismagen: null,
+            elegidoPor: [],
+            titulo: null,
+            artista: null,
+            genero: null,
+            danzabilidad: null,
+            audiofile: null,
+            personalMatch: null,
+            ranking: null,
+        },
+        {
+            titulo: "DTMF (Debí Tirar Más Fotos)",
+            artista: "Bad Bunny",
+            genero: "Reguetón", // Asegúrate de que los géneros aquí coincidan con tus claves en genreColors
+            danzabilidad: 80,
+            texto: "La canción más escuchada en Argentina fue DTMF. Con un reguetón nostálgico pero bailable, el tema se volvió un clásico instantáneo: para perrear con el corazón roto y mover los recuerdos al ritmo del beat",
+            imagen: "/images/album-covers/bad-bunny-dtmf.jpg",
+            audiofile: "DTMF-Bad-Bunny.mp3",
+            elegidoPor: ["Steffy", "Var"],
+            personalMatch: { 
+            Steffy: 95, 
+            Var: 70,    
+          },
+          ranking:1,
+        },
+        {
+            titulo: "Beautiful Things",
+            artista: "Benson Boone",
+            genero: "Pop", // Cambiado de 'Balada' a 'Pop' si es el caso, o deja 'Balada' si tienes ese género
+            danzabilidad: 65,
+            texto: "Desde Estados Unidos, Beautiful Things con su voz intensa y una letra que abraza el alma, la canción conectó con millones en todo el mundo. Una balada emotiva que habla de amor, pérdida y gratitud por las pequeñas cosas que hacen hermosa la vida.",
+            imagen: "/images/album-covers/benson-boone-beautiful-things.jpg",
+            audiofile: "Beautiful-Things-Benson-Boone.mp3",
+            elegidoPor: ["Rosita", "Steffy"],
+            personalMatch: { 
+             Steffy: 89, 
+            Rosita: 85, 
+            },
+            ranking: 4,
+          },
+        {
+            titulo: "Est-ce que tu m’aimes?",
+            artista: "GIMS",
+            genero: "Rap",
+            danzabilidad: 45,
+            texto: "Desde Francia, Est-ce que tu m’aimes?, un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”.",
+            imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
+            audiofile: "Est-ce-que-tu-m’aimes-GIMS.mp3",
+            elegidoPor: ["Rosita","Var"],
+            personalMatch: {
+              Rosita: 65,
+              Var:50,
+            },
+            ranking: 10,
+        },
+        {
+            titulo: "Die With a Smile",
+            artista: "Lady Gaga y Bruno Mars",
+            genero: "Pop", // Ajusta el género según tu referencia, si "Soul" no está en tu nueva lista
+            danzabilidad: 70,
+            texto: "Desde Arabia Saudita, Die With a Smile conquistó el 2025 con una fusión inesperada de pop, soul y ritmos árabes. Un himno brillante que celebra la vida con estilo, actitud y una sonrisa final",
+            imagen: "/images/album-covers/lady-gaga-bruno-mars-die-with-a-smile.jpg",
+            audiofile: "Die-With-a-Smile-Bruno-Mars-_-Lady-Gaga.mp3",
+            elegidoPor: ["Rosita"],
+            personalMatch:{
+              Rosita: 77,
+            },
+            ranking: 6,
+        },
+        {
+            titulo: "Baby (It Is a Crime)",
+            artista: "Rema",
+            genero: "Rap", // Ajusta el género según tu referencia, si "Afrobeat" no está en tu nueva lista
+            danzabilidad: 50,
+            texto: "Desde Uganda llegó Baby (It Is a Crime), un hit que mezcló ritmos afrobeat con una historia de amor intenso y peligroso. Con beats vibrantes y una letra que duele, la canción se volvió himno en las pistas de África y más allá.",
+            imagen: "/images/album-covers/baby-it-is-a-crime.jpg",
+            audiofile: "Baby-_It-Is-a-Crime_-Rema.mp3",
+            elegidoPor: ["Steffy"],
+            personalMatch:{
+              Steffy: 60,
+            },
+            ranking: 12,
+        },
+        {
+            titulo: "Mona Lisa",
+            artista: "J-Hope",
+            genero: "Pop", // Ajusta el género según tu referencia, si "K-Pop" no está en tu nueva lista
+            danzabilidad: 80,
+            texto: "Desde Japón, Mona Lisa de J-Hope se convirtió en una obra maestra del 2025. Un tema enigmático, con ritmos suaves y elegancia coreografiada. Con su sonrisa críptica y su flow brillante, J-Hope hizo del silencio... puro arte pop.",
+            imagen: "/images/album-covers/j-hope-mona-lisa.jpg",
+            audiofile: "Mona-Lisa-J-Hope.mp3",
+            elegidoPor: ["Rosita", "Steffy", "Var"],
+            personalMatch:{
+              Steffy: 75,
+            Rosita: 100,
+            Var: 70,
+            },
+            ranking: 8,
+        },
+        {
+            titulo: "Ordinary",
+            artista: "Alex Warren",
+            genero: "Indie",
+            danzabilidad:40,
+            texto: "Desde Nueva Zelanda, Ordinary, una balada honesta sobre sentirse común en un mundo que exige brillar. Con guitarra suave y voz quebrada, convirtió lo simple en algo hermoso. Porque ser “ordinary” también es parte de lo extraordinario.",
+            imagen: "/images/album-covers/alex-warren-ordinary.jpg",
+            audiofile:"Ordinary-Alex-Warren.mp3",
+            elegidoPor: ["Rosita", "Steffy"],
+            personalMatch:{
+              Steffy: 60,
+              Rosita: 85,
+            },
+            ranking: 10,
+        },
+    ];
+
+ // Cuando una canción se reproduce, guardaremos su 'titulo' aquí
+const currentlyPlayingSongTitle = writable(null);
+let audioGlobal;
+onMount(() => {
+  if (!window.audioGlobalInstance) {
+    window.audioGlobalInstance = new Audio();
+  }
+  audioGlobal = window.audioGlobalInstance;
+
+  // Escuchador para cuando la canción termine
+  audioGlobal.onended = () => {
+    currentlyPlayingSongTitle.set(null); // Resetea el estado cuando la canción termina
+  };
+});
+
+function handleClickCancion(slide) {
+  // Asegurarse de que slide.audiofile existe para evitar errores
+  if (!slide.audiofile) {
+    console.warn('Esta slide no tiene un archivo de audio asociado:', slide.titulo);
+    return;
+  }
+
+  const audioPath = `/Musica Scrolly/${slide.audiofile}`; // Ruta corregida: Public es la raíz
+  const currentTitle = slide.titulo;
+
+  // Si la canción que se está reproduciendo es la misma que la que se hizo clic
+  if ($currentlyPlayingSongTitle === currentTitle) {
+    audioGlobal.pause();
+    audioGlobal.currentTime = 0; // Opcional: reiniciar a 0 al pausar/detener
+    currentlyPlayingSongTitle.set(null); // No hay canción reproduciéndose
+  } else {
+    // Si hay otra canción reproduciéndose o ninguna, pausar y reproducir la nueva
+    audioGlobal.pause();
+    audioGlobal.currentTime = 0; // Reiniciar por si había otra canción cargada
+    audioGlobal.src = audioPath; // Establecer la nueva fuente de audio
+    audioGlobal.load(); // Cargar el audio
+
+    audioGlobal.play()
+      .then(() => {
+        currentlyPlayingSongTitle.set(currentTitle); // Actualiza la store con el título de la canción actual
+      })
+      .catch(error => {
+        console.error("Error al reproducir el audio:", error);
+        currentlyPlayingSongTitle.set(null);
+      });
+  }
+}
+
+ const PlayIcon = '▶️';
+  const PauseIcon = '⏸️'
+
+  function calculateSpeed(danzabilidad) {
+    // Invertimos: + danzabilidad => - duración (más rápido)
+    const minSpeed = 0.5; // segundos
+    const maxSpeed = 2.5; // segundos
+    return maxSpeed - (danzabilidad / 100) * (maxSpeed - minSpeed);
+  }
 
   function loadFlourishScrolly() {
       const script = document.createElement('script')
@@ -460,53 +550,107 @@ Object.keys(cancionesPorDecada).forEach(decada => {
         {/if}
     </div>
 
-<!-- Intro centrado -->
+    <!-- Intro centrado -->
 <div class="scrollytelling-content">
-  <h2>El Sonido del Mundo en 2025</h2>
-  <p>Sumérgete en un mapa interactivo que descifra la energía musical de 63 países hoy en día. Descubre cuáles son las canciones que marcan tendencia y conecta con ritmos que trascienden continentes, colores y culturas. 
-    <br>Un recorrido sonoro que te invita a sentir el latido global, donde cada nota cuenta una historia única y contemporánea.</p>
-  <p>Elegimos 8 puntos clave de distintos continentes para llevarte en un viaje musical como ningún otro.
+  <h2>Las canciones más <br> reproducidas en 2025</h2>
+  <p>Sumérgete en un mapa interactivo que descifra la energía musical de 63 países hoy en día. 
+    Un recorrido sonoro que te invita a sentir el latido global, donde cada nota cuenta una historia única.</p>
+  <p>Elegimos siete puntos clave de distintos continentes para llevarte en un viaje musical como ningún otro.
     <br> Nuestros símbolos resaltan en cada parada, marcando con fuerza qué estilos vibran más con nuestra esencia.
   </p>
 </div>
-
-<!-- Mapa + Texto lado a lado -->
 <div class="scrollytelling-container">
- <div class="globe-container">
-  <div class="flourish-embed" data-src="story/3175953" data-url="https://flo.uri.sh/story/3175953/embed" data-height="100vh"></div>
- </div>
+  <div class="globe-container">
+    <div class="flourish-embed" data-src="story/3175953" data-url="https://flo.uri.sh/story/3175953/embed" data-height="100vh"></div>
+  </div>
 
-{#each slides as slide, index}
-  <div class="texto-scrolly">
-    <p>
-    {#if slide.imagen}
-      <img src={slide.imagen} alt="Portada del álbum" class="album-cover-scrolly" />
-    {/if}
-    <!-- svelte-ignore a11y-missing-content -->
-    {@html slide.texto}
-    <a href={"#story/3175953/slide-" + (index + 1)}></a>
-
-    {#if slide.elegidoPor && slide.elegidoPor.length > 0}
-         <div class="person-symbols-group">
-            {#each slide.elegidoPor as person, i}
-              {#if person === "Steffy"}
-                <img src="/images/Steffy.png"
-                                alt="Steffy Simbolo" class ="simbolos">
-              {/if}
-              {#if person === "Rosita"}
-                <img src="/images/Rosita.png"
-                                alt="Rosita Simbolo" class ="simbolos">
-              {/if}
-              {#if person === "Var"}
-                <img src="/images/Var.png"
-                                alt="Var Simbolo" class ="simbolos">
-              {/if}
-            {/each}
+  {#each slides as slide, index}
+    <div class="song-card" style="--genre-color: {slide.genero ? colorGenero(slide.genero) : '#ccc'};">
+      {#if slide.titulo}
+        <div class="header">
+          <div class="genre-dot" style="background-color: var(--genre-color);"></div>
+          <div class="title-artist">
+            <h3>{slide.titulo}</h3>
+            <p>{slide.artista}</p>
           </div>
-        {/if}
+        </div>
+      {/if}
+
+      {#if slide.imagen}
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <div class="album-cover-wrapper" on:click={() => handleClickCancion(slide)}>
+        <img src={slide.imagen} alt="Portada del álbum" class="album-cover" />
+        {#if slide.audiofile}
+            <div class="play-pause-overlay">
+              {#if $currentlyPlayingSongTitle === slide.titulo}
+                <span class="icon">{PauseIcon}</span>
+              {:else}
+                <span class="icon">{PlayIcon}</span>
+              {/if}
+            </div>
+          {/if}
+        </div>
+      {/if}
+
+      {#if slide.ranking !== null}
+      <div class="ranking-circle" style="background-color: var(--genre-color);">
+        {slide.ranking}
       </div>
+    {/if}
+
+     
+      <p class="description">
+        {@html slide.texto}
+      </p>
+      
+      {#if slide.danzabilidad} 
+      <div class="danzability-wrapper">
+        <div class="danzability-labels">
+          <span>0%</span>
+          <span>100%</span>
+        </div>
+    
+        <div class="danzability-bar-container">
+          <div 
+            class="danzability-bar"
+            style="
+              width: {slide.danzabilidad}%;
+              background-color: var(--genre-color);
+              animation: danceScale {calculateSpeed(slide.danzabilidad)}s infinite ease-in-out;
+            ">
+          </div>
+          <div class="danzability-info">{slide.danzabilidad}%</div>
+        </div>
+      </div>
+    {/if}
+    
+    
+      {#if slide.elegidoPor && slide.elegidoPor.length > 0}
+        <div class="symbols">
+          <span>Matchea con:</span>
+          {#each slide.elegidoPor as person}
+            <div class="symbol-wrapper">
+              <img 
+                src="/images/{person}.png" 
+                alt="{person} símbolo" 
+                class="symbol" 
+                style="filter: none; background-color: var(--genre-color);">
+              <div class="like-info">{slide.personalMatch[person]}%</div>
+            </div>
+          {/each}
+        </div>
+      {/if}
+
+      <!-- svelte-ignore a11y-missing-content -->
+      <a href={"#story/3175953/slide-" + (index + 1)}></a>
+    </div>
   {/each}
-</div>  <!-- Conclusión -->
+</div>
+       
+ 
+    
+    <!-- Conclusión -->
 <div class="conclusion-musical">
   <h2 class = "titulo-centrado">Y al final... siempre suena una canción</h2>
   <p>
@@ -522,40 +666,9 @@ Object.keys(cancionesPorDecada).forEach(decada => {
   </p>
 </div>
 
-<div class="form-container">
-  <h2>¡Dejá tu canción favorita del momento!</h2>
-  <p>¿Qué canción te tiene en repeat? Compartí tu gusto musical con la comunidad.</p>
 
-  <form id="favoriteSongForm">
-    <input type="text" name="entry.984890267" placeholder="Tu Nombre" required />
-    <input type="number" name="entry.1712815975" placeholder="Tu Edad" required />
-    <input type="text" name="entry.1809252496" placeholder="Título de la canción" required />
-    <input type="text" name="entry.1793128131" placeholder="Artista" required />
-    <select name="entry.2122062067" required>
-      <option value="">Selecciona un género</option>
-      <option value="Pop">Pop</option>
-      <option value="Rock">Rock</option>
-      <option value="Indie">Indie</option>
-      <option value="Electrónica">Electrónica</option>
-      <option value="Reguetón">Reguetón</option>
-      <option value="Rap">Rap</option>
-      <option value="Otro">Otro</option>
-    </select>
-    <input type="number" name="entry.2093388091" placeholder="Año de Lanzamiento" required />
-    <button type="submit">Agregar mi canción</button>
-  </form>
-</div>
 
-<h3>🎧 Canciones agregadas</h3>
-<table id="tablaCanciones" border="1">
-  <thead>
-    <tr>
-      <th>Nombre</th><th>Edad</th><th>Título</th><th>Artista</th><th>Género</th><th>Año</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
+ <ReproductorCompartido />
 
   <Footer/>
 </body>

@@ -682,7 +682,7 @@ html {
 }
 
 .scrollytelling-content {
-  padding: 10px 30px;
+  padding: 20px 30px;
   margin-top: 60px;
   text-align: center;
   font-family: 'Raleway', sans-serif;
@@ -695,11 +695,11 @@ html {
 }
 .scrollytelling-content h2 {
   background: linear-gradient(
-      to right,
-      #6a0dad,     /* Morado oscuro */
-      #007bff      /* Azul vibrante */
-  );
-  -webkit-background-clip: text;
+    to right,
+    #6a0dad,     /* Morado oscuro */
+    #007bff      /* Azul vibrante */
+);
+   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   font-weight: 800;
@@ -710,64 +710,262 @@ html {
   margin-bottom: 20px;
 }
 
-/* Contenedor principal para el scrollytelling con mapa y texto lado a lado */
 .scrollytelling-container {
-  display: flex; /* Hacemos este contenedor flex para alinear sus hijos */
-  position: relative; /* Necesario para que el Flourish se posicione correctamente */
-  min-height: 100vh; /* Para asegurar que el scrollytelling tenga suficiente altura */
-  align-items: flex-start; 
-  padding-left: 30px; 
-  padding-right: 120px; 
+  display: flex;
+  position: relative;
+  min-height: 100vh;
+  align-items: flex-start;
+  margin-right: 50px;
+  padding: 1rem;
+  gap: 2rem;
+}
+
+.globe-container .flourish-embed {
+  width: 125% !important;
+  height: auto !important;
+  max-width: 125% !important;
+}
+
+.globe-container {
+  flex: 0 0 45%; 
+  max-width: 45%;
+  margin-left: 10px;
+  height: auto;
+  position: relative;
+}
+
+.flourish-popup-constrainer,
+.flourish-popup {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+.song-card {
+  background: #fff;
+  border-radius: 12px;
+  margin-right:70px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 1rem;
+  font-family: 'Raleway', sans-serif;
+  max-width: 350px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.genre-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  margin-top: -24px;
   
 }
 
-
-/* Columna del mapa (izquierda) */
-.globe-container {
-  flex: 1.5; /* Ocupa 1.5 veces el espacio de la columna de texto */
-  min-width: 0; /* Permite que el contenido se encoja si es necesario */
-  max-width: 60%; /* Límite de ancho para el mapa */
-  position: sticky; /* Hace que el mapa se quede fijo mientras el texto se desplaza */
-  padding-right: 15px; 
-  height: 100vh; /* Asegura que el contenedor del mapa ocupe toda la altura visible */
-  overflow: hidden; /* Oculta cualquier desbordamiento si el mapa es más grande */
+.title-artist h3 {
+  font-size: 1.2rem;
+  margin: 0;
+  color: var(--genre-color);
 }
 
-.person-symbols-group{
-  filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(280deg) brightness(0%); 
-  display: flex;
-  width: 50px; 
-  height: 50px;
-  object-fit: contain; 
-  transform: translate(400%, -30%);
-  margin-top: 15px;
+.title-artist p {
+  font-size: 0.95rem;
+  margin: 0;
+  color: #333;
 }
-.simbolos{
-  margin-top: 20px;
-  margin-left: 5px;
-  text-align: center;
 
-}
-div[id^="fl-scrolly-section-"] {
+.album-cover {
   width: 100%;
+  border-radius: 8px;
+  margin: 0.5rem 0;
 }
 
-/* Contenedor principal para el scrollytelling con mapa y texto lado a lado */
-.scrollytelling-container {
-  display: flex; /* Hacemos este contenedor flex para alinear sus hijos */
-  position: relative; /* Necesario para que el Flourish se posicione correctamente */
-  min-height: 100vh; /* Para asegurar que el scrollytelling tenga suficiente altura */
-  align-items: flex-start; /* Alinea los elementos al inicio (arriba) */
+.description {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.5rem;
 }
 
-/* Estilos para cada "slide" individual de texto dentro de la columna de scroll */
-.texto-scrolly {
+.danzability-title {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--genre-color);
+}
+.danzability-bar-container {
+  width: 100%;
+  background: #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 10px;
+  position: relative;
+}
+.danzability-wrapper {
+  width: 100%;
+  font-family: Raleway, sans-serif;
+}
+
+.danzability-bar-container {
+  width: 100%;
+  background: #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 10px;
+  position: relative;
+}
+.danzability-labels {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+@keyframes danceScale {
+  0% { transform: scaleX(1); }
+  50% { transform: scaleX(1.2); }
+  100% { transform: scaleX(1); }
+}
+
+.danzability-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 1s ease-out;
+  border-radius: 5px 0 0 5px;
+}
+
+  /* Estilos para el wrapper de la imagen y el overlay de play/pause */
+  .album-cover-wrapper {
+    position: relative;
+    width: 100%; /* O el ancho deseado */
+    max-width: 300px; /* Ejemplo, ajusta a tu diseño */
+    margin: 0 auto;
+    cursor: pointer;
+    overflow: hidden; /* Para asegurar que el icono no se salga si es muy grande */
+  }
+  .ranking-circle {
+    position: absolute;
+    top: 15px; /* Ajusta la distancia desde arriba */
+    right: 15px; /* Ajusta la distancia desde la derecha */
+    width: 25px; /* Tamaño del círculo */
+    height: 25px;
+    border-radius: 50%; /* Para que sea un círculo perfecto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.0em;
+    color: white; /* Color del número */
+    z-index: 5; /* Asegura que esté por encima de la imagen y el overlay de play/pause */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Una pequeña sombra para que destaque */
+  }
+
+  .album-cover {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px; /* Si tus covers son redondas o con bordes redondeados */
+    transition: transform 0.3s ease-in-out; /* Para el efecto de pulso */
+  }
+
+  .play-pause-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(236, 226, 226, 0.4); /* Fondo semi-transparente para el icono */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* Oculto por defecto */
+    transition: opacity 0.2s ease-in-out;
+    border-radius: 8px; /* Coincide con la imagen */
+  }
+
+  .album-cover-wrapper:hover .play-pause-overlay {
+    opacity: 1; /* Muestra el overlay al pasar el mouse */
+  }
+
+  .play-pause-overlay .icon {
+    font-size: 3em; /* Tamaño del icono */
+    color: white;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra para que destaque */
+  }
+
+  /* Efecto "pulso" cuando la canción está activa */
+  .album-cover-wrapper.is-playing .album-cover {
+    transform: scale(1.03); /* Un pequeño pulso */
+  }
+
+  .album-cover-wrapper.is-playing .play-pause-overlay {
+    opacity: 1; /* Asegura que el overlay se vea cuando está reproduciendo */
+  }
+.symbols {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.symbol-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.symbol {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.symbol:hover {
+  box-shadow: 0 0 6px var(--genre-color);
+}
+
+.like-info {
+  display: none;
+  position: absolute;
+  bottom: -1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-size: 0.7rem;
+  color: #333;
+}
+
+.symbol-wrapper:hover .like-info {
+  display: block; 
 }
 
 
 
+div[id^="fl-scrolly-section-"] {
+  width: 100% !important;
+}
+
+.texto-scrolly {
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+
+
+p.fl-scrolly-step{
+  margin: 0 !important;
+  width: 30% !important;
+  text-align: center;
+  margin-bottom: 90vh !important;
+ 
+}
 /* Estilos para el contenedor principal de la conclusión */
 .conclusion-musical {
     background-color: var(--color-fondo-oscuro);
@@ -781,6 +979,50 @@ div[id^="fl-scrolly-section-"] {
     line-height: 1.8; /* Mayor espacio entre líneas para mejor lectura */
     font-family: 'Raleway', sans-serif; /* Consistencia con tus selectores */
 }
+
+.danzability-bar-container {
+  background: #eee;
+  border-radius: 5px;
+  height: 8px;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.danzability-bar {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.danzability-info {
+  display: none;
+  position: absolute;
+  top: -1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-size: 0.7rem;
+  color: var(--genre-color);
+}
+
+.danzability-bar-container:hover .danzability-info {
+  display: block;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /* Estilos para el título de la conclusión */
 .conclusion-musical .titulo-centrado {
@@ -799,16 +1041,6 @@ div[id^="fl-scrolly-section-"] {
     margin-right: auto;
 }
 
-
-
-
-p.fl-scrolly-step{
-  margin: 0 !important;
-  width: 30% !important;
-  text-align: center;
-  margin-bottom: 90vh !important;
-  padding: 1.25em; /* Padding interno del cuadro de texto */
-}
 .form-container {
   max-width: 600px;
   margin: 0 auto;
