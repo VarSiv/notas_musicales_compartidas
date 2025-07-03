@@ -139,7 +139,7 @@
             {/each}
         </ul>
     {/if}
-</div>
+    </div>
 
 <style>
 .reproductor-container {
