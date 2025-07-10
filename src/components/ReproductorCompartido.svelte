@@ -691,7 +691,7 @@
                   <span>Calculando...</span>
               {/if}
           </div>
-          <p class="description-symbol">Este símbolo se asigna automáticamente según tu afinidad en nuestro juego musical. Si no jugaste, se te asignará una cruz.</p>
+          <p class="description-symbol">Este símbolo se asigna automáticamente según tu afinidad en nuestro juego musical. Si no jugaste, se te asignará una cruz y si hubo empate, se te asigna un igual.</p>
       </div>
       
       <button class="btn-crear-reproductor" on:click={createReproducer}>
