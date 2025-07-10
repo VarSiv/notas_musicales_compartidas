@@ -4,9 +4,10 @@
   import Footer from "./components/Footer.svelte";
   import { onMount } from 'svelte';
   import { reproduccionesPorPersona } from "./stores.js"; // Para acumular los clics de las personas
-  import ReproductorCompartido from "./components/ReproductorCompartido.svelte";
+ 
   import { writable } from 'svelte/store';
-  
+  import ReproductorCompartido from './components/ReproductorCompartido.svelte';
+
   // Variables generales
   let canciones = [];
   let cancionesPorDecada = {};
@@ -191,7 +192,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
         {
             titulo: "Est-ce que tu m’aimes?",
             artista: "GIMS",
-            genero: "Rap",
+            genero: "Pop",
             danzabilidad: 45,
             texto: "Desde Francia, Est-ce que tu m’aimes?, un clásico moderno que mezcla melancolía y ritmo, preguntando con voz profunda lo que tantos temen decir: “¿Me amás?”.",
             imagen: "/images/album-covers/gims-est-ce-que-tu-m-aimes.jpg",
@@ -227,7 +228,7 @@ Object.keys(cancionesPorDecada).forEach(decada => {
             audiofile: "Baby-_It-Is-a-Crime_-Rema.mp3",
             elegidoPor: ["Steffy"],
             personalMatch:{
-              Steffy: 60,
+              Steffy: 75,
             },
             ranking: 12,
         },
@@ -669,6 +670,7 @@ function handleClickCancion(slide) {
 
 
  <ReproductorCompartido />
+
 
   <Footer/>
 </body>
