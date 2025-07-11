@@ -27,7 +27,7 @@
   
   // --- Stores para los reproductores creados ---
   // Los reproductores se guardan en localStorage para persistencia
-  const userReproducers = writable(JSON.parse(localStorage.getItem('userReproducers') || '[]'));
+export const userReproducers = writable(JSON.parse(localStorage.getItem('userReproducers') || '[]'));
 
   userReproducers.subscribe(value => {
       localStorage.setItem('userReproducers', JSON.stringify(value));
