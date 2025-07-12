@@ -667,11 +667,7 @@ function handleClickCancion(slide) {
   </p>
 </div>
 
-
-
  <ReproductorCompartido />
-
-
   <Footer/>
 </body>
 <style>
