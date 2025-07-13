@@ -548,8 +548,8 @@
     .reproductor-item .symbol-reproductor-left,
     .reproductor-item .symbol-reproductor-right {
         position: absolute; /* Posicionamiento absoluto respecto a .circulo-reproductor */
-        width: 35px; /* Tamaño del símbolo */
-        height: 35px;
+        width: 25px; /* Tamaño del símbolo */
+        height: 25px;
         object-fit: contain;
         z-index: 1; /* Por debajo del círculo interno si se superpone */
         top: 50%; /* Centra verticalmente */
@@ -608,6 +608,28 @@
             margin: 20px auto;
         }
     }
+.symbol-control2 {
+    font-size: 3em; /* Tamaño del icono */
+    position: absolute;
+    bottom: 15%; 
+    left: 47%;
+    transform: translate(-80%, 40%);
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+}
+
+.symbol-control1 {
+    font-size: 3em; /* Tamaño del icono */
+    position: absolute;
+    bottom: 15%; 
+    left: 60%;
+    transform: translate(-50%, 40%);
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+}
+    
 </style>
 
 <div class="reproductor-compartido-container">
@@ -747,6 +769,8 @@
                                 />
                             {/if}
 
+                            <img src="/images/Pause.png" alt="Pause" class="symbol-control1" />
+                            <img src="/images/Play.png" alt="Play" class="symbol-control2" />
                             <div class="circulo-interno">
                                 <svg
                                     class="wave-svg"
