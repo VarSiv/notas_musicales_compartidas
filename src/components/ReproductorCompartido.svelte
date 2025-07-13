@@ -609,7 +609,6 @@
         }
     }
 .symbol-control2 {
-    font-size: 3em; /* Tamaño del icono */
     position: absolute;
     bottom: 15%; 
     left: 47%;
@@ -620,14 +619,12 @@
 }
 
 .symbol-control1 {
-    font-size: 3em; /* Tamaño del icono */
     position: absolute;
     bottom: 15%; 
     left: 60%;
     transform: translate(-50%, 40%);
     width: 20px;
     height: 20px;
-    filter: brightness(0) invert(1);
 }
     
 </style>
