@@ -747,7 +747,7 @@
     <div class="reproductores-guardados">
         <h3>Reproductores Creados por la Comunidad:</h3>
         {#if $userReproducers.length === 0}
-            <p>¡Sé el primero en crear un reproductor personalizado!</p>
+            <p style="text-align:center;">¡Sé el primero en crear un reproductor personalizado!</p>
         {:else}
             <div class="lista-reproductores">
                 {#each $userReproducers as reproducer (reproducer.id)}
