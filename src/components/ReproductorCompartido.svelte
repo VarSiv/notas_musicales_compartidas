@@ -490,19 +490,47 @@
         justify-content: center;
     }
 
+    @keyframes glowing-border {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.2), 0 0 10px rgba(255, 255, 255, 0.2), 0 0 15px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.4), 0 0 30px currentColor;
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.2), 0 0 10px rgba(255, 255, 255, 0.2), 0 0 15px currentColor;
+  }
+}
     .reproductor-item {
         background-color: white;
         border-radius: 12px;
         padding: 20px 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 15px rgba(223, 61, 158, 0.08);
         text-align: center;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
         min-height: 250px; /* Para mantener un tamaño uniforme */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for smooth effect */
+        border: 2px solid #85d7ff; /* celeste suave */
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(223, 61, 158, 0.08);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
+    .reproductor-item:hover {
+        border-color: #0099ff;
+        box-shadow: 0 8px 25px rgba(77, 97, 197, 0.15);
+}
 
+.reproductor-item .circulo-reproductor:active {
+  box-shadow:
+    0 0 25px currentColor,
+    0 0 40px currentColor,
+    0 0 60px currentColor,
+    inset 0 0 10px rgba(255, 255, 255, 0.2);
+  transform: scale(0.97); /* efecto de presión */
+}
     .reproductor-item .circulo-reproductor {
         width: 120px;
         height: 120px;
@@ -513,8 +541,17 @@
         position: relative; /* ¡MUY IMPORTANTE! Establece este div como el contexto para el posicionamiento absoluto de las cruces */
         overflow: hidden; /* Oculta partes que se salgan si las cruces son muy grandes o están muy al borde */
         margin-bottom: 15px;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.1); /* Efecto de sombra interior para profundidad */
+        /* Existing shadow for depth */
+  box-shadow: inset 0 0 10px rgba(19, 178, 175, 0.4);
+
+/* Add glow effect */
+animation: glowing-border 3s infinite alternate ease-in-out; /* Subtle pulsing glow */
+transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover */
     }
+
+    .reproductor-item .circulo-reproductor:hover {
+  box-shadow: 0 0 15px currentColor, 0 0 25px currentColor, 0 0 40px currentColor, inset 0 0 10px rgba(0, 0, 0, 0.1); /* More pronounced glow on hover */
+}
 
     .reproductor-item .circulo-interno {
         width: 50px; /* Tamaño del círculo blanco central */
