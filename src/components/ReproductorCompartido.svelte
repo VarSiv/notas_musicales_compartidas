@@ -321,6 +321,8 @@
             default: return '🎧';
         }
     }
+
+
 </script>
 
 <style>
@@ -328,7 +330,9 @@
     .reproductor-compartido-container {
         max-width: 900px;
         margin: 40px auto;
+        margin-top: -95px;
         padding: 30px;
+        padding-top: 30px;
         background-color: #f9f9f9;
         border-radius: 15px;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -442,8 +446,9 @@
         font-size: 1.2em;
         margin-top: 10px;
         color: #003058;
-        margin-left:-160px;
-        margin-right: -50px;
+        margin-left:0px;
+        margin-right:135px;
+        gap: 6px;
         text-align: left;
         flex-wrap: wrap;
     }
@@ -454,10 +459,10 @@
         height: 40px;
         object-fit: contain;
         filter: brightness(0); 
-        margin-right: 10px; 
+        margin-right:5px; 
         vertical-align: middle;
         text-align: left;
-        margin-left: 45px;
+        margin-left: 10px;
         flex-shrink: 0; 
     }
 
@@ -713,6 +718,9 @@
         filter: brightness(0) invert(1);
     }
 
+
+    
+
 </style>
 
 <div class="reproductor-compartido-container">
@@ -890,6 +898,7 @@
                     </div>
                 {/each}
             </div>
+                  
             <button class="btn-clear-reproducers" on:click={clearReproducers}>
                 Borrar Todos los Reproductores
             </button>
