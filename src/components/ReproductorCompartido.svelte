@@ -5,28 +5,26 @@
 
     // Importamos el store de afinidad de tu App.svelte
     // Asegúrate de que esta ruta sea correcta para tu proyecto
-    import { reproduccionesPorPersona } from "../stores.js";
+    import { reproduccionesPorPersona } from "../stores.js"; // O la ruta correcta a tu stores.js
 
     // --- Datos para el autocompletado y colores ---
-    // allSongsData ahora contendrá las canciones con Danzabilidad y Mood del CSV
     let allSongsData = [];
 
     // Definición de colores de género (copiado de tu App.svelte)
     const colorGenero = d3.scaleOrdinal()
-        .domain(["Pop", "Rock", "Indie", "Electrónica", "Reggaetón", "Rap", "Balada", "Regional", "Trap", "Funk", "Cumbia Pop", "Rock Latino"]) // Ampliado con géneros de tu nuevo CSV
-        .range(["#00CC66", "#CC0000", "#CC0066", "#001BCC", "#CCB400", "#000000", "#800080", "#FFA500", "#DAA520", "#FF1493", "#32CD32", "#6A5ACD"]); // Asegúrate de tener suficientes colores
+        .domain(["Pop", "Rock", "Indie", "Electrónica", "Reggaetón", "Rap", "Balada", "Regional", "Trap", "Funk", "Cumbia Pop", "Rock Latino", "Metal"])
+        .range(["#00CC66", "#CC0000", "#CC0066", "#001BCC", "#CCB400", "#000000", "#800080", "#FFA500", "#DAA520", "#FF1493", "#32CD32", "#6A5ACD", "#8B0000"]);
 
-    // Símbolos para el selector
+    // Símbolos para el selector - ¡Nombres actualizados para coincidir con tus imágenes!
     const simboloSelector = {
-        "Var": "/images/Var.png",
-        "Rosita": "/images/Rosita.png",
-        "Steffy": "/images/Steffy.png",
-        "Cruz": "/images/Cruz.png", // Asegúrate de tener esta imagen en public/images/
-        "Igual": "/images/Igual.png" // Asegúrate de tener esta imagen en public/images/
+        Var: "/images/Var.png",
+        Rosita: "/images/Rosita.png",
+        Steffy: "/images/Steffy.png",
+        Cruz: "/images/Cruz.png",
+        Igual: "/images/Igual.png"
     };
 
     // --- Stores para los reproductores creados ---
-    // Los reproductores se guardan en localStorage para persistencia
     export const userReproducers = writable(JSON.parse(localStorage.getItem('userReproducers') || '[]'));
 
     userReproducers.subscribe(value => {
@@ -38,10 +36,15 @@
     let songName = "";
     let artistName = "";
     let selectedGenre = "";
-    let selectedColor = "#00CC66"; // Color por defecto (verde para Pop)
-    let danzabilityInput = 0; // Input para Danzabilidad
-    let moodInput = "";        // Input para Mood
+    let selectedColor = "#00CC66";
+    let danzabilityInput = 0;
+    let moodInput = "";
+
+    // --- Variables para la asignación de símbolo ---
     let assignedSymbol = "";
+    let assignedSymbolText = "";
+    let assignedSymbolDescription = ""; // Nueva variable para la descripción
+    let isCalculatingSymbol = true;
 
     // Sugerencias para autocompletado
     let songSuggestions = [];
@@ -51,21 +54,19 @@
     // --- Lógica de carga de datos al iniciar el componente ---
     onMount(async () => {
         try {
-            // Asegúrate que el nombre del archivo CSV sea correcto y la ruta
             allSongsData = await d3.csv("/cancionescompartidas.csv");
             console.log("Canciones compartidas cargadas:", allSongsData);
 
-            // Actualizar el dominio de colorGenero con todos los géneros del CSV
-            // Usar "Genero" con G mayúscula según tu CSV
             const uniqueGenresFromCsv = [...new Set(allSongsData.map(d => d.Genero).filter(Boolean))];
             colorGenero.domain(Array.from(new Set([...colorGenero.domain(), ...uniqueGenresFromCsv])));
 
-            // Asignar símbolo inicial al cargar el componente
+            await new Promise(resolve => setTimeout(resolve, 500));
             assignSymbolBasedOnAfinity();
+            isCalculatingSymbol = false;
 
         } catch (error) {
             console.error("Error al cargar cancionescompartidas.csv:", error);
-            // Puedes mostrar un mensaje al usuario si el CSV no se carga
+            isCalculatingSymbol = false;
         }
     });
 
@@ -76,15 +77,15 @@
 
         if (type === 'song') {
             return allSongsData
-                .filter(d => d.Cancion && d.Cancion.toLowerCase().includes(lowerQuery)) // Usar "Cancion" con C mayúscula
+                .filter(d => d.Cancion && d.Cancion.toLowerCase().includes(lowerQuery))
                 .map(d => d.Cancion)
                 .slice(0, 5);
         } else if (type === 'artist') {
-            return [...new Set(allSongsData.filter(d => d.Artista && d.Artista.toLowerCase().includes(lowerQuery)) // Usar "Artista" con A mayúscula
+            return [...new Set(allSongsData.filter(d => d.Artista && d.Artista.toLowerCase().includes(lowerQuery))
                 .map(d => d.Artista))]
                 .slice(0, 5);
         } else if (type === 'genre') {
-            return [...new Set(allSongsData.map(d => d.Genero))] // Usar "Genero" con G mayúscula
+            return [...new Set(allSongsData.map(d => d.Genero))]
                 .filter(g => g && g.toLowerCase().includes(lowerQuery))
                 .slice(0, 5);
         }
@@ -94,24 +95,23 @@
     function handleSongInput(event) {
         songName = event.target.value;
         songSuggestions = filterSuggestions(songName, 'song');
-        // Resetear artista, género, danzabilidad, mood si el nombre de la canción cambia
         artistName = "";
         selectedGenre = "";
-        danzabilityInput = 0; // Resetear input de danzabilidad
-        moodInput = "";        // Resetear input de mood
+        danzabilityInput = 0;
+        moodInput = "";
     }
 
     function selectSong(suggestion) {
         songName = suggestion;
-        const foundSong = allSongsData.find(d => d.Cancion === suggestion); // Usar "Cancion"
+        const foundSong = allSongsData.find(d => d.Cancion === suggestion);
         if (foundSong) {
-            artistName = foundSong.Artista; // Usar "Artista"
-            selectedGenre = foundSong.Genero; // Usar "Genero"
-            selectedColor = colorGenero(selectedGenre); // Asigna el color del género encontrado
-            danzabilityInput = +foundSong.Danzabilidad; // Asignar al input de danzabilidad
-            moodInput = foundSong.Mood; // Asignar al input de mood
+            artistName = foundSong.Artista;
+            selectedGenre = foundSong.Genero;
+            selectedColor = colorGenero(selectedGenre);
+            danzabilityInput = +foundSong.Danzabilidad;
+            moodInput = foundSong.Mood;
         }
-        songSuggestions = []; // Limpiar sugerencias después de seleccionar
+        songSuggestions = [];
     }
 
     function handleArtistInput(event) {
@@ -121,24 +121,23 @@
 
     function selectArtist(suggestion) {
         artistName = suggestion;
-        artistSuggestions = []; // Limpiar sugerencias después de seleccionar
+        artistSuggestions = [];
     }
 
     function handleGenreInput(event) {
         selectedGenre = event.target.value;
-        selectedColor = colorGenero(selectedGenre); // Actualiza el color en tiempo real
+        selectedColor = colorGenero(selectedGenre);
         genreSuggestions = filterSuggestions(selectedGenre, 'genre');
     }
 
     function selectGenre(suggestion) {
         selectedGenre = suggestion;
-        selectedColor = colorGenero(selectedGenre); // Asigna el color del género seleccionado
-        genreSuggestions = []; // Limpiar sugerencias después de seleccionar
+        selectedColor = colorGenero(selectedGenre);
+        genreSuggestions = [];
     }
 
     // --- Lógica de asignación de símbolo basada en afinidad ---
     function assignSymbolBasedOnAfinity() {
-        // Obtenemos el valor actual del store de afinidad
         const currentReproducciones = get(reproduccionesPorPersona);
         const total = currentReproducciones.Steffy + currentReproducciones.Rosita + currentReproducciones.Var;
 
@@ -148,22 +147,26 @@
                 { nombre: "Rosita", porcentaje: (currentReproducciones.Rosita / total) * 100, simbolo: simboloSelector.Rosita },
                 { nombre: "Var", porcentaje: (currentReproducciones.Var / total) * 100, simbolo: simboloSelector.Var }
             ];
-            // Ordenar por porcentaje de mayor a menor
             afinidades.sort((a, b) => b.porcentaje - a.porcentaje);
 
             const top1 = afinidades[0];
             const top2 = afinidades[1];
 
-            // Si los dos primeros tienen el mismo porcentaje (empate)
             if (top1.porcentaje === top2.porcentaje) {
-                assignedSymbol = simboloSelector.Igual; // Asignar el símbolo de "Igual"
+                assignedSymbol = simboloSelector.Igual;
+                assignedSymbolText = "Igual";
+                assignedSymbolDescription = `Tu porcentaje de afinidad con ${top1.nombre} y ${top2.nombre} fue del ${top1.porcentaje.toFixed(2)}% cada uno. ¡Hay un empate!`;
             } else {
-                assignedSymbol = top1.simbolo; // Asignar el símbolo del que tiene mayor afinidad
+                assignedSymbol = top1.simbolo;
+                assignedSymbolText = top1.nombre;
+                assignedSymbolDescription = `Tu afinidad principal es con ${top1.nombre} (${top1.porcentaje.toFixed(2)}%).`;
             }
         } else {
-            // Si no se ha jugado (total de reproducciones es 0)
-            assignedSymbol = simboloSelector.Cruz; // Asignar el símbolo de "Cruz"
+            assignedSymbol = simboloSelector.Cruz;
+            assignedSymbolText = "Cruz";
+            assignedSymbolDescription = "Aún no has jugado o no hay reproducciones registradas. ¡Juega para descubrir tu afinidad!";
         }
+        console.log("Símbolo asignado:", assignedSymbolText, assignedSymbol);
     }
 
     // Reactividad: la función se ejecuta cada vez que 'reproduccionesPorPersona' cambia
@@ -174,43 +177,46 @@
 
     // --- Función para crear un nuevo reproductor ---
     function createReproducer() {
-        if (!userName || !songName || !artistName || !selectedGenre || !danzabilityInput || !moodInput) {
+        if (!userName || !songName || !artistName || !selectedGenre || danzabilityInput === null || moodInput === "") {
             alert("Por favor, completa todos los campos: Nombre/Apodo, Canción, Artista, Género, Danzabilidad y Mood.");
             return;
         }
 
-        // Asegurarse de que danzabilityInput es un número válido
-        const finalDanzability = Math.max(0, Math.min(100, parseInt(danzabilityInput) || 0)); // Entre 0 y 100
+        const finalDanzability = Math.max(0, Math.min(100, parseInt(danzabilityInput) || 0));
 
         const newReproducer = {
-            id: Date.now(), // ID único basado en la marca de tiempo
+            id: Date.now(),
             userName,
             songName,
             artistName,
             genre: selectedGenre,
             color: selectedColor,
-            danzability: finalDanzability, // Usar el valor del input
-            mood: moodInput,             // Usar el valor del input
-            symbol: assignedSymbol       // Guardar el símbolo asignado
+            danzability: finalDanzability,
+            mood: moodInput,
+            symbol: assignedSymbol,
+            symbolText: assignedSymbolText
         };
 
-        // Actualizar el store con el nuevo reproductor
         userReproducers.update(currentReproducers => [...currentReproducers, newReproducer]);
 
-        // Limpiar formulario después de crear
+        // Limpiar formulario y "vaciar" el símbolo asignado
         userName = "";
         songName = "";
         artistName = "";
         selectedGenre = "";
-        selectedColor = colorGenero("Pop"); // Vuelve al color por defecto para el próximo
+        selectedColor = colorGenero("Pop");
         danzabilityInput = 0;
         moodInput = "";
+        assignedSymbol = ""; // Vaciar la imagen del símbolo
+        assignedSymbolText = ""; // Vaciar el texto del símbolo
+        assignedSymbolDescription = ""; // Vaciar la descripción
+        isCalculatingSymbol = true; // Preparar para el próximo cálculo
     }
 
     // --- Función para borrar todos los reproductores guardados ---
     function clearReproducers() {
         if (confirm("¿Estás seguro de que quieres borrar TODOS los reproductores creados? Esta acción es irreversible.")) {
-            userReproducers.set([]); // Establece el store a un array vacío
+            userReproducers.set([]);
             console.log("Reproductores borrados de localStorage.");
         }
     }
@@ -221,8 +227,7 @@
     }
 
     function wavePathReproductorUsuario(danzability) {
-        // Adaptamos la lógica de wavePath de tu componente principal
-        const danceability = parseFloat(danzability || 50); // Si no hay danzability, usa 50
+        const danceability = parseFloat(danzability || 50);
         const maxAmplitude = 6;
         const baseAmplitude = 1;
         const amplitude =
@@ -233,8 +238,8 @@
         const frequency =
             minFrequency + (maxFrequency - minFrequency) * (danceability / 100);
 
-        const width = 100; // Ancho virtual para el path
-        const baseY = width * 0.16; // Posición vertical base de la onda
+        const width = 100;
+        const baseY = width * 0.16;
 
         let d = `M 0 ${baseY}`;
         for (let x = 0; x < width; x += 1) {
@@ -246,7 +251,7 @@
     }
 
     function strokeWidthReproductorUsuario() {
-        return 2; // Ancho de la línea de la onda
+        return 2;
     }
 
     // Simple función para obtener un emoji de mood, si se desea una visualización extra
@@ -285,10 +290,10 @@
             case 'sarcástico': return ' sarcastic';
             case 'historia': return '📜';
             case 'disco': return '🪩';
-            default: return '🎧'; // Emoji por defecto
+            case 'metal': return '🤘';
+            default: return '🎧';
         }
     }
-
 </script>
 
 <style>
@@ -410,8 +415,13 @@
         font-size: 1.2em;
         margin-top: 10px;
         color: #003058;
-        font-weight: bold;
     }
+
+    .current-symbol span.bold-symbol-text {
+        font-weight: bold; /* Hace el texto en negrita */
+        margin-right: 5px; /* Pequeño espacio entre el texto y la imagen */
+    }
+
 
     .current-symbol img {
         width: 30px;
@@ -419,6 +429,8 @@
         margin-left: 10px;
         vertical-align: middle;
         object-fit: contain; /* Para que el símbolo se vea bien */
+        /* SÍMBOLO ASIGNADO EN EL FORMULARIO SIEMPRE EN NEGRO */
+        filter: brightness(0);
     }
 
     .description-symbol {
@@ -491,15 +503,15 @@
     }
 
     @keyframes glowing-border {
-  0% {
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.2), 0 0 10px rgba(255, 255, 255, 0.2), 0 0 15px currentColor;
-  }
-  50% {
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.4), 0 0 30px currentColor;
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.2), 0 0 10px rgba(255, 255, 255, 0.2), 0 0 15px currentColor;
-  }
+    0% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.2), 0 0 10px rgba(255, 255, 255, 0.2), 0 0 15px currentColor;
+    }
+    50% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.4), 0 0 30px currentColor;
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.2), 0 0 10px rgba(255, 255, 255, 0.2), 0 0 15px currentColor;
+    }
 }
     .reproductor-item {
         background-color: white;
@@ -514,83 +526,79 @@
         min-height: 250px; /* Para mantener un tamaño uniforme */
         transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for smooth effect */
         border: 2px solid #85d7ff; /* celeste suave */
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(223, 61, 158, 0.08);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(223, 61, 158, 0.08);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
     .reproductor-item:hover {
         border-color: #0099ff;
         box-shadow: 0 8px 25px rgba(77, 97, 197, 0.15);
-}
+    }
 
-.reproductor-item .circulo-reproductor:active {
-  box-shadow:
-    0 0 25px currentColor,
-    0 0 40px currentColor,
-    0 0 60px currentColor,
-    inset 0 0 10px rgba(255, 255, 255, 0.2);
-  transform: scale(0.97); /* efecto de presión */
-}
+    .reproductor-item .circulo-reproductor:active {
+        box-shadow:
+            0 0 25px currentColor,
+            0 0 40px currentColor,
+            0 0 60px currentColor,
+            inset 0 0 10px rgba(255, 255, 255, 0.2);
+        transform: scale(0.97); /* efecto de presión */
+    }
     .reproductor-item .circulo-reproductor {
         width: 120px;
         height: 120px;
         border-radius: 50%;
-        display: flex; /* Asegura que `.circulo-reproductor` sea un flex container */
-        align-items: center; /* Centra verticalmente el contenido */
-        justify-content: center; /* Centra horizontalmente el `.circulo-interno` */
-        position: relative; /* ¡MUY IMPORTANTE! Establece este div como el contexto para el posicionamiento absoluto de las cruces */
-        overflow: hidden; /* Oculta partes que se salgan si las cruces son muy grandes o están muy al borde */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
         margin-bottom: 15px;
-        /* Existing shadow for depth */
-  box-shadow: inset 0 0 10px rgba(19, 178, 175, 0.4);
-
-/* Add glow effect */
-animation: glowing-border 3s infinite alternate ease-in-out; /* Subtle pulsing glow */
-transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover */
+        box-shadow: inset 0 0 10px rgba(19, 178, 175, 0.4);
+        animation: glowing-border 3s infinite alternate ease-in-out;
+        transition: box-shadow 0.3s ease-in-out;
     }
 
     .reproductor-item .circulo-reproductor:hover {
-  box-shadow: 0 0 15px currentColor, 0 0 25px currentColor, 0 0 40px currentColor, inset 0 0 10px rgba(0, 0, 0, 0.1); /* More pronounced glow on hover */
-}
+        box-shadow: 0 0 15px currentColor, 0 0 25px currentColor, 0 0 40px currentColor, inset 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
     .reproductor-item .circulo-interno {
-        width: 50px; /* Tamaño del círculo blanco central */
+        width: 50px;
         height: 50px;
         border-radius: 50%;
         background-color: white;
-        display: flex; /* Usamos flexbox para centrar contenido */
-        align-items: center; /* Centra verticalmente */
-        justify-content: center; /* Centra horizontalmente */
-        position: relative; /* Importante para el posicionamiento absoluto del símbolo y la onda */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
         overflow: hidden;
-        z-index: 2; /* Asegura que el círculo interno esté sobre las cruces si se superponen */
+        z-index: 2;
     }
 
     .reproductor-item .wave-svg {
-        position: absolute; /* Para que el SVG se posicione sobre el círculo interno */
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         display: block;
-        z-index: 1; /* La onda debería estar detrás del símbolo, pero dentro de su contenedor */
-        /* Aseguramos que la onda no se extienda fuera del círculo interno */
+        z-index: 1;
         border-radius: 50%;
     }
     .reproductor-item .wave-svg path {
         transition: stroke 0.3s ease;
     }
 
-    /* NUEVOS ESTILOS PARA LAS CRUCES LATERALES */
-    .reproductor-item .symbol-reproductor-left,
-    .reproductor-item .symbol-reproductor-right {
-        position: absolute; /* Posicionamiento absoluto respecto a .circulo-reproductor */
-        width: 25px; /* Tamaño del símbolo */
+    /* ESTILOS PARA TODOS LOS SÍMBOLOS EN LOS LATERALES DEL CÍRCULO PRINCIPAL */
+    .reproductor-item .symbol-reproductor-side {
+        position: absolute;
+        width: 25px; /* Símbolos más pequeños */
         height: 25px;
         object-fit: contain;
-        z-index: 1; /* Por debajo del círculo interno si se superpone */
-        top: 50%; /* Centra verticalmente */
-        transform: translateY(-50%); /* Ajuste fino para centrado vertical */
+        z-index: 1; /* Por debajo del círculo interno */
+        top: 50%;
+        transform: translateY(-50%);
+        filter: brightness(0) invert(1); /* Símbolos en reproductores SIEMPRE BLANCOS */
     }
 
     .reproductor-item .symbol-reproductor-left {
@@ -601,18 +609,7 @@ transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover */
         right: 5px; /* Distancia desde el borde derecho del círculo de color */
     }
 
-    /* ESTILOS PARA OTROS SÍMBOLOS DENTRO DEL CÍRCULO BLANCO (si los hubiera) */
-    /* Si la cruz era el único símbolo que iba aquí, puedes eliminar esta clase.
-       Si otros símbolos deben ir dentro del círculo blanco, aquí es donde irían sus estilos. */
-    .reproductor-item .symbol-inside-circle {
-        width: 35px; /* Tamaño del símbolo dentro del círculo blanco */
-        height: 35px;
-        object-fit: contain;
-        z-index: 3; /* Asegura que esté por encima de la onda */
-        /* Estas propiedades ya no son necesarias si el padre .circulo-interno es flex y centra */
-        /* position:left; */
-    }
-
+    /* ELIMINAMOS .symbol-inside-circle YA QUE TODOS LOS SÍMBOLOS VAN LATERALES */
 
     .reproductor-item h4 {
         color: #003058;
@@ -645,25 +642,27 @@ transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover */
             margin: 20px auto;
         }
     }
-.symbol-control2 {
-    position: absolute;
-    bottom: 15%; 
-    left: 47%;
-    transform: translate(-80%, 40%);
-    width: 20px;
-    height: 20px;
-    filter: brightness(0) invert(1);
-}
+    .symbol-control2 {
+        position: absolute;
+        bottom: 15%;
+        left: 47%;
+        transform: translate(-80%, 40%);
+        width: 20px;
+        height: 20px;
+        filter: brightness(0) invert(1); /* Para que sea blanco y contraste con el color del reproductor */
+    }
 
-.symbol-control1 {
-    position: absolute;
-    bottom: 15%; 
-    left: 60%;
-    transform: translate(-50%, 40%);
-    width: 20px;
-    height: 20px;
-}
-    
+
+    .symbol-control1 {
+        position: absolute;
+        bottom: 15%;
+        left: 60%;
+        transform: translate(-50%, 40%);
+        width: 20px;
+        height: 20px;
+        filter: brightness(0) invert(1); /* Para que sea blanco y contraste con el color del reproductor */
+    }
+
 </style>
 
 <div class="reproductor-compartido-container">
@@ -687,8 +686,8 @@ transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover */
             {#if songSuggestions.length > 0}
                 <ul class="suggestions-list">
                     {#each songSuggestions as suggestion}
-                        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                         <li class="suggestion-item" on:click={() => selectSong(suggestion)}>
                             {suggestion}
                         </li>
@@ -708,7 +707,6 @@ transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover */
             {#if artistSuggestions.length > 0}
                 <ul class="suggestions-list">
                     {#each artistSuggestions as suggestion}
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                         <li class="suggestion-item" on:click={() => selectArtist(suggestion)}>
@@ -765,15 +763,15 @@ transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover */
         </div>
 
         <div class="form-group">
-            <p>Tu Símbolo asignado:</p>
-            <div class="current-symbol">
-                {#if assignedSymbol}
-                    <img src={assignedSymbol} alt="Símbolo" />
-                {:else}
-                    <span>Calculando...</span>
+            <p>Tu Símbolo asignado:
+                {#if isCalculatingSymbol && assignedSymbolText === ""} <span>Calculando...</span>
+                {:else if assignedSymbolText !== ""}
+                    <span class="bold-symbol-text">{assignedSymbolText}</span>
+                    <img src={assignedSymbol} alt="Símbolo asignado" /> {:else}
+                    <span></span>
                 {/if}
-            </div>
-            <p class="description-symbol">Este símbolo se asigna automáticamente según tu afinidad en nuestro juego musical. Si no jugaste, se te asignará una cruz y si hubo empate, se te asigna un igual.</p>
+            </p>
+            <p class="description-symbol">{assignedSymbolDescription}</p>
         </div>
 
         <button class="btn-crear-reproductor" on:click={createReproducer}>
@@ -795,16 +793,20 @@ transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover */
                                    width: {obtenerDiametroReproductorUsuario()}px;
                                    height: {obtenerDiametroReproductorUsuario()}px;"
                         >
-                            {#if reproducer.symbol === simboloSelector.Cruz}
-                                <img
-                                    src={reproducer.symbol}
-                                    alt="Cruz izquierda"
-                                    class="symbol-reproductor-left"
-                                />
-                            {/if}
+                            <img
+                                src={reproducer.symbol}
+                                alt="{reproducer.symbolText} izquierda"
+                                class="symbol-reproductor-side symbol-reproductor-left"
+                            />
+                            <img
+                                src={reproducer.symbol}
+                                alt="{reproducer.symbolText} derecha"
+                                class="symbol-reproductor-side symbol-reproductor-right"
+                            />
 
                             <img src="/images/Pause.png" alt="Pause" class="symbol-control1" />
                             <img src="/images/Play.png" alt="Play" class="symbol-control2" />
+
                             <div class="circulo-interno">
                                 <svg
                                     class="wave-svg"
@@ -817,44 +819,26 @@ transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover */
                                         d={wavePathReproductorUsuario(reproducer.danzability)}
                                         fill="none"
                                         stroke={reproducer.color}
-                                        stroke-width={strokeWidthReproductorUsuario()}
-                                        stroke-linecap="round"
-                                        vector-effect="non-scaling-stroke"
+                                        stroke-width="{strokeWidthReproductorUsuario()}"
                                     />
                                 </svg>
-                                {#if reproducer.symbol !== simboloSelector.Cruz && reproducer.symbol}
-                                     <img
-                                         src={reproducer.symbol}
-                                         alt="Símbolo del usuario"
-                                         class="symbol-inside-circle"
-                                     />
-                                 {/if}
                             </div>
-
-                            {#if reproducer.symbol === simboloSelector.Cruz}
-                                <img
-                                    src={reproducer.symbol}
-                                    alt="Cruz derecha"
-                                    class="symbol-reproductor-right"
-                                />
-                            {/if}
                         </div>
-                        <h4>{reproducer.songName}</h4>
-                        <p><strong>Artista:</strong> {reproducer.artistName}</p>
-                        <p><strong>Género:</strong> {reproducer.genre}</p>
-                        <p><strong>Danzabilidad:</strong> {reproducer.danzability}%</p>
+
+                        <h4>{reproducer.userName} - {reproducer.songName}</h4>
+                        <p>{reproducer.artistName}</p>
+                        <p>{reproducer.genre}</p>
+                        <p>Danzabilidad: {reproducer.danzability}%</p>
                         <p class="mood-display">
-                            <strong>Mood:</strong>
-                            {reproducer.mood} {getMoodEmoji(reproducer.mood)}
+                            Mood: {getMoodEmoji(reproducer.mood)} {reproducer.mood}
                         </p>
-                        <p><strong>Creado por:</strong> {reproducer.userName}</p>
                     </div>
                 {/each}
             </div>
-        {/if}
+            <button class="btn-clear-reproducers" on:click={clearReproducers}>
+                Borrar Todos los Reproductores
+            </button>
+            {/if}
     </div>
 
-    <button class="btn-clear-reproducers" on:click={clearReproducers}>
-        Borrar Todos los Reproductores
-    </button>
-</div>
+    </div>
