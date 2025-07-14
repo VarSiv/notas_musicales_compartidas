@@ -795,8 +795,13 @@
                 </ul>
             {/if}
             <div class="color-input-wrapper">
-                <label for="selectedColor">Color del Género:</label>
                 <input type="color" id="selectedColor" bind:value={selectedColor} />
+                <div class="form-group">
+                    <label for="selectedColor">Color del Género:</label>
+                    
+                        <span class="color-description">Puedes personalizar el color que te guste!</span>
+                
+                </div>
             </div>
         </div>
 
