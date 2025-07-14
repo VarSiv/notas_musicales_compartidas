@@ -2,7 +2,9 @@
     import { onMount } from 'svelte';
     import { writable, get } from 'svelte/store';
     import * as d3 from 'd3';
-    import { reproduccionesPorPersona } from "../stores.js";
+    // Asumo que reproduccionesPorPersona se actualiza en algún otro lugar
+    // cuando se "reproduce" una canción, o lo que sea que signifique "jugar" para ti.
+    import { reproduccionesPorPersona } from "../stores.js"; 
 
     let allSongsData = [];
     const colorGenero = d3.scaleOrdinal()
@@ -31,11 +33,12 @@
     let danzabilityInput = 0;
     let moodInput = "";
 
-    let assignedSymbol = "";
+    // Estas variables ahora se actualizarán justo antes de crear el reproductor
+    let assignedSymbol = ""; 
     let assignedSymbolText = "";
     let assignedSymbolDescription = "";
-    let isCalculatingSymbol = true;
-    let hasPlayed = false;
+    let isCalculatingSymbol = true; // Todavía útil para el mensaje inicial
+    let hasPlayed = false; // Se gestionará en assignSymbolBasedOnAfinity
 
     let songSuggestions = [];
     let artistSuggestions = [];
@@ -46,17 +49,24 @@
             allSongsData = await d3.csv("/cancionescompartidas.csv");
             const uniqueGenresFromCsv = [...new Set(allSongsData.map(d => d.Genero).filter(Boolean))];
             colorGenero.domain(Array.from(new Set([...colorGenero.domain(), ...uniqueGenresFromCsv])));
+            // Calculamos el símbolo inicial al cargar, si ya hay datos de afinidad
             await calcularSimboloConDelay();
         } catch (error) {
             console.error("Error al cargar cancionescompartidas.csv:", error);
             isCalculatingSymbol = false;
+            // Asegurarse de que si falla la carga, el símbolo sea la cruz
+            assignedSymbol = simboloSelector.Cruz;
+            assignedSymbolText = "Cruz";
+            assignedSymbolDescription = "Error al cargar datos. No jugaste todavía, por eso te identificás con una cruz.";
+            hasPlayed = false;
         }
     });
 
     async function calcularSimboloConDelay() {
         isCalculatingSymbol = true;
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        assignSymbolBasedOnAfinity();
+        // Agregamos un pequeño delay para que el mensaje "Calculando..." sea visible
+        await new Promise(resolve => setTimeout(resolve, 2000)); 
+        assignSymbolBasedOnAfinity(); // Calcula el símbolo basado en el estado actual
         isCalculatingSymbol = false;
     }
 
@@ -80,10 +90,10 @@
     function handleSongInput(event) {
         songName = event.target.value;
         songSuggestions = filterSuggestions(songName, 'song');
-        artistName = "";
-        selectedGenre = "";
-        danzabilityInput = 0;
-        moodInput = "";
+        artistName = ""; // Limpiar si la canción cambia
+        selectedGenre = ""; // Limpiar si la canción cambia
+        danzabilityInput = 0; // Limpiar
+        moodInput = ""; // Limpiar
     }
 
     function selectSong(suggestion) {
@@ -134,42 +144,36 @@
             afinidades.sort((a, b) => b.porcentaje - a.porcentaje);
             const top1 = afinidades[0];
             const top2 = afinidades[1];
-            const top3 = afinidades[3];
+            const top3 = afinidades[2];
 
-            if (top1.porcentaje === top2.porcentaje == top3.porcentaje) {
+            // Mejorar la lógica de empate
+            // Check for perfect tie among all three
+            if (top1.porcentaje === top2.porcentaje && top2.porcentaje === top3.porcentaje && top1.porcentaje > 0) {
                 assignedSymbol = simboloSelector.Igual;
-                assignedSymbolText = "Igual";
-                assignedSymbolDescription = `Empate entre ${top1.nombre} y ${top2.nombre} y ${top3.nombre}: ${top1.porcentaje.toFixed(2)}%`;
+                assignedSymbolText = "Empate Total";
+                assignedSymbolDescription = `¡Un empate perfecto entre Steffy, Rosita y Var con ${top1.porcentaje.toFixed(2)}% cada uno!`;
+                hasPlayed = true;
+            } 
+            // Check for a tie between top 1 and top 2 (and possibly top 3 if it's the same)
+            else if (top1.porcentaje === top2.porcentaje && top1.porcentaje > 0) {
+                const tiedNames = afinidades.filter(a => a.porcentaje === top1.porcentaje).map(a => a.nombre).join(' y ');
+                assignedSymbol = simboloSelector.Igual;
+                assignedSymbolText = "Empate";
+                assignedSymbolDescription = `¡Empate entre ${tiedNames} con ${top1.porcentaje.toFixed(2)}% de afinidad!`;
                 hasPlayed = true;
             }
-            else if(top1.porcentaje == top2.porcentaje){
-                assignedSymbol = simboloSelector.Igual;
-                assignedSymbolText = "Igual";
-                assignedSymbolDescription = `Empate entre ${top1.nombre} y ${top2.nombre} ${top1.porcentaje.toFixed(2)}%`;
-                hasPlayed = true;
-
-            }else if(top1.porcentaje == top3.porcentaje){
-                assignedSymbol = simboloSelector.Igual;
-                assignedSymbolText = "Igual";
-                assignedSymbolDescription = `Empate entre ${top1.nombre} y ${top3.nombre} ${top1.porcentaje.toFixed(2)}%`;
-                hasPlayed = true;
-            }
-            else if(top2.porcentaje == top3.porcentaje){
-                assignedSymbol = simboloSelector.Igual;
-                assignedSymbolText = "Igual";
-                assignedSymbolDescription = `Empate entre ${top2.nombre} y ${top3.nombre} ${top2.porcentaje.toFixed(2)}%`;
-                hasPlayed = true;
-            }else {
-                assignedSymbol = top1.simbolo; // este es el que tiene mejor porcentaje
+            // If no ties, assign the top affinity
+            else {
+                assignedSymbol = top1.simbolo; 
                 assignedSymbolText = top1.nombre;
                 assignedSymbolDescription = `Tu afinidad es con ${top1.nombre}: ${top1.porcentaje.toFixed(2)}%`;
                 hasPlayed = true;
             }
-        // Si no jugaste, que me de la cruz directamente.
         } else {
+            // Si no hay reproducciones o total es 0
             assignedSymbol = simboloSelector.Cruz;
             assignedSymbolText = "Cruz";
-            assignedSymbolDescription = "No jugaste todavía. ¡Jugá para conocer tu símbolo!";
+            assignedSymbolDescription = "No jugaste todavía, por eso te identificás con una cruz.\n¡Jugá para conocer tu símbolo!";
             hasPlayed = false;
         }
     }
@@ -182,6 +186,35 @@
 
         const finalDanzability = Math.max(0, Math.min(100, parseInt(danzabilityInput) || 0));
 
+        // ***** AQUÍ ES DONDE NECESITAMOS ACTUALIZAR reproduccionesPorPersona *****
+        // Esto es un ejemplo, DEBES TENER TU PROPIA LÓGICA DE CÓMO LA CANCIÓN
+        // AFECTA LAS AFINIDADES DE STEFFY, ROSITA Y VAR.
+        // Por ejemplo, podrías tener una función que calcule la afinidad de la canción
+        // con cada persona y luego actualizar el store.
+        reproduccionesPorPersona.update(current => {
+            // Lógica para determinar a quién beneficia esta canción.
+            // Esto es solo un placeholder, necesitas implementar tu lógica real.
+            // Por ejemplo:
+            let personaAfectada = "";
+            if (selectedGenre === "Pop" || selectedGenre === "Electrónica") {
+                personaAfectada = "Rosita";
+            } else if (selectedGenre === "Rock" || selectedGenre === "Metal") {
+                personaAfectada = "Steffy";
+            } else {
+                personaAfectada = "Var";
+            }
+
+            // Incrementa el contador de la persona afectada
+            return {
+                ...current,
+                [personaAfectada]: current[personaAfectada] + 1
+            };
+        });
+
+        // Ahora que reproduccionesPorPersona ha sido actualizado,
+        // recalculamos el símbolo *antes* de crear el reproductor.
+        assignSymbolBasedOnAfinity(); 
+
         const newReproducer = {
             id: Date.now(),
             userName,
@@ -191,28 +224,38 @@
             color: selectedColor,
             danzability: finalDanzability,
             mood: moodInput,
-            symbol: assignedSymbol,
+            symbol: assignedSymbol, // Ahora assignedSymbol tendrá el valor correcto
             symbolText: assignedSymbolText
         };
 
         userReproducers.update(current => [...current, newReproducer]);
 
+        // Resetear el formulario
         userName = "";
         songName = "";
         artistName = "";
         selectedGenre = "";
-        selectedColor = colorGenero("Pop");
+        selectedColor = colorGenero("Pop"); // Volver a un color por defecto
         danzabilityInput = 0;
         moodInput = "";
-        assignedSymbol = "";
-        assignedSymbolText = "";
-        assignedSymbolDescription = "";
-        isCalculatingSymbol = true;
+        
+        // No necesitamos resetear assignedSymbol aquí,
+        // ya que el `onMount` y la próxima vez que se llame `assignSymbolBasedOnAfinity`
+        // lo calcularán de nuevo. 
+        // Si quieres que el formulario muestre "Calculando..." después de crear uno, puedes hacerlo.
+        // assignedSymbol = ""; 
+        // assignedSymbolText = "";
+        // assignedSymbolDescription = "";
+        // isCalculatingSymbol = true; // Esto activaría el "Calculando..." de nuevo.
     }
 
     function clearReproducers() {
         if (confirm("¿Borrar todos los reproductores?")) {
             userReproducers.set([]);
+            // También deberías resetear reproduccionesPorPersona si borras todo
+            reproduccionesPorPersona.set({ Steffy: 0, Rosita: 0, Var: 0 });
+            // Y recalcular el símbolo para que muestre la cruz de nuevo
+            assignSymbolBasedOnAfinity(); 
         }
     }
 
@@ -272,7 +315,6 @@
             case 'powerful': return '⚡';
             case 'seductor': return '😏';
             case 'cool': return '😎';
-            case 'sarcástico': return ' sarcastic';
             case 'historia': return '📜';
             case 'disco': return '🪩';
             case 'metal': return '🤘';
@@ -397,10 +439,12 @@
     .symbol-display-container {
         display: flex;
         align-items: center;
-        justify-content: flex-start; /* Alineado a la izquierda */
         font-size: 1.2em;
         margin-top: 10px;
         color: #003058;
+        margin-left:-160px;
+        margin-right: -50px;
+        text-align: left;
         flex-wrap: wrap;
     }
 
@@ -412,6 +456,8 @@
         filter: brightness(0); 
         margin-right: 10px; 
         vertical-align: middle;
+        text-align: left;
+        margin-left: 45px;
         flex-shrink: 0; 
     }
 
@@ -615,7 +661,9 @@
         font-size: 1.1em; /* Más grande */
         font-weight: bold; /* Negrita */
         color: #003058; /* Color oscuro */
-        margin-bottom: 5px; /* Espacio debajo */
+        margin-bottom: 3px; /* Espacio debajo */
+        margin-top: -2px;
+        padding-top: 1px;
     }
     .reproductor-item .user-name-display {
         font-size: 0.95em; /* Ligeramente más pequeño que la canción */
@@ -765,12 +813,13 @@
         </div>
 
         <div class="form-group">
-            {#if isCalculatingSymbol && !assignedSymbol} <p>Tu Símbolo asignado: <span>Calculando...</span></p>
-            {:else if assignedSymbol} <div class="symbol-display-container">
+            {#if isCalculatingSymbol && !hasPlayed} <p>Tu Símbolo asignado: <span>Calculando...</span></p>
+            {:else if assignedSymbol}
+                <div class="symbol-display-container">
                     <p>Tu símbolo asignado: <span class="bold-symbol-text">{assignedSymbolText}</span></p>
                     <img src={assignedSymbol} alt="Símbolo asignado" class="assigned-symbol-preview" />
                 </div>
-                <p class="description-symbol">{assignedSymbolDescription}</p>
+                <p style="white-space: pre-line;">{assignedSymbolDescription}</p>
             {:else}
                 <p>Tu símbolo asignado:</p>
                 <p class="description-symbol">Aún no se ha calculado tu afinidad. ¡Juega para descubrirla!</p>
@@ -795,17 +844,17 @@
                         <div
                             class="circulo-reproductor"
                             style="background-color: {reproducer.color};
-                                   width: {obtenerDiametroReproductorUsuario()}px;
-                                   height: {obtenerDiametroReproductorUsuario()}px;"
+                                    width: {obtenerDiametroReproductorUsuario()}px;
+                                    height: {obtenerDiametroReproductorUsuario()}px;"
                         >
                             <img
                                 src={reproducer.symbol}
-                                alt="{reproducer.symbolText} izquierda"
+                                alt="{reproducer.symbolText}"
                                 class="symbol-reproductor-side symbol-reproductor-left"
                             />
                             <img
                                 src={reproducer.symbol}
-                                alt="{reproducer.symbolText} derecha"
+                                alt="{reproducer.symbolText}"
                                 class="symbol-reproductor-side symbol-reproductor-right"
                             />
 
