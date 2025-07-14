@@ -2,20 +2,13 @@
     import { onMount } from 'svelte';
     import { writable, get } from 'svelte/store';
     import * as d3 from 'd3';
+    import { reproduccionesPorPersona } from "../stores.js";
 
-    // Importamos el store de afinidad de tu App.svelte
-    // Asegúrate de que esta ruta sea correcta para tu proyecto
-    import { reproduccionesPorPersona } from "../stores.js"; // O la ruta correcta a tu stores.js
-
-    // --- Datos para el autocompletado y colores ---
     let allSongsData = [];
-
-    // Definición de colores de género (copiado de tu App.svelte)
     const colorGenero = d3.scaleOrdinal()
         .domain(["Pop", "Rock", "Indie", "Electrónica", "Reggaetón", "Rap", "Balada", "Regional", "Trap", "Funk", "Cumbia Pop", "Rock Latino", "Metal"])
         .range(["#00CC66", "#CC0000", "#CC0066", "#001BCC", "#CCB400", "#000000", "#800080", "#FFA500", "#DAA520", "#FF1493", "#32CD32", "#6A5ACD", "#8B0000"]);
 
-    // Símbolos para el selector - ¡Nombres actualizados para coincidir con tus imágenes!
     const simboloSelector = {
         Var: "/images/Var.png",
         Rosita: "/images/Rosita.png",
@@ -24,14 +17,12 @@
         Igual: "/images/Igual.png"
     };
 
-    // --- Stores para los reproductores creados ---
     export const userReproducers = writable(JSON.parse(localStorage.getItem('userReproducers') || '[]'));
 
     userReproducers.subscribe(value => {
         localStorage.setItem('userReproducers', JSON.stringify(value));
     });
 
-    // --- Variables del formulario ---
     let userName = "";
     let songName = "";
     let artistName = "";
@@ -40,54 +31,48 @@
     let danzabilityInput = 0;
     let moodInput = "";
 
-    // --- Variables para la asignación de símbolo ---
     let assignedSymbol = "";
     let assignedSymbolText = "";
-    let assignedSymbolDescription = ""; // Nueva variable para la descripción
+    let assignedSymbolDescription = "";
     let isCalculatingSymbol = true;
+    let hasPlayed = false;
 
-    // Sugerencias para autocompletado
     let songSuggestions = [];
     let artistSuggestions = [];
     let genreSuggestions = [];
 
-    // --- Lógica de carga de datos al iniciar el componente ---
     onMount(async () => {
         try {
             allSongsData = await d3.csv("/cancionescompartidas.csv");
-            console.log("Canciones compartidas cargadas:", allSongsData);
-
             const uniqueGenresFromCsv = [...new Set(allSongsData.map(d => d.Genero).filter(Boolean))];
             colorGenero.domain(Array.from(new Set([...colorGenero.domain(), ...uniqueGenresFromCsv])));
-
-            await new Promise(resolve => setTimeout(resolve, 500));
-            assignSymbolBasedOnAfinity();
-            isCalculatingSymbol = false;
-
+            await calcularSimboloConDelay();
         } catch (error) {
             console.error("Error al cargar cancionescompartidas.csv:", error);
             isCalculatingSymbol = false;
         }
     });
 
-    // --- Funciones de autocompletado ---
+    async function calcularSimboloConDelay() {
+        isCalculatingSymbol = true;
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        assignSymbolBasedOnAfinity();
+        isCalculatingSymbol = false;
+    }
+
     function filterSuggestions(query, type) {
         if (!query) return [];
         const lowerQuery = query.toLowerCase();
 
         if (type === 'song') {
-            return allSongsData
-                .filter(d => d.Cancion && d.Cancion.toLowerCase().includes(lowerQuery))
-                .map(d => d.Cancion)
-                .slice(0, 5);
+            return allSongsData.filter(d => d.Cancion && d.Cancion.toLowerCase().includes(lowerQuery))
+                .map(d => d.Cancion).slice(0, 5);
         } else if (type === 'artist') {
             return [...new Set(allSongsData.filter(d => d.Artista && d.Artista.toLowerCase().includes(lowerQuery))
-                .map(d => d.Artista))]
-                .slice(0, 5);
+                .map(d => d.Artista))].slice(0, 5);
         } else if (type === 'genre') {
             return [...new Set(allSongsData.map(d => d.Genero))]
-                .filter(g => g && g.toLowerCase().includes(lowerQuery))
-                .slice(0, 5);
+                .filter(g => g && g.toLowerCase().includes(lowerQuery)).slice(0, 5);
         }
         return [];
     }
@@ -136,7 +121,6 @@
         genreSuggestions = [];
     }
 
-    // --- Lógica de asignación de símbolo basada en afinidad ---
     function assignSymbolBasedOnAfinity() {
         const currentReproducciones = get(reproduccionesPorPersona);
         const total = currentReproducciones.Steffy + currentReproducciones.Rosita + currentReproducciones.Var;
@@ -148,37 +132,51 @@
                 { nombre: "Var", porcentaje: (currentReproducciones.Var / total) * 100, simbolo: simboloSelector.Var }
             ];
             afinidades.sort((a, b) => b.porcentaje - a.porcentaje);
-
             const top1 = afinidades[0];
             const top2 = afinidades[1];
+            const top3 = afinidades[3];
 
-            if (top1.porcentaje === top2.porcentaje) {
+            if (top1.porcentaje === top2.porcentaje == top3.porcentaje) {
                 assignedSymbol = simboloSelector.Igual;
                 assignedSymbolText = "Igual";
-                assignedSymbolDescription = `Tu porcentaje de afinidad con ${top1.nombre} y ${top2.nombre} fue del ${top1.porcentaje.toFixed(2)}% cada uno. ¡Hay un empate!`;
-            } else {
-                assignedSymbol = top1.simbolo;
-                assignedSymbolText = top1.nombre;
-                assignedSymbolDescription = `Tu afinidad principal es con ${top1.nombre} (${top1.porcentaje.toFixed(2)}%).`;
+                assignedSymbolDescription = `Empate entre ${top1.nombre} y ${top2.nombre} y ${top3.nombre}: ${top1.porcentaje.toFixed(2)}%`;
+                hasPlayed = true;
             }
+            else if(top1.porcentaje == top2.porcentaje){
+                assignedSymbol = simboloSelector.Igual;
+                assignedSymbolText = "Igual";
+                assignedSymbolDescription = `Empate entre ${top1.nombre} y ${top2.nombre} ${top1.porcentaje.toFixed(2)}%`;
+                hasPlayed = true;
+
+            }else if(top1.porcentaje == top3.porcentaje){
+                assignedSymbol = simboloSelector.Igual;
+                assignedSymbolText = "Igual";
+                assignedSymbolDescription = `Empate entre ${top1.nombre} y ${top3.nombre} ${top1.porcentaje.toFixed(2)}%`;
+                hasPlayed = true;
+            }
+            else if(top2.porcentaje == top3.porcentaje){
+                assignedSymbol = simboloSelector.Igual;
+                assignedSymbolText = "Igual";
+                assignedSymbolDescription = `Empate entre ${top2.nombre} y ${top3.nombre} ${top2.porcentaje.toFixed(2)}%`;
+                hasPlayed = true;
+            }else {
+                assignedSymbol = top1.simbolo; // este es el que tiene mejor porcentaje
+                assignedSymbolText = top1.nombre;
+                assignedSymbolDescription = `Tu afinidad es con ${top1.nombre}: ${top1.porcentaje.toFixed(2)}%`;
+                hasPlayed = true;
+            }
+        // Si no jugaste, que me de la cruz directamente.
         } else {
             assignedSymbol = simboloSelector.Cruz;
             assignedSymbolText = "Cruz";
-            assignedSymbolDescription = "Aún no has jugado o no hay reproducciones registradas. ¡Juega para descubrir tu afinidad!";
+            assignedSymbolDescription = "No jugaste todavía. ¡Jugá para conocer tu símbolo!";
+            hasPlayed = false;
         }
-        console.log("Símbolo asignado:", assignedSymbolText, assignedSymbol);
     }
 
-    // Reactividad: la función se ejecuta cada vez que 'reproduccionesPorPersona' cambia
-    $: {
-        assignSymbolBasedOnAfinity();
-    }
-
-
-    // --- Función para crear un nuevo reproductor ---
     function createReproducer() {
         if (!userName || !songName || !artistName || !selectedGenre || danzabilityInput === null || moodInput === "") {
-            alert("Por favor, completa todos los campos: Nombre/Apodo, Canción, Artista, Género, Danzabilidad y Mood.");
+            alert("Por favor, completá todos los campos.");
             return;
         }
 
@@ -197,9 +195,8 @@
             symbolText: assignedSymbolText
         };
 
-        userReproducers.update(currentReproducers => [...currentReproducers, newReproducer]);
+        userReproducers.update(current => [...current, newReproducer]);
 
-        // Limpiar formulario y "vaciar" el símbolo asignado
         userName = "";
         songName = "";
         artistName = "";
@@ -207,54 +204,42 @@
         selectedColor = colorGenero("Pop");
         danzabilityInput = 0;
         moodInput = "";
-        assignedSymbol = ""; // Vaciar la imagen del símbolo
-        assignedSymbolText = ""; // Vaciar el texto del símbolo
-        assignedSymbolDescription = ""; // Vaciar la descripción
-        isCalculatingSymbol = true; // Preparar para el próximo cálculo
+        assignedSymbol = "";
+        assignedSymbolText = "";
+        assignedSymbolDescription = "";
+        isCalculatingSymbol = true;
     }
 
-    // --- Función para borrar todos los reproductores guardados ---
     function clearReproducers() {
-        if (confirm("¿Estás seguro de que quieres borrar TODOS los reproductores creados? Esta acción es irreversible.")) {
+        if (confirm("¿Borrar todos los reproductores?")) {
             userReproducers.set([]);
-            console.log("Reproductores borrados de localStorage.");
         }
     }
 
-    // --- Lógica para el círculo del reproductor (igual que en App.svelte) ---
     function obtenerDiametroReproductorUsuario() {
-        return 120; // Diámetro fijo para los reproductores creados por el usuario
+        return 120;
     }
 
     function wavePathReproductorUsuario(danzability) {
         const danceability = parseFloat(danzability || 50);
-        const maxAmplitude = 6;
-        const baseAmplitude = 1;
-        const amplitude =
-            baseAmplitude + (maxAmplitude - baseAmplitude) * (danceability / 100);
-
-        const minFrequency = 0.0;
-        const maxFrequency = 0.65;
-        const frequency =
-            minFrequency + (maxFrequency - minFrequency) * (danceability / 100);
-
+        const amplitude = 1 + 5 * (danceability / 100);
+        const frequency = 0 + 0.65 * (danceability / 100);
         const width = 100;
         const baseY = width * 0.16;
 
         let d = `M 0 ${baseY}`;
-        for (let x = 0; x < width; x += 1) {
-            const waveY = Math.sin(x * frequency)
-            const y = baseY + waveY * amplitude
-            d += ` L ${x} ${y}`
+        for (let x = 0; x < width; x++) {
+            const waveY = Math.sin(x * frequency);
+            const y = baseY + waveY * amplitude;
+            d += ` L ${x} ${y}`;
         }
-        return d
+        return d;
     }
 
     function strokeWidthReproductorUsuario() {
         return 2;
     }
 
-    // Simple función para obtener un emoji de mood, si se desea una visualización extra
     function getMoodEmoji(mood) {
         switch (mood.toLowerCase()) {
             case 'flow': return '🌊';
@@ -408,29 +393,31 @@
         border: none;
     }
 
-    .current-symbol {
+    /* Contenedor para el símbolo literal y el texto en el formulario */
+    .symbol-display-container {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start; /* Alineado a la izquierda */
         font-size: 1.2em;
         margin-top: 10px;
         color: #003058;
-    }
-
-    .current-symbol span.bold-symbol-text {
-        font-weight: bold; /* Hace el texto en negrita */
-        margin-right: 5px; /* Pequeño espacio entre el texto y la imagen */
+        flex-wrap: wrap;
     }
 
 
-    .current-symbol img {
-        width: 30px;
-        height: 30px;
-        margin-left: 10px;
+    .assigned-symbol-preview {
+        width: 40px; 
+        height: 40px;
+        object-fit: contain;
+        filter: brightness(0); 
+        margin-right: 10px; 
         vertical-align: middle;
-        object-fit: contain; /* Para que el símbolo se vea bien */
-        /* SÍMBOLO ASIGNADO EN EL FORMULARIO SIEMPRE EN NEGRO */
-        filter: brightness(0);
+        flex-shrink: 0; 
+    }
+
+    .symbol-display-container span.bold-symbol-text {
+        font-weight: bold;
+        margin-right: 5px;
     }
 
     .description-symbol {
@@ -438,6 +425,8 @@
         color: #777;
         margin-top: 5px;
         line-height: 1.4;
+        grid-column: 1 / -1; 
+        text-align: left; /* Alineado con el resto del formulario */
     }
 
     .btn-crear-reproductor {
@@ -461,24 +450,29 @@
         box-shadow: 0 6px 12px rgba(0, 204, 102, 0.5);
     }
 
-    /* Estilos para el botón de borrar reproductores */
     .btn-clear-reproducers {
-        background-color: #ff4d4d;
-        color: white;
+        background-color: transparent;
+        color: #cc0000;
         padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
+        border: 2px solid #cc0000;
+        border-radius: 8px;
         cursor: pointer;
-        margin-top: 30px; /* Espacio debajo del formulario o lista */
-        font-size: 0.9em;
-        transition: background-color 0.3s ease;
-        display: block; /* Para que ocupe su propia línea */
+        margin-top: 30px;
+        font-size: 0.95em;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        display: block;
         margin-left: auto;
         margin-right: auto;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 5px rgba(204, 0, 0, 0.2);
     }
 
     .btn-clear-reproducers:hover {
         background-color: #cc0000;
+        color: white;
+        box-shadow: 0 4px 10px rgba(204, 0, 0, 0.4);
+        transform: translateY(-1px);
     }
 
 
@@ -523,9 +517,9 @@
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
-        min-height: 250px; /* Para mantener un tamaño uniforme */
-        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for smooth effect */
-        border: 2px solid #85d7ff; /* celeste suave */
+        min-height: 250px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid #85d7ff;
         border-radius: 15px;
         box-shadow: 0 4px 15px rgba(223, 61, 158, 0.08);
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -541,7 +535,7 @@
             0 0 40px currentColor,
             0 0 60px currentColor,
             inset 0 0 10px rgba(255, 255, 255, 0.2);
-        transform: scale(0.97); /* efecto de presión */
+        transform: scale(0.97);
     }
     .reproductor-item .circulo-reproductor {
         width: 120px;
@@ -589,39 +583,47 @@
         transition: stroke 0.3s ease;
     }
 
-    /* ESTILOS PARA TODOS LOS SÍMBOLOS EN LOS LATERALES DEL CÍRCULO PRINCIPAL */
     .reproductor-item .symbol-reproductor-side {
         position: absolute;
-        width: 25px; /* Símbolos más pequeños */
+        width: 25px;
         height: 25px;
-        object-fit: contain;
-        z-index: 1; /* Por debajo del círculo interno */
+        object-fit: contain; /* MUY IMPORTANTE para evitar deformaciones */
+        z-index: 1;
         top: 50%;
         transform: translateY(-50%);
         filter: brightness(0) invert(1); /* Símbolos en reproductores SIEMPRE BLANCOS */
     }
 
     .reproductor-item .symbol-reproductor-left {
-        left: 5px; /* Distancia desde el borde izquierdo del círculo de color */
+        left: 5px;
     }
 
     .reproductor-item .symbol-reproductor-right {
-        right: 5px; /* Distancia desde el borde derecho del círculo de color */
+        right: 5px;
     }
 
-    /* ELIMINAMOS .symbol-inside-circle YA QUE TODOS LOS SÍMBOLOS VAN LATERALES */
-
-    .reproductor-item h4 {
-        color: #003058;
-        margin-bottom: 5px;
-        font-size: 1.2em;
-    }
-
+    
+    
     .reproductor-item p {
         font-size: 0.9em;
         color: #666;
         margin-bottom: 3px;
     }
+
+    /* Nuevos estilos para el nombre de canción y usuario */
+    .reproductor-item .song-name-display {
+        font-size: 1.1em; /* Más grande */
+        font-weight: bold; /* Negrita */
+        color: #003058; /* Color oscuro */
+        margin-bottom: 5px; /* Espacio debajo */
+    }
+    .reproductor-item .user-name-display {
+        font-size: 0.95em; /* Ligeramente más pequeño que la canción */
+        color: #444; /* Color menos prominente */
+        margin-top: 5px; /* Espacio arriba */
+        margin-bottom: 10px;
+    }
+
 
     .reproductor-item .mood-display {
         display: flex;
@@ -649,7 +651,7 @@
         transform: translate(-80%, 40%);
         width: 20px;
         height: 20px;
-        filter: brightness(0) invert(1); /* Para que sea blanco y contraste con el color del reproductor */
+        filter: brightness(0) invert(1);
     }
 
 
@@ -660,7 +662,7 @@
         transform: translate(-50%, 40%);
         width: 20px;
         height: 20px;
-        filter: brightness(0) invert(1); /* Para que sea blanco y contraste con el color del reproductor */
+        filter: brightness(0) invert(1);
     }
 
 </style>
@@ -763,15 +765,16 @@
         </div>
 
         <div class="form-group">
-            <p>Tu Símbolo asignado:
-                {#if isCalculatingSymbol && assignedSymbolText === ""} <span>Calculando...</span>
-                {:else if assignedSymbolText !== ""}
-                    <span class="bold-symbol-text">{assignedSymbolText}</span>
-                    <img src={assignedSymbol} alt="Símbolo asignado" /> {:else}
-                    <span></span>
-                {/if}
-            </p>
-            <p class="description-symbol">{assignedSymbolDescription}</p>
+            {#if isCalculatingSymbol && !assignedSymbol} <p>Tu Símbolo asignado: <span>Calculando...</span></p>
+            {:else if assignedSymbol} <div class="symbol-display-container">
+                    <p>Tu símbolo asignado: <span class="bold-symbol-text">{assignedSymbolText}</span></p>
+                    <img src={assignedSymbol} alt="Símbolo asignado" class="assigned-symbol-preview" />
+                </div>
+                <p class="description-symbol">{assignedSymbolDescription}</p>
+            {:else}
+                <p>Tu símbolo asignado:</p>
+                <p class="description-symbol">Aún no se ha calculado tu afinidad. ¡Juega para descubrirla!</p>
+            {/if}
         </div>
 
         <button class="btn-crear-reproductor" on:click={createReproducer}>
@@ -787,6 +790,8 @@
             <div class="lista-reproductores">
                 {#each $userReproducers as reproducer (reproducer.id)}
                     <div class="reproductor-item">
+                        <p class="song-name-display">{reproducer.songName}</p>
+
                         <div
                             class="circulo-reproductor"
                             style="background-color: {reproducer.color};
@@ -825,7 +830,8 @@
                             </div>
                         </div>
 
-                        <h4>{reproducer.userName} - {reproducer.songName}</h4>
+                        <p class="user-name-display">{reproducer.userName}</p>
+
                         <p>{reproducer.artistName}</p>
                         <p>{reproducer.genre}</p>
                         <p>Danzabilidad: {reproducer.danzability}%</p>
@@ -838,7 +844,6 @@
             <button class="btn-clear-reproducers" on:click={clearReproducers}>
                 Borrar Todos los Reproductores
             </button>
-            {/if}
+        {/if}
     </div>
-
-    </div>
+</div>
