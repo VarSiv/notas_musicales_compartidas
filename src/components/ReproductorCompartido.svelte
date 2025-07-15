@@ -132,6 +132,7 @@
         genreSuggestions = [];
     }
 
+    // Lógica para obtener los símbolos de acuerdo a nuestras afinidades
     function calcularSimbolo() {
 		const current = get(reproduccionesPorPersona);
 		const total = current.Steffy + current.Rosita + current.Var;
@@ -150,7 +151,7 @@
 		if (a.porcentaje === b.porcentaje && b.porcentaje === c.porcentaje) {
 			asignarIgual("Empate perfecto entre los tres.");
 		} else if (a.porcentaje === b.porcentaje) {
-			asignarIgual(`Empate entre ${a.nombre} y ${b.nombre}.`);
+			asignarIgual(`Empate entre ${a.nombre} y ${b.nombre}`);
 		} else {
 			assignedSymbol = a.simbolo;
 			assignedSymbolText = a.nombre;
@@ -170,7 +171,7 @@
 		assignedSymbolDescription = texto;
 	}
 
-
+    
     function createReproducer() {
         if (!userName || !songName || !artistName || !selectedGenre || danzabilityInput === null || moodInput === "") {
             alert("Por favor, completá todos los campos.");
@@ -178,11 +179,8 @@
         }
 
         const finalDanzability = Math.max(0, Math.min(100, parseInt(danzabilityInput) || 0));
-
-
-
 		calcularSimbolo();
-
+        // La persona puede armar el reproductor personalizado:
 		const nuevo = {
 			id: Date.now(),
 			userName,
@@ -206,14 +204,6 @@
         danzabilityInput = 0;
         moodInput = "";
         
-        // No necesitamos resetear assignedSymbol aquí,
-        // ya que el `onMount` y la próxima vez que se llame `assignSymbolBasedOnAfinity`
-        // lo calcularán de nuevo. 
-        // Si quieres que el formulario muestre "Calculando..." después de crear uno, puedes hacerlo.
-        // assignedSymbol = ""; 
-        // assignedSymbolText = "";
-        // assignedSymbolDescription = "";
-        // isCalculatingSymbol = true; // Esto activaría el "Calculando..." de nuevo.
     }
 
     function clearReproducers() {
@@ -381,11 +371,11 @@
         gap: 10px;
         margin-top: 15px; /* Más espacio para separar del input de Género */
         padding-top: 10px; /* Padding para que el separador sea visible */
-        border-top: 1px dashed #eee; /* Separador sutil */
+        border-top: 1px dashed #eee; 
     }
 
     .color-input-wrapper label {
-        margin-bottom: 0; /* Ajuste para la etiqueta dentro del flexbox */
+        margin-bottom: 0; 
     }
 
     .color-input-wrapper input[type="color"] {
@@ -395,8 +385,8 @@
         border: none;
         cursor: pointer;
         border-radius: 5px;
-        overflow: hidden; /* Oculta los bordes por defecto del color picker */
-        margin-left: 10px; /* Empuja el color picker a la derecha */
+        overflow: hidden; 
+        margin-left: 10px; 
     }
     /* Estilos específicos para el color picker en navegadores WebKit (Chrome, Edge, Safari) */
     .color-input-wrapper input[type="color"]::-webkit-color-swatch-wrapper {
@@ -419,8 +409,6 @@
         text-align: left;
         flex-wrap: wrap;
     }
-
-
     .assigned-symbol-preview {
         width: 40px; 
         height: 40px;
@@ -492,7 +480,6 @@
         box-shadow: 0 4px 10px rgba(204, 0, 0, 0.4);
         transform: translateY(-1px);
     }
-
 
     /* Estilos para la visualización de los reproductores guardados */
     .reproductores-guardados {
@@ -605,11 +592,11 @@
         position: absolute;
         width: 25px;
         height: 25px;
-        object-fit: contain; /* MUY IMPORTANTE para evitar deformaciones */
+        object-fit: contain; 
         z-index: 1;
         top: 50%;
         transform: translateY(-50%);
-        filter: brightness(0) invert(1); /* Símbolos en reproductores SIEMPRE BLANCOS */
+        filter: brightness(0) invert(1); 
     }
 
     .reproductor-item .symbol-reproductor-left {
@@ -619,9 +606,7 @@
     .reproductor-item .symbol-reproductor-right {
         right: 5px;
     }
-
-    
-    
+  
     .reproductor-item p {
         font-size: 0.9em;
         color: #666;
@@ -630,16 +615,16 @@
 
     /* Nuevos estilos para el nombre de canción y usuario */
     .reproductor-item .song-name-display {
-        font-size: 1.1em; /* Más grande */
-        font-weight: bold; /* Negrita */
-        color: #003058; /* Color oscuro */
-        margin-bottom: 3px; /* Espacio debajo */
+        font-size: 1.1em; 
+        font-weight: bold; 
+        color: #003058; 
+        margin-bottom: 3px; 
         margin-top: -2px;
         padding-top: 1px;
     }
     .reproductor-item .user-name-display {
         font-size: 0.95em; /* Ligeramente más pequeño que la canción */
-        color: #444; /* Color menos prominente */
+        color: #444; 
         margin-top: 5px; /* Espacio arriba */
         margin-bottom: 10px;
     }
@@ -684,10 +669,6 @@
         height: 20px;
         filter: brightness(0) invert(1);
     }
-
-
-    
-
 </style>
 
 <div class="reproductor-compartido-container">
