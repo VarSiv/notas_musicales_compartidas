@@ -2,8 +2,8 @@
     import { onMount } from 'svelte';
     import { writable, get } from 'svelte/store';
     import * as d3 from 'd3';
-    // Asumo que reproduccionesPorPersona se actualiza en algún otro lugar
-    // cuando se "reproduce" una canción, o lo que sea que signifique "jugar" para ti.
+    
+    // cuando se "reproduce" una canción -> juego que canción le gusta más al usuario.
     import { reproduccionesPorPersona } from "../stores.js"; 
 
     let allSongsData = [];
@@ -33,12 +33,12 @@
     let danzabilityInput = 0;
     let moodInput = "";
 
-    // Estas variables ahora se actualizarán justo antes de crear el reproductor
+    // Variables que se actualizarán justo antes de crear el reproductor
     let assignedSymbol = ""; 
     let assignedSymbolText = "";
     let assignedSymbolDescription = "";
-    let isCalculatingSymbol = true; // Todavía útil para el mensaje inicial
-    let hasPlayed = false; // Se gestionará en assignSymbolBasedOnAfinity
+    let isCalculatingSymbol = true; 
+    let hasPlayed = false; // Se gestionará en base a assignSymbolBasedOnAfinity
 
     let songSuggestions = [];
     let artistSuggestions = [];
@@ -54,17 +54,17 @@
         } catch (error) {
             console.error("Error al cargar cancionescompartidas.csv:", error);
             isCalculatingSymbol = false;
-            // Asegurarse de que si falla la carga, el símbolo sea la cruz
+            // Asegurarse de que si falla la carga, el símbolo sea la cruz (o sea no jugó la persona)
             assignedSymbol = simboloSelector.Cruz;
             assignedSymbolText = "Cruz";
-            assignedSymbolDescription = "Error al cargar datos. No jugaste todavía, por eso te identificás con una cruz.";
+            assignedSymbolDescription = " No jugaste todavía, por eso te identificás con una cruz.";
             hasPlayed = false;
         }
     });
 
     async function calcularSimboloConDelay() {
         isCalculatingSymbol = true;
-        // Agregamos un pequeño delay para que el mensaje "Calculando..." sea visible
+        // Agregamos un pequeño delay para que el mensaje "Calculando..." del símbolo sea visible hasta que aparezca
         await new Promise(resolve => setTimeout(resolve, 2000)); 
         assignSymbolBasedOnAfinity(); // Calcula el símbolo basado en el estado actual
         isCalculatingSymbol = false;
@@ -92,10 +92,11 @@
         songSuggestions = filterSuggestions(songName, 'song');
         artistName = ""; // Limpiar si la canción cambia
         selectedGenre = ""; // Limpiar si la canción cambia
-        danzabilityInput = 0; // Limpiar
-        moodInput = ""; // Limpiar
+        danzabilityInput = 0; 
+        moodInput = "";
     }
 
+    // Idea Pre-listado:
     function selectSong(suggestion) {
         songName = suggestion;
         const foundSong = allSongsData.find(d => d.Cancion === suggestion);
@@ -131,52 +132,44 @@
         genreSuggestions = [];
     }
 
-    function assignSymbolBasedOnAfinity() {
-        const currentReproducciones = get(reproduccionesPorPersona);
-        const total = currentReproducciones.Steffy + currentReproducciones.Rosita + currentReproducciones.Var;
+    function calcularSimbolo() {
+		const current = get(reproduccionesPorPersona);
+		const total = current.Steffy + current.Rosita + current.Var;
 
-        if (total > 0) {
-            const afinidades = [
-                { nombre: "Steffy", porcentaje: (currentReproducciones.Steffy / total) * 100, simbolo: simboloSelector.Steffy },
-                { nombre: "Rosita", porcentaje: (currentReproducciones.Rosita / total) * 100, simbolo: simboloSelector.Rosita },
-                { nombre: "Var", porcentaje: (currentReproducciones.Var / total) * 100, simbolo: simboloSelector.Var }
-            ];
-            afinidades.sort((a, b) => b.porcentaje - a.porcentaje);
-            const top1 = afinidades[0];
-            const top2 = afinidades[1];
-            const top3 = afinidades[2];
+		if (total === 0) return asignarCruz();
 
-            // Mejorar la lógica de empate
-            // Check for perfect tie among all three
-            if (top1.porcentaje === top2.porcentaje && top2.porcentaje === top3.porcentaje && top1.porcentaje > 0) {
-                assignedSymbol = simboloSelector.Igual;
-                assignedSymbolText = "Empate Total";
-                assignedSymbolDescription = `¡Un empate perfecto entre Steffy, Rosita y Var con ${top1.porcentaje.toFixed(2)}% cada uno!`;
-                hasPlayed = true;
-            } 
-            // Check for a tie between top 1 and top 2 (and possibly top 3 if it's the same)
-            else if (top1.porcentaje === top2.porcentaje && top1.porcentaje > 0) {
-                const tiedNames = afinidades.filter(a => a.porcentaje === top1.porcentaje).map(a => a.nombre).join(' y ');
-                assignedSymbol = simboloSelector.Igual;
-                assignedSymbolText = "Empate";
-                assignedSymbolDescription = `¡Empate entre ${tiedNames} con ${top1.porcentaje.toFixed(2)}% de afinidad!`;
-                hasPlayed = true;
-            }
-            // If no ties, assign the top affinity
-            else {
-                assignedSymbol = top1.simbolo; 
-                assignedSymbolText = top1.nombre;
-                assignedSymbolDescription = `Tu afinidad es con ${top1.nombre}: ${top1.porcentaje.toFixed(2)}%`;
-                hasPlayed = true;
-            }
-        } else {
-            // Si no hay reproducciones o total es 0
-            assignedSymbol = simboloSelector.Cruz;
-            assignedSymbolText = "Cruz";
-            assignedSymbolDescription = "No jugaste todavía, por eso te identificás con una cruz.\n¡Jugá para conocer tu símbolo!";
-            hasPlayed = false;
-        }
-    }
+		const afinidades = [
+			{ nombre: "Steffy", porcentaje: current.Steffy / total, simbolo: simboloSelector.Steffy },
+			{ nombre: "Rosita", porcentaje: current.Rosita / total, simbolo: simboloSelector.Rosita },
+			{ nombre: "Var", porcentaje: current.Var / total, simbolo: simboloSelector.Var }
+		];
+
+		afinidades.sort((a, b) => b.porcentaje - a.porcentaje);
+		const [a, b, c] = afinidades;
+
+		if (a.porcentaje === b.porcentaje && b.porcentaje === c.porcentaje) {
+			asignarIgual("Empate perfecto entre los tres.");
+		} else if (a.porcentaje === b.porcentaje) {
+			asignarIgual(`Empate entre ${a.nombre} y ${b.nombre}.`);
+		} else {
+			assignedSymbol = a.simbolo;
+			assignedSymbolText = a.nombre;
+			assignedSymbolDescription = `Tu afinidad es con ${a.nombre} con este ${a.porcentaje*100}`;
+		}
+	}
+
+	function asignarCruz() {
+		assignedSymbol = simboloSelector.Cruz;
+		assignedSymbolText = "Cruz";
+		assignedSymbolDescription = "No jugaste todavía. ¡Jugá para conocer tu símbolo!";
+	}
+
+	function asignarIgual(texto) {
+		assignedSymbol = simboloSelector.Igual;
+		assignedSymbolText = "Empate";
+		assignedSymbolDescription = texto;
+	}
+
 
     function createReproducer() {
         if (!userName || !songName || !artistName || !selectedGenre || danzabilityInput === null || moodInput === "") {
@@ -186,50 +179,24 @@
 
         const finalDanzability = Math.max(0, Math.min(100, parseInt(danzabilityInput) || 0));
 
-        // ***** AQUÍ ES DONDE NECESITAMOS ACTUALIZAR reproduccionesPorPersona *****
-        // Esto es un ejemplo, DEBES TENER TU PROPIA LÓGICA DE CÓMO LA CANCIÓN
-        // AFECTA LAS AFINIDADES DE STEFFY, ROSITA Y VAR.
-        // Por ejemplo, podrías tener una función que calcule la afinidad de la canción
-        // con cada persona y luego actualizar el store.
-        reproduccionesPorPersona.update(current => {
-            // Lógica para determinar a quién beneficia esta canción.
-            // Esto es solo un placeholder, necesitas implementar tu lógica real.
-            // Por ejemplo:
-            let personaAfectada = "";
-            if (selectedGenre === "Pop" || selectedGenre === "Electrónica") {
-                personaAfectada = "Rosita";
-            } else if (selectedGenre === "Rock" || selectedGenre === "Metal") {
-                personaAfectada = "Steffy";
-            } else {
-                personaAfectada = "Var";
-            }
 
-            // Incrementa el contador de la persona afectada
-            return {
-                ...current,
-                [personaAfectada]: current[personaAfectada] + 1
-            };
-        });
 
-        // Ahora que reproduccionesPorPersona ha sido actualizado,
-        // recalculamos el símbolo *antes* de crear el reproductor.
-        assignSymbolBasedOnAfinity(); 
+		calcularSimbolo();
 
-        const newReproducer = {
-            id: Date.now(),
-            userName,
-            songName,
-            artistName,
-            genre: selectedGenre,
-            color: selectedColor,
-            danzability: finalDanzability,
-            mood: moodInput,
-            symbol: assignedSymbol, // Ahora assignedSymbol tendrá el valor correcto
-            symbolText: assignedSymbolText
-        };
+		const nuevo = {
+			id: Date.now(),
+			userName,
+			songName,
+			artistName,
+			genre: selectedGenre,
+			color: selectedColor,
+			danzability: finalDanzability,
+			mood: moodInput,
+			symbol: assignedSymbol,
+			symbolText: assignedSymbolText
+		};
 
-        userReproducers.update(current => [...current, newReproducer]);
-
+		userReproducers.update(actual => [...actual, nuevo]);
         // Resetear el formulario
         userName = "";
         songName = "";
