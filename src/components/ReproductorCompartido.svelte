@@ -155,7 +155,7 @@
 		} else {
 			assignedSymbol = a.simbolo;
 			assignedSymbolText = a.nombre;
-			assignedSymbolDescription = `Tu afinidad es con ${a.nombre} con este ${a.porcentaje*100}`;
+			assignedSymbolDescription = `Tu afinidad es con ${a.nombre}`;
 		}
 	}
 
